@@ -1,4 +1,0 @@
-Password protection:
-
-So apparently if we're running on an Apache web server we can do the .htaccess thing to password-protect a directory (allowing free access to any files in that directory), and the password file automatically comes with (probably low level) encryption.
-This isn't necessarily the most secure system, but it can prevent people from randomly going to other parts of the site.

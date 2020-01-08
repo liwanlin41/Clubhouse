@@ -1,0 +1,4 @@
+AuthName "replace later with some name"
+AuthType Basic
+AuthUserFile ../../.htpasswd
+require valid-user

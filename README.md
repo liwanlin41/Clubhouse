@@ -36,6 +36,14 @@ python3 -m venv venv
 pip install -r requirements.txt
 ```
 
+To reactivate the virtual environment, either
+```
+venv/bin/activate
+```
+or
+```source venv/bin/activate```
+if the first one doesn't work.
+
 Run the Flask app:
 ```
 export FLASK_APP=app.py

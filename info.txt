@@ -1,0 +1,18 @@
+First name*
+Last name*
+Street address
+City
+State
+Zipcode
+Email (use to generate member id?)
+Phone
+Join date
+Birthday
+School
+Gender
+Race and Ethnicity
+Guardian first name
+Guardian last name
+Guardian relationship to member
+Guardian email
+Guardian phone

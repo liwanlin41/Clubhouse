@@ -1,21 +1,16 @@
+{% extends "base.html" %}
 <!-- main page for top-level sign-in for both clubhouse and admin -->
-<!DOCTYPE html>
-<html>
 
-	<head>
-		<title>The Clubhouse Network</title>
-	</head>
+{% block title %} Home {% endblock %}
 
-	<body>
-		<h1>Welcome! Sign in to your respective account.</h1>
-		
-		<div>
-			<a href="./admin/home.html"> where sign in to administrators go </a>
-		</div>
+{% block content %}
+<h1>Welcome! Sign in to your respective account.</h1>
 
-		<div>
-			<a href="./clubhouse/home.html"> where sign in to coordinators go </a>
-		</div>
-	</body>
+<div>
+	<a href="./admin/home.html"> where sign in to administrators go </a>
+</div>
 
-</html>
+<div>
+	<a href="./clubhouse/home.html"> where sign in to coordinators go </a>
+</div>
+{% endblock %}

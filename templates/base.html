@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+    <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}" />
+    <title>{% block title %}{% endblock %} - The Clubhouse Network</title>
+    {% endblock %}
+</head>
+<body>
+    <div id="navbar">
+        <ul>
+            <li>[logo]</li>
+            {% block navtabs %}{% endblock %}
+        <ul>
+    </div>
+    <div id="content">{% block content %}{% endblock %}</div>
+    <div id="footer">
+        {% block footer %}
+        Footer - The Clubhouse Network.
+        {% endblock %}
+    </div>
+</body>
+</html>

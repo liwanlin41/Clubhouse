@@ -2,6 +2,12 @@
 
 A website where Clubhouses in [The Clubhouse Network](https://theclubhousenetwork.org/) can track day-to-day check-ins of their members.
 
+## HTML Language Instructions
+
+Wrap all text to be displayed on the website like this.
+```{{ _("display text")}}```
+in the HTML file. Wanlin will then make the language translations work.
+
 ## Install and Run
 
 These instructions require that Python 3 is already installed on the machine.

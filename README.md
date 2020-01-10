@@ -2,6 +2,10 @@
 
 A website where Clubhouses in [The Clubhouse Network](https://theclubhousenetwork.org/) can track day-to-day check-ins of their members.
 
+## Flask Files
+
+All the (important) flask files are now under the app directory. The main file to run is run_app.py (```export FLASK_APP=run_app.py```), with some auxiliary things in the main folder.
+
 ## HTML Language Instructions
 
 Wrap all text to be displayed on the website like this.

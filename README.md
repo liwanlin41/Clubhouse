@@ -8,6 +8,22 @@ Wrap all text to be displayed on the website like this.
 ```{{ _("display text")}}```
 in the HTML file. Wanlin will then make the language translations work.
 
+To run language compilation:
+
+```
+pybabel extract -F babel.cfg -o messages.pot --input-dirs=.
+```
+to get started, then
+```
+pybabel init -i messages.pot -d app/translations -l (insert language abbrev here)
+```
+which creates a language directory in the translations folder. This file can then be edited and translations inputted.
+Finally to compile,
+```
+pybabel compile -d app/translations
+```
+and hopefully it works.
+
 ## Install and Run
 
 These instructions require that Python 3 is already installed on the machine.

@@ -1,1 +1,5 @@
 Flask
+flask-login
+flask-babel
+flask-wtf
+flask-mysql

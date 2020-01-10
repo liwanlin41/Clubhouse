@@ -1,21 +1,24 @@
+{% extends "base.html" %}
 <!-- homepage for individual clubhouse -->
 
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Clubhouse Coordinator</title>
-</head>
-<body>
-	<div>
-		<a href="./add.html">Edit Members</a>
-	</div>
+{% block title %} Clubhouse Coordinator {% endblock %}
 
-	<div>
-		<a href="./checkin.html">Member Check-ins</a>
-	</div>
+{% block navtabs %}
+<li>Check-in</li>
+<li>Add Student</li>
+<li>View Data</li>
+{% endblock %}
 
-	<div>
-		<a href="./view.html">View Clubhouse Data</a>
-	</div>
-</body>
-</html>
+{% block content %}
+<div>
+	<a href="./add.html">Edit Members</a>
+</div>
+
+<div>
+	<a href="./checkin.html">Member Check-ins</a>
+</div>
+
+<div>
+	<a href="./view.html">View Clubhouse Data</a>
+</div>
+{% endblock %}

@@ -9,7 +9,9 @@
 <body>
     <div id="navbar">
         <ul>
-            <li>[logo]</li>
+		<li><!--[logo] -->
+		<img src = "{{ url_for('static',filename='images/small.jpg') }}">
+	    </li>
             {% block navtabs %}{% endblock %}
         <ul>
     </div>

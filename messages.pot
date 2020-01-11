@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-01-10 17:01-0500\n"
+"POT-Creation-Date: 2020-01-11 12:23-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,5 +31,105 @@ msgstr ""
 
 #: app/templates/index.html:14
 msgid "where sign in to coordinators go"
+msgstr ""
+
+#: app/templates/login.html:4
+msgid "Sign In"
+msgstr ""
+
+#: app/templates/admin/add.html:11
+msgid "Clubhouse Name"
+msgstr ""
+
+#: app/templates/admin/add.html:13
+msgid "Address"
+msgstr ""
+
+#: app/templates/admin/home.html:6
+msgid "Admin of TCN"
+msgstr ""
+
+#: app/templates/admin/home.html:10
+msgid "Edit Clubhouses"
+msgstr ""
+
+#: app/templates/admin/home.html:14
+msgid "View Clubhouse Data"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:6
+msgid "Edit Member"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:11
+msgid "First Name (required)"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:13
+msgid "Last Name (required)"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:15
+msgid "Street Address"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:17
+msgid "City"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:19
+msgid "State"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:21
+msgid "Zip/Postal Code"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:23
+msgid "Email"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:25
+msgid "Phone"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:27
+msgid "Join Date"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:29
+msgid "Birthday"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:31
+msgid "School"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:33
+msgid "Gender"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:35
+msgid "Race and Ethnicity"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:37
+msgid "Guardian First Name"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:39
+msgid "Guardian Last Name"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:41
+msgid "Guardian Relationship to Member"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:43
+msgid "Guardian Email"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:45
+msgid "Guardian Phone"
 msgstr ""
 

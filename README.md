@@ -21,7 +21,7 @@ to get started, then
 ```
 pybabel init -i messages.pot -d app/translations -l (insert language abbrev here)
 ```
-which creates a language directory in the translations folder. This file can then be edited and translations inputted.
+which creates a language directory in the translations folder. This file (the .po one) can then be edited and translations inputted.
 Finally to compile,
 ```
 pybabel compile -d app/translations

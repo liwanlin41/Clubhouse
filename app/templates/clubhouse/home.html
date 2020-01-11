@@ -1,24 +1,24 @@
 {% extends "base.html" %}
 <!-- homepage for individual clubhouse -->
 
-{% block title %} Clubhouse Coordinator {% endblock %}
+{% block title %} {{_("Clubhouse Coordinator")}} {% endblock %}
 
 {% block navtabs %}
-<li>Check-in</li>
-<li>Add Student</li>
-<li>View Data</li>
+<li>{{_("Check-in")}}</li>
+<li>{{_("Add Student"}}</li>
+<li>{{_("View Data"}}</li>
 {% endblock %}
 
 {% block content %}
 <div>
-	<a href="./add.html">Edit Members</a>
+	<a href="./add.html">{{_("Edit Members")}}</a>
 </div>
 
 <div>
-	<a href="./checkin.html">Member Check-ins</a>
+	<a href="./checkin.html">{{_("Member Check-ins")}}</a>
 </div>
 
 <div>
-	<a href="./view.html">View Clubhouse Data</a>
+	<a href="./view.html">{{_("View Clubhouse Data")}}</a>
 </div>
 {% endblock %}

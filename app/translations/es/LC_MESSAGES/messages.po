@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-01-10 17:01-0500\n"
-"PO-Revision-Date: 2020-01-10 17:01-0500\n"
+"POT-Creation-Date: 2020-01-11 12:09-0500\n"
+"PO-Revision-Date: 2020-01-11 12:10-0500\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
 "Language-Team: es <LL@li.org>\n"
@@ -18,13 +18,29 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
+#: app/forms.py:9
+msgid "Username"
+msgstr "emanresu"
+
+#: app/forms.py:10
+msgid "Password"
+msgstr "drowssap"
+
+#: app/forms.py:11
+msgid "Remember Me"
+msgstr "rebmemer"
+
+#: app/forms.py:12
+msgid "Sign In"
+msgstr "ngis"
+
 #: app/templates/index.html:4
 msgid "Home"
-msgstr "emoH"
+msgstr "emoh"
 
 #: app/templates/index.html:7
 msgid "Welcome! Sign in to your respective account."
-msgstr "emocleW"
+msgstr "emoclew"
 
 #: app/templates/index.html:10
 msgid "where sign in to administrators go"
@@ -32,5 +48,5 @@ msgstr "nimda"
 
 #: app/templates/index.html:14
 msgid "where sign in to coordinators go"
-msgstr "drooc"
+msgstr "rotanidrooc"
 

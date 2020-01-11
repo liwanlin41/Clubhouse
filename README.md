@@ -12,6 +12,8 @@ Wrap all text to be displayed on the website like this.
 ```{{ _("display text")}}```
 in the HTML file. Wanlin will then make the language translations work.
 
+In python files, most translations seem to be needed in forms? See the forms.py file for an example, but in this case wrap the text as ```_l("display text")```.
+
 To run language compilation:
 
 ```

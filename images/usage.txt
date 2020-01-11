@@ -1,0 +1,1 @@
+I think we should probably use the full color images? It's either the one under network/networkfull or club/fullcolor, we'll have to check which one they want us to use. 

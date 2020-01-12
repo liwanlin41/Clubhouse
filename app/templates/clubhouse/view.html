@@ -1,23 +1,61 @@
 {% extends "base.html" %}
 <!-- view data -->
 
-<!DOCTYPE html>
-<html class="no-js" lang="en">
-<head>
-        <title id="pagetitle">Clubhouse Check-ins</title>
-	<link rel="localization" hreflang="en" href="../lang/en.json" />
-</head>
-<body>
+{% block title %} {{ _("Clubhouse Check-ins")}} {% endblock %}
+
+{% block navtabs %}
 	<div>
-		<a href="./home.html">Clubhouse Home</a>
+		<a href="/clubhouse">{{_("Clubhouse Home")}}</a>
 	</div>
         <div>
-                <a href="./add.html">Edit Members</a>
+		<a href="./add.html">{{_("Edit Members")}}</a>
         </div>
 
         <div>
-                <a href="./checkin.html">Member Check-ins</a>
+		<a href="./checkin.html">{{_("Member Check-ins")}}</a>
         </div>
-</body>
-</html>
+{% endblock %}
 
+{% block content %}
+
+<form action="" method="post">
+		<label>{{_("Time range")}}</label>
+		<div class="dropdown">
+		<select name="range">
+			{% for x in time_ranges %}
+			<option value="{{ x[0] }}"{% if loop.first %} SELECTED {% endif %}>{{ x[1] }}</option>
+			{% endfor %}
+		</select>
+		</div>
+	<br>
+		<label>{{_("Data format")}}</label>
+		<div class="dropdown">
+		<select name="format">
+			{% for x in data_format %}
+			<option value="{{ x[0] }}"{% if loop.first %} SELECTED {% endif %}>{{ x[1] }}</option>
+			{% endfor %}
+		</select>
+		</div>
+	<br>
+	<input type="submit" value="Fetch data">
+</form>
+<!--
+	<div class="dropdown-wrapper">
+		<button class="dropdown-button">{{_("Time range")}}</button>
+		<div class="dropdown-options">
+			<a href="#">{{_("Last 24 hours")}}</a>
+			<a href="#">{{_("Last 7 days")}}</a>
+			<a href="#">{{_("Last month")}}</a>
+			<a href="#">{{_("Last year")}}</a>
+		</div>
+	</div>
+
+	<div class="dropdown-wrapper">
+		<button class="dropdown-button">{{_("Data options")}}</button>
+		<div class="dropdown-options">
+			<a href="#">{{_("Time of day")}}</a>
+			<a href="#">{{_("Day of week")}}</a>
+		</div>
+	</div>
+-->
+{% endblock %}

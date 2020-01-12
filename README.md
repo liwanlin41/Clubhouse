@@ -17,7 +17,7 @@ In python files, most translations seem to be needed in forms? See the forms.py 
 To run language compilation:
 
 ```
-pybabel extract -F babel.cfg -o messages.pot --input-dirs=.
+pybabel extract -F babel.cfg -k _l -o messages.pot --input-dirs=.
 ```
 to get started, then
 ```

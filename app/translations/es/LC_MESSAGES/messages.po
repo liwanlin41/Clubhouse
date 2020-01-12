@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-01-11 12:09-0500\n"
-"PO-Revision-Date: 2020-01-11 12:10-0500\n"
+"POT-Creation-Date: 2020-01-12 14:19-0500\n"
+"PO-Revision-Date: 2020-01-12 14:19-0500\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
 "Language-Team: es <LL@li.org>\n"
@@ -20,33 +20,194 @@ msgstr ""
 
 #: app/forms.py:9
 msgid "Username"
-msgstr "emanresu"
+msgstr ""
 
 #: app/forms.py:10
 msgid "Password"
-msgstr "drowssap"
+msgstr ""
 
 #: app/forms.py:11
 msgid "Remember Me"
-msgstr "rebmemer"
+msgstr ""
 
-#: app/forms.py:12
+#: app/forms.py:12 app/templates/login.html:4
 msgid "Sign In"
-msgstr "ngis"
+msgstr ""
+
+#: app/forms.py:15 app/templates/clubhouse/view.html:35
+msgid "Last 24 hours"
+msgstr ""
+
+#: app/forms.py:15 app/templates/clubhouse/view.html:36
+msgid "Last 7 days"
+msgstr "168 hours"
+
+#: app/forms.py:15 app/templates/clubhouse/view.html:37
+msgid "Last month"
+msgstr "a long time"
+
+#: app/forms.py:15 app/templates/clubhouse/view.html:38
+msgid "Last year"
+msgstr "a very long time"
+
+#: app/forms.py:16 app/templates/clubhouse/view.html:23
+#: app/templates/clubhouse/view.html:33
+msgid "Time range"
+msgstr "Time?"
 
 #: app/templates/index.html:4
 msgid "Home"
-msgstr "emoh"
+msgstr ""
 
 #: app/templates/index.html:7
 msgid "Welcome! Sign in to your respective account."
-msgstr "emoclew"
+msgstr ""
 
 #: app/templates/index.html:10
 msgid "where sign in to administrators go"
-msgstr "nimda"
+msgstr ""
 
 #: app/templates/index.html:14
 msgid "where sign in to coordinators go"
-msgstr "rotanidrooc"
+msgstr ""
+
+#: app/templates/admin/add.html:12
+msgid "Clubhouse Name"
+msgstr ""
+
+#: app/templates/admin/add.html:14
+msgid "Address"
+msgstr ""
+
+#: app/templates/admin/home.html:7
+msgid "Admin of TCN"
+msgstr ""
+
+#: app/templates/admin/home.html:11
+msgid "Edit Clubhouses"
+msgstr ""
+
+#: app/templates/admin/home.html:15 app/templates/clubhouse/home.html:22
+msgid "View Clubhouse Data"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:7
+msgid "Edit Member"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:12
+msgid "First Name (required)"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:14
+msgid "Last Name (required)"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:16
+msgid "Street Address"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:18
+msgid "City"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:20
+msgid "State"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:22
+msgid "Zip/Postal Code"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:24
+msgid "Email"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:26
+msgid "Phone"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:28
+msgid "Join Date"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:30
+msgid "Birthday"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:32
+msgid "School"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:34
+msgid "Gender"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:36
+msgid "Race and Ethnicity"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:38
+msgid "Guardian First Name"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:40
+msgid "Guardian Last Name"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:42
+msgid "Guardian Relationship to Member"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:44
+msgid "Guardian Email"
+msgstr ""
+
+#: app/templates/clubhouse/add.html:46
+msgid "Guardian Phone"
+msgstr ""
+
+#: app/templates/clubhouse/home.html:4
+msgid "Clubhouse Coordinator"
+msgstr ""
+
+#: app/templates/clubhouse/home.html:7
+msgid "Check-in"
+msgstr ""
+
+#: app/templates/clubhouse/home.html:8
+msgid "Add Student"
+msgstr ""
+
+#: app/templates/clubhouse/home.html:9
+msgid "View Data"
+msgstr ""
+
+#: app/templates/clubhouse/home.html:14 app/templates/clubhouse/view.html:11
+msgid "Edit Members"
+msgstr ""
+
+#: app/templates/clubhouse/home.html:18 app/templates/clubhouse/view.html:15
+msgid "Member Check-ins"
+msgstr ""
+
+#: app/templates/clubhouse/view.html:4
+msgid "Clubhouse Check-ins"
+msgstr ""
+
+#: app/templates/clubhouse/view.html:8
+msgid "Clubhouse Home"
+msgstr ""
+
+#: app/templates/clubhouse/view.html:43
+msgid "Data options"
+msgstr ""
+
+#: app/templates/clubhouse/view.html:45
+msgid "Time of day"
+msgstr ""
+
+#: app/templates/clubhouse/view.html:46
+msgid "Day of week"
+msgstr ""
 

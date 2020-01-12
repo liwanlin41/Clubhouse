@@ -1,0 +1,49 @@
+/* Dropdown stuff */
+/* ignore all this */
+
+input[type=submit]{
+	background-color: #9BAED2;
+	color: #2D2769;
+}
+
+/* selected element in dropdown */
+/* this doesn't actually work */
+.select-selected {
+	background-color: #C5DBEA;
+}
+
+/* wrapper for dropdown */
+.dropdown {
+	position: relative;
+	background-color: #C5DBEA;
+}
+
+.dropdown-button {
+	background-color: #9BAED2;
+	color: #2D2769;
+	padding: 0px 5px;
+	pointer-events: none; /* disable button click */
+}
+
+.dropdown-options {
+	display: none;
+	position: absolute;
+	z-index: 1;
+	background-color: #C5DBEA;
+	white-space: nowrap;
+}
+
+.dropdown-options a {
+	display: block;
+	color: #2D2769;
+	text-decoration: none;
+}
+
+.dropdown-options a:hover {
+	background-color: #EEF4F7;
+}
+
+/* display dropdown options on hover */
+.dropdown-wrapper:hover .dropdown-options {
+	display: block;
+}

@@ -12,7 +12,6 @@ class LoginForm(FlaskForm):
     submit = SubmitField(_l('Sign In'))
 
 class CheckinForm(FlaskForm):
-    # SelectField is the one that has an entire box with all possible options
     # test data, TODO: replace with actual pulled data (pull either here or in routes.py when called)
     # key members by id for form submission
     members_in = [(123, _l("signed-in test member")), (12, _l("second signed-in test"))] # members currently in clubhouse

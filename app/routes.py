@@ -55,3 +55,12 @@ def admin_login():
         return redirect('admin')
     return render_template('login.html', form=form)
 
+# rest of app routes for clubhouse home page
+@app.route('/clubhouse/editmembers') # might need a method -- better to make html name informative if different?
+def coord_members():
+    return render_template('/clubhouse/add.html')
+
+@app.route('/clubhouse/checkin')
+def coord_checkin():
+    return render_template('/clubhouse/checkin.html')
+

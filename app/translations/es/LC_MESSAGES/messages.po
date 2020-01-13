@@ -20,11 +20,11 @@ msgstr ""
 
 #: app/forms.py:9
 msgid "Username"
-msgstr ""
+msgstr "translation for username here"
 
 #: app/forms.py:10
 msgid "Password"
-msgstr ""
+msgstr "translation for password here"
 
 #: app/forms.py:11
 msgid "Remember Me"

@@ -72,31 +72,17 @@ def coord_members():
 
 # check-in page, main functionality of website
 @app.route('/clubhouse/checkin', methods=['GET','POST'])
-def coord_checkin():
-    form = CheckinForm()
-    if request.method == "POST":
-        # TODO: push check-in data
-        return request.form
-#        return redirect('/clubhouse/checkin')
-    return render_template('/clubhouse/checkin.html', form=form)
-
-# this is an attempt at avoiding pulling from the database
-# on every check in/out operation for efficiency purposes
-# unfortunately it doesn't quite work unless we have some way of tracking
-# whether the user has left this page or some way to prevent
-# a second GET request from being called
-# maybe we should look into cookies?
-@app.route('/clubhouse/checkin/test', methods=['GET','POST'])
 def checkin_test():
-    testform = CheckinManager()
+    # TODO: database connections
+    if request.method == "GET":
+        app.testform = CheckinManager() # persistence
     if request.method == "POST":
-        # TODO: database updates
         if "check_in" in request.form and "check_in_id" in request.form: # check-in button clicked
-            testform.checkin_member(request.form["check_in_id"])
+            app.testform.checkin_member(request.form["check_in_id"])
         elif "check_out_id" in request.form: # check-out button
-            testform.checkout_member(request.form["check_out_id"])
-        return render_template('/clubhouse/checkin.html',form=testform.check_in_form)
-    return render_template('/clubhouse/checkin.html',form=testform.check_in_form)
+            app.testform.checkout_member(request.form["check_out_id"])
+        return render_template('/clubhouse/checkin.html',form=app.testform.check_in_form)
+    return render_template('/clubhouse/checkin.html',form=app.testform.check_in_form)
     
 
 # rest of app routes for admin home page (aka just editclubhouses)

@@ -1,25 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    {% block head %}
-    <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}" />
-    <title>{% block title %}{% endblock %} - The Clubhouse Network</title>
-    {% endblock %}
-</head>
-<body>
-    <div id="navbar">
-        <ul>
-		<li><!--[logo] -->
-		<img src = "{{ url_for('static',filename='images/small.jpg') }}">
-	    </li>
-            {% block navtabs %}{% endblock %}
-        <ul>
-    </div>
-    <div id="content">{% block content %}{% endblock %}</div>
-    <div id="footer">
-        {% block footer %}
-        Footer - The Clubhouse Network.
+    <head>
+        {% block head %}
+        <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}" />
+        <title>{% block title %}{% endblock %} - The Clubhouse Network</title>
         {% endblock %}
-    </div>
-</body>
+    </head>
+    <body>
+        <article>
+            <header>
+                <div id="navbar">
+                    <ul>
+            		<li><!--[logo] -->
+            		<img src = "{{ url_for('static',filename='images/small.jpg') }}">
+            	    </li>
+                        {% block navtabs %}{% endblock %}
+                    </ul>
+                </div>
+            </header>
+
+            <main>
+                <div id="content">{% block content %}{% endblock %}</div>
+            </main>
+            
+            <footer>
+                {% block footer %}
+                Footer - The Clubhouse Network.
+                {% endblock %}
+            </footer>
+        </article>
+    </body>
 </html>

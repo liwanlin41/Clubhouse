@@ -1,18 +1,14 @@
 {% extends "base.html" %}
 <!-- home page for admin -->
 
-<!DOCTYPE html>
-<html>
-<head>
-	<title>{{_("Admin of TCN")}}</title>
-</head>
-<body>
-	<div>
-		<a href="./add.html">{{_("Edit Clubhouses")}}</a>
-	</div>
+{% block title %} {{_("Clubhouse Administrator")}} {% endblock %}
 
-	<div>
-		<a href="./view.html">{{_("View Clubhouse Data")}}</a>
-	</div>
-</body>
-</html>
+{% block content %}
+<div>
+	<a href="admin/editclubhouses">{{_("Edit Clubhouses")}}</a>
+</div>
+
+<div>
+	<a href="admin/view">{{_("View Clubhouse Data")}}</a>
+</div>
+{% endblock %}

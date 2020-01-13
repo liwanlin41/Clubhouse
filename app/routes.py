@@ -36,6 +36,17 @@ def coord_view():
     if request.method == 'GET':
         return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format)
 
+@app.route('/admin/view', methods=['GET', 'POST'])
+def admin_view():
+    # copied from coord_view
+    time_ranges = [(1,_l("Last 24 hours")), (7,_l("Last 7 days")), (30,_l("Last month")), (365,_l("Last year"))]
+    data_format = [(0, _l("Check-ins")), (1, _l("Time of day")), (2, _l("Day of week"))]
+    if request.method == 'POST':
+        #TODO: actually pull data
+        return "this method has not been implemented"
+    if request.method == 'GET':
+        return render_template('/admin/view.html', time_ranges=time_ranges, data_format=data_format)
+
 # basic login form, it doesn't post anything yet
 @app.route('/clubhouse/login', methods=['GET','POST'])
 def coord_login():
@@ -63,4 +74,9 @@ def coord_members():
 @app.route('/clubhouse/checkin')
 def coord_checkin():
     return render_template('/clubhouse/checkin.html')
+
+# rest of app routes for admin home page (aka just editclubhouses)
+@app.route('/admin/editclubhouses')
+def admin_clubhouses():
+    return render_template('/admin/view.html')
 

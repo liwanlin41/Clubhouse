@@ -1,2 +1,22 @@
 {% extends "base.html" %}
 <!-- check in page for members -->
+
+{% block content %}
+	<h1>{{ _("Clubhouse Check-in")}}</h1>
+	<div style="display: table-row">
+	<form action="" method="post" novalidate>
+		{{form.hidden_tag()}}
+		<div class="select-field-wrapper">
+		{{ form.check_in_id.label }}<br>
+		{{ form.check_in_id(size=20) }} <br>
+		{{form.check_in() }}
+		</div>
+		<div class="select-field-wrapper">
+		{{ form.check_out_id.label }}<br>
+		{{ form.check_out_id(size=20) }}<br>
+		{{form.check_out() }}
+		</div>
+	</form>
+	</div>
+
+{% endblock %}

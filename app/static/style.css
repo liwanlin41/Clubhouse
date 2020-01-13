@@ -48,6 +48,12 @@ input[type=submit]{
 	display: block;
 }
 
+/* check-in and check-out div wrappers */
+.select-field-wrapper {
+	display: table-cell;
+	padding: 10px;
+}
+
 /* apparently necessary for keeping footer at bottom */
 
 html, body {

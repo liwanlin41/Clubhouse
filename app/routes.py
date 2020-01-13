@@ -3,14 +3,13 @@
 # not sure what the imports should be but these seem to work?
 from flask import render_template, flash, redirect, request
 from app import app
-from app.forms import LoginForm
+from app.forms import LoginForm, CheckinForm, CheckinManager
 from flask_babel import lazy_gettext as _l
 
 ### homepages
 
 @app.route('/')
 def home():
-#    return "Hello"
     return render_template('index.html')
 
 @app.route('/clubhouse')
@@ -71,9 +70,34 @@ def admin_login():
 def coord_members():
     return render_template('/clubhouse/add.html')
 
-@app.route('/clubhouse/checkin')
+# check-in page, main functionality of website
+@app.route('/clubhouse/checkin', methods=['GET','POST'])
 def coord_checkin():
-    return render_template('/clubhouse/checkin.html')
+    form = CheckinForm()
+    if request.method == "POST":
+        # TODO: push check-in data
+        return request.form
+#        return redirect('/clubhouse/checkin')
+    return render_template('/clubhouse/checkin.html', form=form)
+
+# this is an attempt at avoiding pulling from the database
+# on every check in/out operation for efficiency purposes
+# unfortunately it doesn't quite work unless we have some way of tracking
+# whether the user has left this page or some way to prevent
+# a second GET request from being called
+# maybe we should look into cookies?
+@app.route('/clubhouse/checkin/test', methods=['GET','POST'])
+def checkin_test():
+    testform = CheckinManager()
+    if request.method == "POST":
+        # TODO: database updates
+        if "check_in" in request.form and "check_in_id" in request.form: # check-in button clicked
+            testform.checkin_member(request.form["check_in_id"])
+        elif "check_out_id" in request.form: # check-out button
+            testform.checkout_member(request.form["check_out_id"])
+        return render_template('/clubhouse/checkin.html',form=testform.check_in_form)
+    return render_template('/clubhouse/checkin.html',form=testform.check_in_form)
+    
 
 # rest of app routes for admin home page (aka just editclubhouses)
 @app.route('/admin/editclubhouses')

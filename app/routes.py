@@ -77,11 +77,14 @@ def checkin_test():
     if request.method == "GET":
         app.testform = CheckinManager() # persistence
     if request.method == "POST":
-        if "check_in" in request.form and "check_in_id" in request.form: # check-in button clicked
-            app.testform.checkin_member(request.form["check_in_id"])
-        elif "check_out_id" in request.form: # check-out button
-            app.testform.checkout_member(request.form["check_out_id"])
-        return render_template('/clubhouse/checkin.html',form=app.testform.check_in_form)
+        try:
+            if "check_in" in request.form and "check_in_id" in request.form: # check-in button clicked
+                app.testform.checkin_member(request.form["check_in_id"])
+            elif "check_out_id" in request.form: # check-out button
+                app.testform.checkout_member(request.form["check_out_id"])
+            return render_template('/clubhouse/checkin.html',form=app.testform.check_in_form)
+        except: # cheating way to handle form resubmission
+            return redirect('/clubhouse/checkin')
     return render_template('/clubhouse/checkin.html',form=app.testform.check_in_form)
     
 

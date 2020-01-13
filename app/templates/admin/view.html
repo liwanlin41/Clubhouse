@@ -1,2 +1,45 @@
 {% extends "base.html" %}
 <!-- view information across all clubhouses -->
+
+<!-- currently copied from clubhouse view -->
+
+{% block title %} {{ _("Global Clubhouse Check-ins")}} {% endblock %}
+
+{% block navtabs %}
+        <div>
+                <a href="/admin">{{_("Admin Home")}}</a>
+        </div>
+        <div>
+                <a href="/admin/editclubhouses">{{_("Edit Clubhouses")}}</a>
+        </div>
+
+	<!--
+        <div>
+                <a href="/clubhouse/checkin">{{_("Member Check-ins")}}</a>
+	</div>-->
+{% endblock %}
+
+{% block content %}
+
+<form action="" method="post">
+                <label>{{_("Time range")}}</label>
+                <!--div class="dropdown"-->
+                <select name="range">
+                        {% for x in time_ranges %}
+                        <option value="{{ x[0] }}"{% if loop.first %} SELECTED {% endif %}>{{ x[1] }}</option>
+                        {% endfor %}
+                </select>
+                <!--/div-->
+        <br>
+                <label>{{_("Data format")}}</label>
+                <!--div class="dropdown"-->
+                <select name="format">
+                        {% for x in data_format %}
+                        <option value="{{ x[0] }}"{% if loop.first %} SELECTED {% endif %}>{{ x[1] }}</option>
+                        {% endfor %}
+                </select>
+                <!--/div-->
+        <br>
+        <input type="submit" value="Fetch data">
+</form>
+{% endblock %}

@@ -63,7 +63,7 @@ def admin_login():
     form = LoginForm()
     if form.validate_on_submit():
         raw_data = request.form
-        return redirect('admin')
+        return redirect('/admin')
     return render_template('login.html', form=form)
 
 # rest of app routes for clubhouse home page
@@ -78,5 +78,5 @@ def coord_checkin():
 # rest of app routes for admin home page (aka just editclubhouses)
 @app.route('/admin/editclubhouses')
 def admin_clubhouses():
-    return render_template('/admin/view.html')
+    return render_template('/admin/add.html')
 

@@ -3,6 +3,7 @@
 # not sure what the imports should be but these seem to work?
 from flask import render_template, flash, redirect, request
 from app import app
+# from db import *          # broken, can't seem to find db
 from app.forms import LoginForm, CheckinForm, CheckinManager
 from flask_babel import lazy_gettext as _l
 
@@ -68,6 +69,7 @@ def admin_login():
 # rest of app routes for clubhouse home page
 @app.route('/clubhouse/editmembers') # might need a method -- better to make html name informative if different?
 def coord_members():
+    add_member()
     return render_template('/clubhouse/add.html')
 
 # check-in page, main functionality of website
@@ -87,10 +89,9 @@ def checkin_test():
         except ValueError: # cheating way to handle form resubmission
             return redirect('/clubhouse/checkin')
     return render_template('/clubhouse/checkin.html',form=app.testform.check_in_form)
-    
+
 
 # rest of app routes for admin home page (aka just editclubhouses)
 @app.route('/admin/editclubhouses')
 def admin_clubhouses():
     return render_template('/admin/add.html')
-

@@ -29,4 +29,5 @@ def get_locale():
 #login_manager.init_app(app)
 
 # this import needs to come at the end, don't touch; later the other imported files will also be here
+# from app import db
 from app import routes

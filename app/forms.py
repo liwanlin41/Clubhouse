@@ -1,9 +1,10 @@
-# login forms and other web forms
+# login form and checkin form
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
 from wtforms.validators import DataRequired
 from flask_babel import lazy_gettext as _l
+from helpers import binary_search
 
 class LoginForm(FlaskForm):
     user = StringField(_l('Username'), validators = [DataRequired()])
@@ -12,7 +13,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField(_l('Sign In'))
 
 class CheckinForm(FlaskForm):
-    # test data, TODO: replace with actual pulled data (pull either here or in routes.py when called)
+    '''create the checkin form template, not specialized for any data'''
     # key members by id for form submission
     members_in = [(123, _l("signed-in test member")), (12, _l("second signed-in test"))] # members currently in clubhouse
     members_out = [(234, _l("signed-out test member")), (345, _l("second signed-out test"))] # members not signed in
@@ -29,7 +30,7 @@ class CheckinManager:
         self.check_in_form = CheckinForm()
         if clubhouse:
             self.clubhouse = clubhouse
-            # TODO: load actual lists from database
+            # TODO: load actual lists from database and sort them alphabetically
         if not clubhouse:
             # NOTE: translation not needed here because names are displayed
             self.members_in = [("abc","manager signed-in 1"), ("bcd","manager signed-in 2")]
@@ -44,7 +45,6 @@ class CheckinManager:
             self.setfields()
 
     # reset the SelectField choices
-    # holy shit it works yayyyyyyyyy
     def setfields(self):
         self.check_in_form.check_in_id.choices = self.members_out
         self.check_in_form.check_out_id.choices = self.members_in
@@ -57,10 +57,8 @@ class CheckinManager:
         # extract member to be removed
         member = (id_num, self.id_to_name[id_num])
         self.members_out.remove(member)
-        # TODO: optimize for insertion into sorted list
-        self.members_in.append(member)
-        # sort member lists by displayed name
-        self.members_in.sort(key = lambda x: x[1])
+        # insert member into sorted members_in list
+        self.members_in.insert(binary_search(self.members_in, self.id_to_name[id_num]), member)
         self.setfields() # update visual
 
     # check out member id_num
@@ -69,7 +67,5 @@ class CheckinManager:
         # extract member to be removed
         member = (id_num, self.id_to_name[id_num])
         self.members_in.remove(member)
-        # TODO: same as above
-        self.members_out.append(member)
-        self.members_out.sort(key = lambda x: x[1])
+        self.members_out.insert(binary_search(self.members_out, self.id_to_name[id_num]), member)
         self.setfields()

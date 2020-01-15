@@ -3,6 +3,11 @@
 
 {% block title %} {{_("Edit Clubhouses")}} {% endblock %}
 
+{% block navtabs %}
+<li><a href="/admin">{{_("Admin Home")}}</a></li>
+<li><a href="/admin/view">{{_("View Clubhouse Data")}}</a></li>
+{% endblock %}
+
 {% block content %}
 <form>
 	{{_("Clubhouse Name")}}<br>

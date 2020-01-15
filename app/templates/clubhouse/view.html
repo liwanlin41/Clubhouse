@@ -4,16 +4,9 @@
 {% block title %} {{ _("Clubhouse Check-ins")}} {% endblock %}
 
 {% block navtabs %}
-	<div>
-		<a href="/clubhouse">{{_("Clubhouse Home")}}</a>
-	</div>
-        <div>
-		<a href="/clubhouse/editmembers">{{_("Edit Members")}}</a>
-        </div>
-
-        <div>
-		<a href="/clubhouse/checkin">{{_("Member Check-ins")}}</a>
-        </div>
+<li><a href="/clubhouse">{{_("Clubhouse Home")}}</a></li>
+<li><a href="/clubhouse/checkin">{{_("Member Check-in")}}</a></li>
+<li><a href="/clubhouse/editmembers">{{_("Edit Members")}}</a></li>
 {% endblock %}
 
 {% block content %}

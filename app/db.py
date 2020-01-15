@@ -7,10 +7,14 @@ def get_cursor():
     cursor = conn.cursor()
     return cursor
 
-# retrieve all members
-def get_all_members():
+# retrieve members from a clubhouse: returns (id, first, last)
+def get_clubhouse_members(clubhouse_id, sort_by_last=True):
     cursor = get_cursor()
-    cursor.execute("SELECT * FROM members")
+    sorting = "first_name, last_name" # can collapse if statement to one line
+    if sort_by_last:
+        sorting = "last_name, first_name"
+    cursor.execute("SELECT member_id, first_name, last_name FROM TABLE member_info WHERE clubhouse_id = ? ORDER BY ?"; (clubhouse_id, sorting))
+        # ^ may be sketch in terms of ordering and the ? variable thing (a matter of security)
     rows = cursor.fetchall()
     for row in rows:
         print(row)

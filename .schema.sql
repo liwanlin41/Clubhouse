@@ -1,7 +1,7 @@
 CREATE SCHEMA IF NOT EXISTS clubhouse;
 
 CREATE TABLE IF NOT EXISTS members (
-  member_id           INT NOT NULL AUTO_INCREMENT,
+  member_id           INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   first_name          TINYTEXT NOT NULL,
   last_name           TINYTEXT NOT NULL,
   street_address      TINYTEXT,
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS checkins (
 );
 
 CREATE TABLE IF NOT EXISTS clubhouses (
-  clubhouse_id        INT NOT NULL AUTO_INCREMENT,
+  clubhouse_id        INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name                TINYTEXT NOT NULL,
   address             TINYTEXT NOT NULL,
   username            TINYTEXT NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS clubhouses (
 );
 
 CREATE TABLE IF NOT EXISTS admins (
-  admin_id            INT NOT NULL AUTO_INCREMENT,
+  admin_id            INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   username            TINYTEXT NOT NULL,
   password            VARCHAR(128)
 );

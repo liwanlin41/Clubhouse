@@ -1,6 +1,18 @@
-/* Dropdown stuff */
-/* ignore all this */
+/* color scheme
+ * clubhouse purple: #2D2769
+ * 80/60/40/20: #4F4983, #716998, #968FB2, #C3BED3
+ * light blue: #C5DBEA
+ * 80/60/40/20: #C4DCE8, #D2E3EC, #E0EBF1, #EEF4F7
+ * network blue: #005B9E
+ * 80/60/40/20: #4478B1, #7290C0, #9BAED2, #C9D2E6
+*/
 
+/* navbar */
+.nav {
+	color: #2D2769;
+}
+
+/* submit button on forms */
 input[type=submit]{
 	background-color: #9BAED2;
 	color: #2D2769;

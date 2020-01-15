@@ -78,17 +78,19 @@ def view_members():
 
 # check-in page, main functionality of website
 @app.route('/clubhouse/checkin', methods=['GET','POST'])
-def checkin_test():
+def checkin_handler():
     # TODO: database connections
     if request.method == "GET":
-        app.testform = CheckinManager() # persistence
+        # TODO: this is currently a test clubhouse id
+        # will need to get the actual clubhouse id eventually
+        app.testform = CheckinManager(1) # persistence
     if request.method == "POST":
         # TODO: find a better solution to form resubmission error
         try:
             if "check_in" in request.form and "check_in_id" in request.form: # check-in button clicked
-                app.testform.checkin_member(request.form["check_in_id"])
+                app.testform.checkin_member(int(request.form["check_in_id"]))
             elif "check_out_id" in request.form: # check-out button
-                app.testform.checkout_member(request.form["check_out_id"])
+                app.testform.checkout_member(int(request.form["check_out_id"]))
             return render_template('/clubhouse/checkin.html',form=app.testform.check_in_form)
         except ValueError: # cheating way to handle form resubmission
             return redirect('/clubhouse/checkin')

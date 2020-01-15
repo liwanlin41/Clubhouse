@@ -74,7 +74,7 @@ def coord_members():
 
 @app.route('/clubhouse/viewmembers')
 def view_members():
-    return str(get_all_members())
+    return str(get_clubhouse_members(1))
 
 # check-in page, main functionality of website
 @app.route('/clubhouse/checkin', methods=['GET','POST'])

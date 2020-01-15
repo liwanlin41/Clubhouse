@@ -13,7 +13,7 @@ def get_clubhouse_members(clubhouse_id, sort_by_last=True):
     sorting = "first_name, last_name" # can collapse if statement to one line
     if sort_by_last:
         sorting = "last_name, first_name"
-    cursor.execute("SELECT member_id, first_name, last_name FROM TABLE member_info WHERE clubhouse_id = ? ORDER BY ?"; (clubhouse_id, sorting))
+    cursor.execute("SELECT member_id, first_name, last_name FROM members WHERE clubhouse_id = %s ORDER BY %s", (clubhouse_id, sorting))
         # ^ may be sketch in terms of ordering and the ? variable thing (a matter of security)
     rows = cursor.fetchall()
     for row in rows:

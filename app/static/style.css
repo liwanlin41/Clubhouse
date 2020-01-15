@@ -8,8 +8,43 @@
 */
 
 /* navbar */
-.nav {
+nav {
 	color: #2D2769;
+	font-weight: bold;
+}
+
+nav ul {
+	list-style-type: none;
+	text-align: center;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+nav ul li {
+	display: inline;
+	padding: 10px;
+}
+
+nav a {
+	text-decoration: none;
+}
+
+nav a:visited {
+	color: #2D2769;
+}
+
+nav a:hover {
+	background-color: #2D2769;
+	color: white;
+}
+
+nav #logo {
+	vertical-align: middle;
+}
+
+/* find some better way to make the logo link look nice? */
+nav a#logo:hover {
+	background-color: rgba(0,0,0,0);
 }
 
 /* submit button on forms */

@@ -9,13 +9,14 @@
     <body>
         <article>
             <header>
-                <div id="navbar" class="nav">
-                    <ul>
-            		<li>
-            		<img src = "{{ url_for('static',filename='images/small.jpg') }}"></li>
+		<nav>
+	    <div id="navbar">
+		<a href="/" id="logo"><img src = "{{ url_for('static',filename='images/small.jpg') }}"></a>
+		<ul>
                         {% block navtabs %}{% endblock %}
                     </ul>
                 </div>
+		</nav>
             </header>
 
             <main>

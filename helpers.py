@@ -13,12 +13,13 @@ def binary_search(L, elt):
     mid = (low+high)//2
     while high - low > 1:
         if L[mid][1] == elt:
-            return mid # this shouldn't actually happen in practice
+            return mid+1 
         if L[mid][1] < elt:
             low = mid
             mid = (low + high)//2
         else:
             high = mid
             mid = (low+high)//2
-    if L[mid][1] <= elt < L[mid+1][1]:
+    if L[mid][1] <= elt:
         return mid+1
+    #< L[mid+1][1]:

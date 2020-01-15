@@ -14,12 +14,20 @@ def get_clubhouse_members(clubhouse_id, sort_by_last=True):
     if sort_by_last:
         sorting = "last_name, first_name"
     cursor.execute("SELECT member_id, first_name, last_name FROM members WHERE clubhouse_id = %s ORDER BY %s", (clubhouse_id, sorting))
-        # ^ may be sketch in terms of ordering and the ? variable thing (a matter of security)
     rows = cursor.fetchall()
-    for row in rows:
-        print(row)
+    # for row in rows: # for debugging purposes?
+    #     print(row)
     cursor.close()
     return rows
+
+# retrieve a specific member: returns the whole row
+def get_specific_member(clubhouse_id, member_id):
+    cursor = get_cursor()
+    cursor.execute("SELECT * FROM members WHERE clubhouse_id = %s AND member_id = %s", (clubhouse_id, member_id))
+    member = cursor.fetchall()
+    if len(member) > 1:
+        print("error: found more than two members with these ids") # shouldn't happen
+    return member
 
 # retrieve only certain members (for filtering)
 def query_members():

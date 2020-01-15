@@ -34,7 +34,7 @@ class CheckinManager:
             # get list of all members and key by member id
             self.id_to_name = {}
             for mem_id, first, last in get_clubhouse_members(self.clubhouse):
-                self.id_to_name[(mem_id)] = first + " " + last
+                self.id_to_name[(mem_id)] = last + ", " + first
             # TODO: load actual check in/out lists from database
             # make all members signed out for testing purposes
             self.members_out = [(num, self.id_to_name[num]) for num in self.id_to_name]

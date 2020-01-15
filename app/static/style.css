@@ -22,11 +22,12 @@ nav ul {
 
 nav ul li {
 	display: inline;
-	padding: 10px;
+	padding: 5px;
 }
 
 nav a {
 	text-decoration: none;
+	padding: 10px;
 }
 
 nav a:visited {

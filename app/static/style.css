@@ -36,10 +36,13 @@ nav a:visited {
 nav a:hover {
 	background-color: #2D2769;
 	color: white;
+	border-radius: 5px;
+	padding: 10px;
 }
 
 nav #logo {
 	vertical-align: middle;
+	padding: 0;
 }
 
 /* find some better way to make the logo link look nice? */

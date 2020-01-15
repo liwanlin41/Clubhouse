@@ -1,6 +1,7 @@
-CREATE SCHEMA clubhouse;
+CREATE SCHEMA IF NOT EXISTS clubhouse;
 
-CREATE TABLE IF NOT EXISTS member_info (
+CREATE TABLE IF NOT EXISTS members (
+  member_id           INT NOT NULL AUTO_INCREMENT,
   first_name          TINYTEXT NOT NULL,
   last_name           TINYTEXT NOT NULL,
   street_address      TINYTEXT,
@@ -19,12 +20,26 @@ CREATE TABLE IF NOT EXISTS member_info (
   guardian_relation   TINYTEXT,
   guardian_email      TINYTEXT,
   guardian_phone      TINYTEXT,
-  clubhouse_id        INT
+  clubhouse_id        INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS checkins (
-  member_id           INT,
+  member_id           INT NOT NULL,
   checkin_datetime    DATETIME,
-  checkout_datetime   TIME,
+  checkout_datetime   DATETIME,
   clubhouse_id        INT
+);
+
+CREATE TABLE IF NOT EXISTS clubhouses (
+  clubhouse_id        INT NOT NULL AUTO_INCREMENT,
+  name                TINYTEXT NOT NULL,
+  address             TINYTEXT NOT NULL,
+  username            TINYTEXT NOT NULL,
+  password            VARCHAR(128)
+);
+
+CREATE TABLE IF NOT EXISTS admins (
+  admin_id            INT NOT NULL AUTO_INCREMENT,
+  username            TINYTEXT NOT NULL,
+  password            VARCHAR(128)
 );

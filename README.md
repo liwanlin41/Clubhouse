@@ -4,15 +4,15 @@ A website where Clubhouses in [The Clubhouse Network](https://theclubhousenetwor
 
 ## Flask Files
 
-All the (important) flask files are now under the app directory. The main file to run is run_app.py (```export FLASK_APP=run_app.py```), with some auxiliary things in the main folder.
+All the (important) flask files are now under the app directory. The main file to run is run_app.py (`export FLASK_APP=run_app.py`), with some auxiliary things in the main folder.
 
 ## HTML Language Instructions
 
 Wrap all text to be displayed on the website like this.
-```{{ _("display text")}}```
+`{{ _("display text")}}`
 in the HTML file. Wanlin will then make the language translations work.
 
-In python files, most translations seem to be needed in forms? See the forms.py file for an example, but in this case wrap the text as ```_l("display text")```.
+In python files, most translations seem to be needed in forms? See the forms.py file for an example, but in this case wrap the text as `_l("display text")`.
 
 To run language compilation:
 
@@ -29,6 +29,24 @@ Finally to compile,
 pybabel compile -d app/translations
 ```
 and hopefully it works.
+
+## Database Setup
+This website uses a MySQL database, accessed through the Flask extension `flask-mysql`.
+
+Once you have set up the MySQL instance database that you wish to use, you must set the following environment variables in the terminal where your app runs:
+
+(note these are specific to the testing DB, and sensitive fields are being kept in a google doc not on GitHub)
+
+```
+export MYSQL_DATABASE_HOST=remotemysql.com
+export MYSQL_DATABASE_USER=<yourUsername>
+export MYSQL_DATABASE_PASSWORD=<yourPassword>
+export MYSQL_DATABASE_DB=<yourDbName>
+```
+
+Visit the `flask-mysql` [documentation](https://flask-mysql.readthedocs.io/en/latest/) for further reference if needed.
+
+To obtain the tables needed for this app, if not done so already, create the tables specified in the schema file (this has been done already for the test database).
 
 ## Install and Run
 
@@ -69,7 +87,7 @@ To reactivate the virtual environment, either
 venv/bin/activate
 ```
 or
-```source venv/bin/activate```
+`source venv/bin/activate`
 if the first one doesn't work.
 
 Run the Flask app:

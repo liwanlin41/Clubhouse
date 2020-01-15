@@ -10,9 +10,9 @@
         <article>
             <header>
                 <div id="navbar">
+            		<img src = "{{ url_for('static',filename='images/small.jpg') }}">
                     <ul>
             		<li><!--[logo] -->
-            		<img src = "{{ url_for('static',filename='images/small.jpg') }}">
             	    </li>
                         {% block navtabs %}{% endblock %}
                     </ul>

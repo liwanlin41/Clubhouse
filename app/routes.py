@@ -3,9 +3,9 @@
 # not sure what the imports should be but these seem to work?
 from flask import render_template, flash, redirect, request
 from app import app
-# from db import *          # broken, can't seem to find db
 from app.forms import LoginForm, CheckinForm, CheckinManager
 from flask_babel import lazy_gettext as _l
+from .db import *
 
 ### homepages
 
@@ -72,19 +72,25 @@ def coord_members():
     add_member()
     return render_template('/clubhouse/add.html')
 
+@app.route('/clubhouse/viewmembers')
+def view_members():
+    return str(get_clubhouse_members(1))
+
 # check-in page, main functionality of website
 @app.route('/clubhouse/checkin', methods=['GET','POST'])
-def checkin_test():
+def checkin_handler():
     # TODO: database connections
     if request.method == "GET":
-        app.testform = CheckinManager() # persistence
+        # TODO: this is currently a test clubhouse id
+        # will need to get the actual clubhouse id eventually
+        app.testform = CheckinManager(1) # persistence
     if request.method == "POST":
         # TODO: find a better solution to form resubmission error
         try:
             if "check_in" in request.form and "check_in_id" in request.form: # check-in button clicked
-                app.testform.checkin_member(request.form["check_in_id"])
+                app.testform.checkin_member(int(request.form["check_in_id"]))
             elif "check_out_id" in request.form: # check-out button
-                app.testform.checkout_member(request.form["check_out_id"])
+                app.testform.checkout_member(int(request.form["check_out_id"]))
             return render_template('/clubhouse/checkin.html',form=app.testform.check_in_form)
         except ValueError: # cheating way to handle form resubmission
             return redirect('/clubhouse/checkin')

@@ -1,13 +1,11 @@
 # helper functions for database operations, all functions with db accesses should be here
 
-from flaskext.mysql import MySQL
-from app import app
+from app import conn
 
 # retrieve cursor for MySQL database defined in env vars
 def get_cursor():
-    mysql = MySQL()
-    mysql.init_app(app)
-    cursor = mysql.get_db().cursor()
+    cursor = conn.cursor()
+    return cursor
 
 # retrieve members from a clubhouse: returns (id, first, last)
 def get_clubhouse_members(clubhouse_id, sort_by_last=True):
@@ -15,9 +13,12 @@ def get_clubhouse_members(clubhouse_id, sort_by_last=True):
     sorting = "first_name, last_name" # can collapse if statement to one line
     if sort_by_last:
         sorting = "last_name, first_name"
-    cursor.execute("SELECT member_id, first_name, last_name FROM TABLE member_info WHERE clubhouse_id = ? ORDER BY ?"; (clubhouse_id, sorting))
+    cursor.execute("SELECT member_id, first_name, last_name FROM members WHERE clubhouse_id = %s ORDER BY %s", (clubhouse_id, sorting))
         # ^ may be sketch in terms of ordering and the ? variable thing (a matter of security)
     rows = cursor.fetchall()
+    for row in rows:
+        print(row)
+    cursor.close()
     return rows
 
 # retrieve only certain members (for filtering)
@@ -28,13 +29,17 @@ def query_members():
 def add_member():
     cursor = get_cursor()
     # for testing, change later
-    cursor.execute("INSERT INTO TABLE member_info (first_name, last_name) VALUES (carolyn, mei)")
+    cursor.execute("""INSERT INTO members (first_name, last_name, clubhouse_id)
+                    VALUES ('carolyn', 'mei', 1)""")
+    conn.commit()
+    cursor.close()
 
 # retrieve all check-ins
 def get_all_checkins():
     cursor = get_cursor()
-    cursor.execute("SELECT * FROM TABLE member_info")
+    cursor.execute("SELECT * FROM checkins")
     rows = cursor.fetchall()
+    cursor.close()
     return rows
 
 # retrieve only certain check-ins (for filtering)

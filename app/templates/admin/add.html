@@ -1,21 +1,16 @@
 {% extends "base.html" %}
 <!-- add/remove or modify clubhouse information -->
-<!DOCTYPE html>
-<html>
 
-	<head>
-		<title>Edit Clubhouses</title>
-	</head>
+{% block title %} Edit Clubhouses {% endblock %}
 
-	<body>
-		<form>
-			{{_("Clubhouse Name")}}<br>
-			<input type="text" name="name"><br>
-			{{_("Address")}}<br>
-			<input type="text" name="address"><br><br>
-			<input type="submit" value="New">
-			<input type="submit" value="Update">
-			<input type="submit" value="Cancel">
-		</form>
-	</body>
-</html>
+{% block content %}
+<form>
+	{{_("Clubhouse Name")}}<br>
+	<input type="text" name="name"><br>
+	{{_("Address")}}<br>
+	<input type="text" name="address"><br><br>
+	<input type="submit" value="New">
+	<input type="submit" value="Update">
+	<input type="submit" value="Cancel">
+</form>
+{% endblock %}

@@ -1,53 +1,50 @@
 {% extends "base.html" %}
 <!-- add/remove member, change member information -->
-<!DOCTYPE html>
-<html>
 
-	<head>
-		<title>{{_("Edit Member")}}</title>
-	</head>
+{% block title %} {{_("Edit Member")}} {% endblock %}
 
-	<body>
-		<form>
-			{{_("First Name (required)")}}<br>
-			<input type="text" name="firstname"><br>
-			{{_("Last Name (required)")}}<br>
-			<input type="text" name="lastname"><br>
-			{{_("Street Address")}}<br>
-			<input type="text" name="address"><br>
-			{{_("City")}}<br>
-			<input type="text" name="city"><br>
-			{{_("State")}}<br>
-			<input type="text" name="state"><br>
-			{{_("Zip/Postal Code")}}<br>
-			<input type="text" name="zipcode"><br>
-			{{_("Email")}}<br>
-			<input type="text" name="email"><br>
-			{{_("Phone")}}<br>
-			<input type="text" name="phone"><br>
-			{{_("Join Date")}}<br>
-			<input type="text" name="joindate"><br>
-			{{_("Birthday")}}<br>
-			<input type="text" name="birthday"><br>
-			{{_("School")}}<br>
-			<input type="text" name="school"><br>
-			{{_("Gender")}}<br>
-			<input type="text" name="gender"><br>
-			{{_("Race and Ethnicity")}}<br>
-			<input type="text" name="race"><br>
-			{{_("Guardian First Name")}}<br>
-			<input type="text" name="guardianfirstname"><br>
-			{{_("Guardian Last Name")}}<br>
-			<input type="text" name="guardianlastname"><br>
-			{{_("Guardian Relationship to Member")}}<br>
-			<input type="text" name="guardianrelationship"><br>
-			{{_("Guardian Email")}}<br>
-			<input type="text" name="guardnemail"><br>
-			{{_("Guardian Phone")}}<br>
-			<input type="text" name="guardianphone"><br><br>
-			<input type="submit" value="New">
-			<input type="submit" value="Update">
-			<input type="submit" value="Cancel">
-		</form>
-	</body>
-</html>
+{% block content %}
+<a href="/clubhouse/viewmembers">See all members</a>
+
+<form>
+	{{_("First Name (required)")}}<br>
+	<input type="text" name="firstname"><br>
+	{{_("Last Name (required)")}}<br>
+	<input type="text" name="lastname"><br>
+	{{_("Street Address")}}<br>
+	<input type="text" name="address"><br>
+	{{_("City")}}<br>
+	<input type="text" name="city"><br>
+	{{_("State")}}<br>
+	<input type="text" name="state"><br>
+	{{_("Zip/Postal Code")}}<br>
+	<input type="text" name="zipcode"><br>
+	{{_("Email")}}<br>
+	<input type="text" name="email"><br>
+	{{_("Phone")}}<br>
+	<input type="text" name="phone"><br>
+	{{_("Join Date")}}<br>
+	<input type="text" name="joindate"><br>
+	{{_("Birthday")}}<br>
+	<input type="text" name="birthday"><br>
+	{{_("School")}}<br>
+	<input type="text" name="school"><br>
+	{{_("Gender")}}<br>
+	<input type="text" name="gender"><br>
+	{{_("Race and Ethnicity")}}<br>
+	<input type="text" name="race"><br>
+	{{_("Guardian First Name")}}<br>
+	<input type="text" name="guardianfirstname"><br>
+	{{_("Guardian Last Name")}}<br>
+	<input type="text" name="guardianlastname"><br>
+	{{_("Guardian Relationship to Member")}}<br>
+	<input type="text" name="guardianrelationship"><br>
+	{{_("Guardian Email")}}<br>
+	<input type="text" name="guardnemail"><br>
+	{{_("Guardian Phone")}}<br>
+	<input type="text" name="guardianphone"><br><br>
+	<input type="submit" value="New">
+	<input type="submit" value="Update">
+	<input type="submit" value="Cancel">
+</form>
+{% endblock %}

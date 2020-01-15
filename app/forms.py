@@ -16,8 +16,8 @@ class LoginForm(FlaskForm):
 class CheckinForm(FlaskForm):
     '''create the checkin form template, not specialized for any data'''
     # key members by id for form submission
-    members_in = [(123, _l("signed-in test member")), (12, _l("second signed-in test"))] # members currently in clubhouse
-    members_out = [(234, _l("signed-out test member")), (345, _l("second signed-out test"))] # members not signed in
+    members_in = []
+    members_out = []
     # field for members to check in
     check_in_id = SelectField(_l("Member List"), choices = members_out)
     # field for checked-in members to check out
@@ -31,19 +31,26 @@ class CheckinManager:
         self.check_in_form = CheckinForm()
         if clubhouse:
             self.clubhouse = clubhouse # clubhouse is id number
-            # TODO: load actual lists from database
+            # get list of all members and key by member id
+            self.id_to_name = {}
+            for mem_id, first, last in get_clubhouse_members(self.clubhouse):
+                self.id_to_name[(mem_id)] = last + ", " + first
+            # TODO: load actual check in/out lists from database
+            # make all members signed out for testing purposes
+            self.members_out = [(num, self.id_to_name[num]) for num in self.id_to_name]
+            self.members_out.sort(key = lambda x: x[1])
+            self.members_in = []
         if not clubhouse: # testing purposes
             # NOTE: translation not needed here because names are displayed
-            self.members_in = [("abc","manager signed-in 1"), ("bcd","manager signed-in 2")]
-            self.members_out = [("ab","manager signed-out 3"),("bc","manager signed-out 4")]
+            self.members_in = [(123,"manager signed-in 1"), (234,"manager signed-in 2")]
+            self.members_out = [(12,"manager signed-out 3"),(23,"manager signed-out 4")]
             # dictionary linking member id to member name
-            # ideally also load from database
             self.id_to_name = {
-                    "abc": "manager signed-in 1",
-                    "bcd": "manager signed-in 2",
-                    "ab": "manager signed-out 3",
-                    "bc": "manager signed-out 4"}
-            self.setfields()
+                    123: "manager signed-in 1",
+                    234: "manager signed-in 2",
+                    12: "manager signed-out 3",
+                    23: "manager signed-out 4"}
+        self.setfields()
 
     # reset the SelectField choices
     def setfields(self):

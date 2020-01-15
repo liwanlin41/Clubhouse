@@ -8,6 +8,10 @@
 	</head>
 
 	<body>
+
+		{% block content %}
+		<a href="/clubhouse/viewmembers">See all members</a>
+
 		<form>
 			{{_("First Name (required)")}}<br>
 			<input type="text" name="firstname"><br>
@@ -49,5 +53,7 @@
 			<input type="submit" value="Update">
 			<input type="submit" value="Cancel">
 		</form>
+
+		{% endblock  %}
 	</body>
 </html>

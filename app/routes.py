@@ -69,7 +69,7 @@ def admin_login():
 # rest of app routes for clubhouse home page
 @app.route('/clubhouse/editmembers') # might need a method -- better to make html name informative if different?
 def coord_members():
-    add_member()
+    # add_member()
     return render_template('/clubhouse/add.html')
 
 @app.route('/clubhouse/viewmembers')

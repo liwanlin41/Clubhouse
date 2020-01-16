@@ -31,15 +31,25 @@ class CheckinManager:
         self.check_in_form = CheckinForm()
         if clubhouse:
             self.clubhouse = clubhouse # clubhouse is id number
+            # TODO: actually set this field
+            self.display_last = False # whether to display last name first
             # get list of all members and key by member id
             self.id_to_name = {}
+            self.members_out = []
             for mem_id, first, last in get_clubhouse_members(self.clubhouse):
-                self.id_to_name[(mem_id)] = last + ", " + first
+                # separate first and last names for sorting purposes
+                self.id_to_name[(mem_id)] = (first, last)
+                # list is already sorted, initialize members_out here
+                self.members_out.append(self.get_member_display(mem_id))
             # TODO: load actual check in/out lists from database
-            # make all members signed out for testing purposes
-            self.members_out = [(num, self.id_to_name[num]) for num in self.id_to_name]
-            self.members_out.sort(key = lambda x: x[1])
+            # check syntax on later updates
             self.members_in = []
+            # parse checked-in members and remove them from checked-out list
+            for mem_id, club_id, in_time, out_time in get_all_checkins():
+                if out_time:
+                    member = self.get_member_display(mem_id)
+                    self.members_in.append(member)
+                    self.members_out.remove(member)
         if not clubhouse: # testing purposes
             # NOTE: translation not needed here because names are displayed
             self.members_in = [(123,"manager signed-in 1"), (234,"manager signed-in 2")]
@@ -57,25 +67,34 @@ class CheckinManager:
         self.check_in_form.check_in_id.choices = self.members_out
         self.check_in_form.check_out_id.choices = self.members_in
 
+    # return (id_num, first last) or (id_num, last first)
+    def get_member_display(self, id_num):
+        first, last = self.id_to_name[id_num]
+        if self.display_last:
+            return (id_num, last + ", " + first)
+        return (id_num, first + " " + last)
+
     # check in member id_num
     # move from out list to in list
     def checkin_member(self, id_num):
         # extract member to be removed
-        member = (id_num, self.id_to_name[id_num])
+        member = self.get_member_display(id_num)
         self.members_out.remove(member)
         # check-in to database
         # TODO: check syntax
         add_checkin()
         # insert member into sorted members_in list
-        self.members_in.insert(binary_search(self.members_in, self.id_to_name[id_num]), member)
+        self.members_in.insert(binary_search(self.members_in, member, key = lambda x: self.id_to_name[x[0]][1] + ", " + self.id_to_name[x[0]][0]), member)
+#        self.members_in.insert(binary_search(self.members_in, self.id_to_name[id_num], key = lambda x: x[1]), member)
         self.setfields() # update visual
 
     # check out member id_num
     # move from in list to out list
     def checkout_member(self, id_num):
         # extract member to be removed
-        member = (id_num, self.id_to_name[id_num])
+        member = self.get_member_display(id_num)
         self.members_in.remove(member)
         add_checkout()
-        self.members_out.insert(binary_search(self.members_out, self.id_to_name[id_num]), member)
+        self.members_out.insert(binary_search(self.members_out, member, key = lambda x: self.id_to_name[x[0]][1] + ", " + self.id_to_name[x[0]][0]), member)
+#       self.members_out.insert(binary_search(self.members_out, self.id_to_name[id_num], key = lambda x: x[1]), member)
         self.setfields()

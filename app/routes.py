@@ -3,7 +3,7 @@
 # not sure what the imports should be but these seem to work?
 from flask import render_template, flash, redirect, request
 from app import app
-from app.forms import LoginForm, CheckinForm, CheckinManager
+from app.forms import LoginForm, CheckinForm, CheckinManager, MemberManager
 from flask_babel import lazy_gettext as _l
 from .db import *
 
@@ -67,10 +67,33 @@ def admin_login():
     return render_template('login.html', form=form)
 
 # rest of app routes for clubhouse home page
-@app.route('/clubhouse/editmembers', methods=['GET','POST']) # might need a method -- better to make html name informative if different?
+@app.route('/clubhouse/addmember', methods=['GET','POST']) # might need a method -- better to make html name informative if different?
 def coord_members():
+    if request.method == 'POST':
+        if request.form["button"] == "Update":
+            return("updating member")
+        else: # new member
+            add_member()
+            return request.form
     # add_member()
     return render_template('/clubhouse/add.html')
+
+@app.route('/clubhouse/members', methods=['GET','POST'])
+def manage_members():
+    club_id = 1 # TODO: get actual clubhouse id
+    form_manager = MemberManager(club_id)
+    if request.method == "POST":
+        if "new_member" in request.form:
+            return redirect('/clubhouse/addmember')
+        # view or edit button pressed but no member selected
+        if "memberselect" not in request.form:
+            return redirect('/clubhouse/members')
+        member_id = int(request.form['memberselect'])
+        if "view" in request.form:
+            return str(get_specific_member(club_id, member_id))
+        if "edit" in request.form:
+            return "pre-populate form fields"
+    return render_template('/clubhouse/membership.html', form=form_manager.member_form)
 
 @app.route('/clubhouse/viewmembers')
 def view_members():

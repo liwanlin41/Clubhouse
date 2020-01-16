@@ -12,11 +12,11 @@
 {% block content %}
 <a href="/clubhouse/viewmembers">See all members</a>
 
-<form>
+<form method="POST">
 	{{_("First Name (required)")}}<br>
-	<input type="text" name="firstname"><br>
+	<input type="text" name="firstname" required><br>
 	{{_("Last Name (required)")}}<br>
-	<input type="text" name="lastname"><br>
+	<input type="text" name="lastname" required><br>
 	{{_("Street Address")}}<br>
 	<input type="text" name="address"><br>
 	{{_("City")}}<br>
@@ -49,8 +49,8 @@
 	<input type="text" name="guardnemail"><br>
 	{{_("Guardian Phone")}}<br>
 	<input type="text" name="guardianphone"><br><br>
-	<input type="submit" value="New">
-	<input type="submit" value="Update">
-	<input type="submit" value="Cancel">
+	<input type="submit" name="button" value="New">
+	<input type="submit" name="button" value="Update">
+	<input type="reset" name="button" value="Clear">
 </form>
 {% endblock %}

@@ -7,12 +7,36 @@ from flask_babel import lazy_gettext as _l
 from helpers import binary_search
 from .db import *
 
+# this form doesn't do anything yet
 class LoginForm(FlaskForm):
     user = StringField(_l('Username'), validators = [DataRequired()])
     password = StringField(_l('Password'), validators = [DataRequired()])
     remember = BooleanField(_l('Remember Me'))
     submit = SubmitField(_l('Sign In'))
 
+# form to view and manage clubhouse members
+class MemberViewForm(FlaskForm):
+        memberselect = SelectField(_l("Member List"), choices = [])
+        view = SubmitField(_l("View"))
+        edit = SubmitField(_l("Edit"))
+        new_member = SubmitField(_l("New Member"))
+
+class MemberManager:
+    def __init__(self, clubhouse=None):
+        if clubhouse:
+            self.clubhouse=clubhouse
+        else:
+            self.clubhouse = 1 # for testing only
+        self.member_form = MemberViewForm()
+        self.display_last = False # TODO: pull from clubhouse
+        # get all members in desired format
+        if self.display_last:
+            self.memberlist = [(num, last + ", " + first) for num, first, last in get_clubhouse_members(self.clubhouse)]
+        else:
+            self.memberlist = [(num, first + " " + last) for num, first, last in get_clubhouse_members(self.clubhouse)]
+        self.member_form.memberselect.choices = self.memberlist
+
+# check-in form and handler, these are up and running
 class CheckinForm(FlaskForm):
     '''create the checkin form template, not specialized for any data'''
     # key members by id for form submission

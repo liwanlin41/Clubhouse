@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+<!--view all members page-->
+
+{% block title %} {{_("Clubhouse Members")}} {% endblock %}
+
+{% block navtabs %}
+<li><a href="/clubhouse">{{_("Clubhouse Home")}}</a></li>
+<li><a href="/clubhouse/checkin">{{_("Member Check-in")}}</a></li>
+<li><a href="/clubhouse/view">{{_("View Data")}}</a></li>
+{% endblock %}
+
+{% block content %}
+	<h1>{{_("Clubhouse Members")}}</h1>
+	<form action="" method="post" novalidate>
+		{{form.hidden_tag()}}
+		<div class="select-field-wrapper">
+		{{ form.memberselect.label }}<br>
+		{{ form.memberselect(size=20) }} <br>
+		{{ form.view() }}
+		{{ form.edit() }}<br>
+		{{ form.new_member() }}
+		</div>
+	</form>
+{% endblock %}

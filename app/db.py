@@ -14,7 +14,8 @@ def get_clubhouse_members(clubhouse_id, sort_by_last=True):
     sorting = "first_name, last_name" # can collapse if statement to one line
     if sort_by_last:
         sorting = "last_name, first_name"
-    cursor.execute("SELECT member_id, first_name, last_name FROM members WHERE clubhouse_id = %s ORDER BY %s" %(clubhouse_id, sorting))
+    # temporarily hard-coded sort order
+    cursor.execute("SELECT member_id, first_name, last_name FROM members WHERE clubhouse_id = %s ORDER BY last_name, first_name", (clubhouse_id,))
     rows = cursor.fetchall()
 #    for row in rows: # for debugging purposes?
 #        print(row)
@@ -24,8 +25,8 @@ def get_clubhouse_members(clubhouse_id, sort_by_last=True):
 # retrieve a specific member: returns the whole row by default
 def get_specific_member(clubhouse_id, member_id, short_form=False):
     cursor = get_cursor()
-    if short_form:      # return (id, first, last) only
-        cursor.execute("""SELECT member_id, first_name, last_name
+    if short_form:      # return (first, last) only
+        cursor.execute("""SELECT first_name, last_name
                           FROM members
                           WHERE clubhouse_id = %s
                           AND member_id = %s""", (clubhouse_id, member_id))
@@ -37,7 +38,7 @@ def get_specific_member(clubhouse_id, member_id, short_form=False):
     cursor.close()
     return member[0]
 
-# retrieve a list of members that are currently checked into a clubhouse: returns (id, first, last)
+# retrieve a list of members that are currently checked into a clubhouse: returns (id, (first, last))
 def get_checked_in_members(clubhouse_id, sort_by_last=True):
     current_time = datetime.now()
 
@@ -54,7 +55,7 @@ def get_checked_in_members(clubhouse_id, sort_by_last=True):
 
     result = []
     for (member_id, clubhouse_id) in members:
-        result.append(get_specific_member(clubhouse_id, member_id, True))
+        result.append((member_id,get_specific_member(clubhouse_id, member_id, True)))
     cursor.close()
     return result
 

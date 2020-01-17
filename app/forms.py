@@ -21,6 +21,7 @@ class MemberViewForm(FlaskForm):
         edit = SubmitField(_l("View/Edit"))
         new_member = SubmitField(_l("New Member"))
 
+# wrapper class for MemberViewForm
 class MemberManager:
     def __init__(self, clubhouse=None):
         if clubhouse:
@@ -34,13 +35,14 @@ class MemberManager:
             self.memberlist = [(num, last + ", " + first) for num, first, last in get_clubhouse_members(self.clubhouse)]
         else:
             self.memberlist = [(num, first + " " + last) for num, first, last in get_clubhouse_members(self.clubhouse)]
+        # set member list selection options
         self.member_form.memberselect.choices = self.memberlist
 
-# form and handler for adding new member
+# form and handler for adding or editing member
 class MemberAddForm(FlaskForm):
-    mem_id = HiddenField() # store member id for posting
-    firstname = StringField(_l('First Name (required)'), validators = [DataRequired()])
-    lastname = StringField(_l('Last Name (required)'), validators = [DataRequired()])
+    mem_id = HiddenField() # store member id for post request when editing member
+    firstname = StringField(_l('First Name'), validators = [DataRequired()])
+    lastname = StringField(_l('Last Name'), validators = [DataRequired()])
     address = StringField(_l('Street Address'))
     city = StringField(_l('City'))
     state = StringField(_l('State'))
@@ -143,11 +145,12 @@ class CheckinManager:
             # check syntax on later updates
             self.members_in = []
             # parse checked-in members and remove them from checked-out list
-            for mem_id, club_id, in_time, out_time in get_all_checkins():
-                if out_time:
-                    member = self.get_member_display(mem_id)
-                    self.members_in.append(member)
-                    self.members_out.remove(member)
+            for mem_id, name in get_checked_in_members(self.clubhouse):
+                member = self.get_member_display(mem_id)
+                self.members_in.append(member)
+                self.members_out.remove(member)
+            # sort members in, change this later
+            self.members_in.sort(key = lambda x: self.id_to_name[x[0]][1] + ", " + self.id_to_name[x[0]][0])
         if not clubhouse: # testing purposes
             # NOTE: translation not needed here because names are displayed
             self.members_in = [(123,"manager signed-in 1"), (234,"manager signed-in 2")]

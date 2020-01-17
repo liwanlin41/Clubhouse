@@ -16,12 +16,19 @@
 	<form action="" method="post" novalidate>
 	{% else %}
 	<form action="/clubhouse/editmember" method="post" novalidate>
+	<!--have the editmember page handle the edits-->
 	{% endif %}
 		{{form.hidden_tag()}}
 		{{ form.mem_id() }}
 		{{ form.firstname.label }}<br>
+		{% for error in form.firstname.errors %}
+		<span style="color: red;">[{{ error }}]</span><br>
+            	{% endfor %}
 		{{ form.firstname(size=20) }} <br>
 		{{ form.lastname.label }}<br>
+		{% for error in form.lastname.errors %}
+		<span style="color: red;">[{{ error }}]</span><br>
+            	{% endfor %}
 		{{ form.lastname(size=20) }}<br>
 		{{ form.address.label }}<br>
 		{{ form.address(size=20) }}<br>

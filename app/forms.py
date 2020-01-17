@@ -1,7 +1,7 @@
 # login form and checkin form
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, HiddenField
 from wtforms.validators import DataRequired
 from flask_babel import lazy_gettext as _l
 from helpers import binary_search
@@ -17,8 +17,8 @@ class LoginForm(FlaskForm):
 # form to view and manage clubhouse members
 class MemberViewForm(FlaskForm):
         memberselect = SelectField(_l("Member List"), choices = [])
-        view = SubmitField(_l("View"))
-        edit = SubmitField(_l("Edit"))
+#        view = SubmitField(_l("View"))
+        edit = SubmitField(_l("View/Edit"))
         new_member = SubmitField(_l("New Member"))
 
 class MemberManager:
@@ -35,6 +35,80 @@ class MemberManager:
         else:
             self.memberlist = [(num, first + " " + last) for num, first, last in get_clubhouse_members(self.clubhouse)]
         self.member_form.memberselect.choices = self.memberlist
+
+# form and handler for adding new member
+class MemberAddForm(FlaskForm):
+    mem_id = HiddenField() # store member id for posting
+    firstname = StringField(_l('First Name (required)'), validators = [DataRequired()])
+    lastname = StringField(_l('Last Name (required)'), validators = [DataRequired()])
+    address = StringField(_l('Street Address'))
+    city = StringField(_l('City'))
+    state = StringField(_l('State'))
+    zipcode = StringField(_l('Zip/Postal Code'))
+    email = StringField(_l('Email'))
+    phone = StringField(_l('Phone'))
+    joindate = StringField(_l('Join Date'))
+    birthday = StringField(_l('Birthday'))
+    school = StringField(_l('School'))
+    gender = StringField(_l('Gender'))
+    race = StringField(_l('Race and Ethnicity'))
+    guardianfirstname = StringField(_l('Guardian First Name'))
+    guardianlastname = StringField(_l('Guardian Last Name'))
+    guardianrelationship = StringField(_l('Guardian Relationship to Member'))
+    guardianemail = StringField(_l('Guardian Email'))
+    guardianphone = StringField(_l('Guardian Phone'))
+    add_btn = SubmitField(_l('Add Member'))
+    update_btn = SubmitField(_l('Update Member Info'))
+    cancel_btn = SubmitField(_l('Cancel'))
+    delete_btn = SubmitField(_l('Remove Member'))
+
+# handle form pre-population, loading data, etc.
+class MemberInfoHandler:
+    def __init__(self, data):
+        self.form = MemberAddForm()
+        # painfully load all data
+        mem_id, firstname, lastname, address, city, state, zipcode, email, phone, joindate, birthday, school, gender, race, guardianfirstname, guardianlastname, guardianrelationship, guardianemail, guardianphone, club_id = data
+        # someone please find a better way to do this
+        # load default data, disable some fields
+        self.mem_id = mem_id
+        self.club_id = club_id
+        self.form.mem_id.render_kw = {'value': mem_id}
+        if firstname:
+            self.form.firstname.render_kw = {'value': firstname, 'disabled': 'disabled'}
+        if lastname:
+            self.form.lastname.render_kw = {'value': lastname, 'disabled': 'disabled'}
+        if address:
+            self.form.address.render_kw = {'value': address}
+        if city:
+            self.form.city.render_kw = {'value': city}
+        if state:
+            self.form.state.render_kw = {'value': state}
+        if zipcode:
+            self.form.zipcode.render_kw = {'value': zipcode}
+        if email:
+            self.form.email.render_kw = {'value': email}
+        if phone:
+            self.form.phone.render_kw = {'value': phone}
+        if joindate:
+            self.form.joindate.render_kw = {'value': joindate, 'disabled': 'disabled'}
+        if birthday:
+            self.form.birthday.render_kw = {'value': birthday, 'disabled': 'disabled'}
+        if school:
+            self.form.school.render_kw = {'value': school}
+        if gender:
+            self.form.gender.render_kw = {'value': gender}
+        if race:
+            self.form.race.render_kw = {'value': race}
+        if guardianfirstname:
+            self.form.guardianfirstname.render_kw = {'value': guardianfirstname}
+        if guardianlastname:
+            self.form.guardianlastname.render_kw = {'value': guardianlastname}
+        if guardianrelationship:
+            self.form.guardianrelationship.render_kw = {'value': guardianrelationship}
+        if guardianemail:
+            self.form.guardianemail.render_kw = {'value': guardianemail}
+        if guardianphone:
+            self.form.guardianphone.render_kw = {'value': guardianphone}
 
 # check-in form and handler, these are up and running
 class CheckinForm(FlaskForm):

@@ -39,7 +39,7 @@ def get_specific_member(clubhouse_id, member_id, name_only=False, sort_by_last=T
     if len(member) > 1:
         print("error: found more than two members with these ids") # shouldn't happen
     cursor.close()
-    return member
+    return member[0]
 
 # retrieve a list of members that are currently checked into a clubhouse: returns (id, first, last)
 def get_checked_in_members(clubhouse_id, sort_by_last=True):

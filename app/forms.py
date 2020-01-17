@@ -21,6 +21,7 @@ class MemberViewForm(FlaskForm):
         edit = SubmitField(_l("View/Edit"))
         new_member = SubmitField(_l("New Member"))
 
+# wrapper class for MemberViewForm
 class MemberManager:
     def __init__(self, clubhouse=None):
         if clubhouse:
@@ -34,11 +35,12 @@ class MemberManager:
             self.memberlist = [(num, last + ", " + first) for num, first, last in get_clubhouse_members(self.clubhouse)]
         else:
             self.memberlist = [(num, first + " " + last) for num, first, last in get_clubhouse_members(self.clubhouse)]
+        # set member list selection options
         self.member_form.memberselect.choices = self.memberlist
 
-# form and handler for adding new member
+# form and handler for adding or editing member
 class MemberAddForm(FlaskForm):
-    mem_id = HiddenField() # store member id for posting
+    mem_id = HiddenField() # store member id for post request when editing member
     firstname = StringField(_l('First Name (required)'), validators = [DataRequired()])
     lastname = StringField(_l('Last Name (required)'), validators = [DataRequired()])
     address = StringField(_l('Street Address'))

@@ -57,13 +57,6 @@ input[type=submit]{
 	color: #2D2769;
 }
 
-/*
-input[type=reset]{
-	background-color: #9BAED2;
-	color: #2D2769;
-}
-*/
-
 /* check-in and check-out div wrappers */
 .select-field-wrapper {
 	display: table-cell;

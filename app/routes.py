@@ -71,16 +71,15 @@ def admin_login():
 # add new member
 @app.route('/clubhouse/addmember', methods=['GET','POST']) # might need a method -- better to make html name informative if different?
 def create_member():
+    form = MemberAddForm()
     if request.method == 'POST':
+        if "cancel_btn" in request.form:
+            return redirect('/clubhouse/members')
+        elif form.validate_on_submit():
         # TODO: add member info to database
-        return request.form
-        if request.form["button"] == "Update":
-            return("updating member")
-        else: # new member
             add_member()
             return request.form
-    # add_member()
-    return render_template('/clubhouse/edit.html', form=MemberAddForm(), new_member=True)
+    return render_template('/clubhouse/edit.html', form=form, new_member=True)
 
 @app.route('/clubhouse/members', methods=['GET','POST'])
 def manage_members():
@@ -103,6 +102,11 @@ def manage_members():
 @app.route('/clubhouse/editmember',methods=['GET','POST'])
 def edit_member():
     if request.method == 'POST':
+        if "cancel_btn" in request.form: # cancel the updates
+            return redirect('/clubhouse/members')
+        if "delete_btn" in request.form: # delete member from active members
+            # TODO: add confirmation step
+            return request.form
         # TODO: update member info in database
         # this post request contains the member id
         return request.form

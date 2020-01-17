@@ -16,6 +16,7 @@
 	<form action="" method="post" novalidate>
 	{% else %}
 	<form action="/clubhouse/editmember" method="post" novalidate>
+	<!--have the editmember page handle the edits-->
 	{% endif %}
 		{{form.hidden_tag()}}
 		{{ form.mem_id() }}

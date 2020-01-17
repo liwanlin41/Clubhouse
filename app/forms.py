@@ -1,7 +1,7 @@
 # login form and checkin form
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, HiddenField
 from wtforms.validators import DataRequired
 from flask_babel import lazy_gettext as _l
 from helpers import binary_search
@@ -38,6 +38,7 @@ class MemberManager:
 
 # form and handler for adding new member
 class MemberAddForm(FlaskForm):
+    mem_id = HiddenField() # store member id for posting
     firstname = StringField(_l('First Name (required)'), validators = [DataRequired()])
     lastname = StringField(_l('Last Name (required)'), validators = [DataRequired()])
     address = StringField(_l('Street Address'))
@@ -71,6 +72,7 @@ class MemberInfoHandler:
         # load default data, disable some fields
         self.mem_id = mem_id
         self.club_id = club_id
+        self.form.mem_id.render_kw = {'value': mem_id}
         if firstname:
             self.form.firstname.render_kw = {'value': firstname, 'disabled': 'disabled'}
         if lastname:

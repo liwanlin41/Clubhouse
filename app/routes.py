@@ -104,6 +104,7 @@ def manage_members():
 def edit_member():
     if request.method == 'POST':
         # TODO: update member info in database
+        # this post request contains the member id
         return request.form
 
 @app.route('/clubhouse/viewmembers')

@@ -18,6 +18,7 @@
 	<form action="/clubhouse/editmember" method="post" novalidate>
 	{% endif %}
 		{{form.hidden_tag()}}
+		{{ form.mem_id() }}
 		{{ form.firstname.label }}<br>
 		{{ form.firstname(size=20) }} <br>
 		{{ form.lastname.label }}<br>

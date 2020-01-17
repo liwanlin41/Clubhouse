@@ -145,11 +145,10 @@ class CheckinManager:
             # check syntax on later updates
             self.members_in = []
             # parse checked-in members and remove them from checked-out list
-            for mem_id, club_id, in_time, out_time in get_all_checkins():
-                if out_time:
-                    member = self.get_member_display(mem_id)
-                    self.members_in.append(member)
-                    self.members_out.remove(member)
+            for mem_id, first, last in get_checked_in_members(self.clubhouse):
+                member = self.get_member_display(mem_id)
+                self.members_in.append(member)
+                self.members_out.remove(member)
         if not clubhouse: # testing purposes
             # NOTE: translation not needed here because names are displayed
             self.members_in = [(123,"manager signed-in 1"), (234,"manager signed-in 2")]

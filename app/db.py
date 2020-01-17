@@ -1,5 +1,6 @@
 # helper functions for database operations, all functions with db accesses should be here
 
+from datetime import datetime
 from app import conn
 
 # retrieve cursor for MySQL database defined in env vars
@@ -20,14 +21,42 @@ def get_clubhouse_members(clubhouse_id, sort_by_last=True):
     cursor.close()
     return rows
 
-# retrieve a specific member: returns the whole row
-def get_specific_member(clubhouse_id, member_id):
+# retrieve a specific member: returns the whole row by default
+def get_specific_member(clubhouse_id, member_id, name_only=False, sort_by_last=True):
     cursor = get_cursor()
-    cursor.execute("SELECT * FROM members WHERE clubhouse_id = %s AND member_id = %s", (clubhouse_id, member_id))
+    if name_only:
+        sorting = "first_name, last_name" # can collapse if statement to one line
+        if sort_by_last:
+            sorting = "last_name, first_name"
+        query = """SELECT %s
+                   FROM members
+                   WHERE clubhouse_id = %%s
+                   AND member_id = %%s""" % (sorting, )
+        cursor.execute(query, (clubhouse_id, member_id))
+    else:
+        cursor.execute("SELECT * FROM members WHERE clubhouse_id = %s AND member_id = %s", (clubhouse_id, member_id))
     member = cursor.fetchall()
     if len(member) > 1:
         print("error: found more than two members with these ids") # shouldn't happen
+    cursor.close()
     return member
+
+# retrieve a list of members that are currently checked into a clubhouse: returns (id, first, last)
+def get_checked_in_members(clubhouse_id, sort_by_last=True):
+    current_time = datetime.now()
+
+    cursor = get_cursor()
+    cursor.execute("""SELECT member_id, clubhouse_id FROM checkins
+                      WHERE clubhouse_id = %s
+                      AND checkin_datetime < %s
+                      AND checkout_datetime IS NULL""", (clubhouse_id, current_time))
+    members = cursor.fetchall()
+
+    result = []
+    for (member_id, clubhouse_id) in members:
+        result.append(get_specific_member(clubhouse_id, member_id, True, sort_by_last))
+    cursor.close()
+    return result
 
 # retrieve only certain members (for filtering)
 def query_members():
@@ -55,8 +84,15 @@ def query_checkins():
     pass
 
 # add a new check-in
-def add_checkin():
-    pass
+def add_checkin(member_id, clubhouse_id):
+    current_time = datetime.now()
+    cursor = get_cursor()
+    # for testing, change later
+    cursor.execute("""INSERT INTO checkins (member_id, checkin_datetime, clubhouse_id)
+                      VALUES (%s, %s, %s)""",
+                      (member_id, current_time, clubhouse_id))
+    conn.commit()
+    cursor.close()
 
 # add a new check-out, edits checkins table
 def add_checkout():

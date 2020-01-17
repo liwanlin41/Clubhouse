@@ -195,7 +195,7 @@ class CheckinManager:
         # extract member to be removed
         member = self.get_member_display(id_num)
         self.members_in.remove(member)
-        add_checkout()
+        add_checkout(id_num, self.clubhouse)
         self.members_out.insert(binary_search(self.members_out, member, key = lambda x: self.id_to_name[x[0]][1] + ", " + self.id_to_name[x[0]][0]), member)
 #       self.members_out.insert(binary_search(self.members_out, self.id_to_name[id_num], key = lambda x: x[1]), member)
         self.setfields()

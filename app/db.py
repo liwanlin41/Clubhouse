@@ -49,12 +49,12 @@ def get_checked_in_members(clubhouse_id, sort_by_last=True):
     cursor.execute("""SELECT member_id, clubhouse_id FROM checkins
                       WHERE clubhouse_id = %s
                       AND checkin_datetime < %s
-                      AND checkout_datetime IS NULL
-                      ORDER BY""" % (clubhouse_id, current_time, sorting))
+                      AND checkout_datetime IS NULL""", (clubhouse_id, current_time))
     members = cursor.fetchall()
 
     result = []
     for (member_id, clubhouse_id) in members:
+        # TODO: sort result by sort_by_last
         result.append((member_id,get_specific_member(clubhouse_id, member_id, True)))
     cursor.close()
     return result

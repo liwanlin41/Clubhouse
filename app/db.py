@@ -22,17 +22,13 @@ def get_clubhouse_members(clubhouse_id, sort_by_last=True):
     return rows
 
 # retrieve a specific member: returns the whole row by default
-def get_specific_member(clubhouse_id, member_id, name_only=False, sort_by_last=True):
+def get_specific_member(clubhouse_id, member_id, short_form=False):
     cursor = get_cursor()
-    if name_only:
-        sorting = "first_name, last_name" # can collapse if statement to one line
-        if sort_by_last:
-            sorting = "last_name, first_name"
-        query = """SELECT %s
-                   FROM members
-                   WHERE clubhouse_id = %%s
-                   AND member_id = %%s""" % (sorting, )
-        cursor.execute(query, (clubhouse_id, member_id))
+    if short_form:      # return (id, first, last) only
+        cursor.execute("""SELECT member_id, first_name, last_name
+                          FROM members
+                          WHERE clubhouse_id = %s
+                          AND member_id = %s""", (clubhouse_id, member_id))
     else:
         cursor.execute("SELECT * FROM members WHERE clubhouse_id = %s AND member_id = %s", (clubhouse_id, member_id))
     member = cursor.fetchall()
@@ -45,16 +41,20 @@ def get_specific_member(clubhouse_id, member_id, name_only=False, sort_by_last=T
 def get_checked_in_members(clubhouse_id, sort_by_last=True):
     current_time = datetime.now()
 
+    sorting = "first_name, last_name" # can collapse if statement to one line
+    if sort_by_last:
+        sorting = "last_name, first_name"
     cursor = get_cursor()
     cursor.execute("""SELECT member_id, clubhouse_id FROM checkins
                       WHERE clubhouse_id = %s
                       AND checkin_datetime < %s
-                      AND checkout_datetime IS NULL""", (clubhouse_id, current_time))
+                      AND checkout_datetime IS NULL
+                      ORDER BY""" % (clubhouse_id, current_time, sorting))
     members = cursor.fetchall()
 
     result = []
     for (member_id, clubhouse_id) in members:
-        result.append(get_specific_member(clubhouse_id, member_id, True, sort_by_last))
+        result.append(get_specific_member(clubhouse_id, member_id, True))
     cursor.close()
     return result
 

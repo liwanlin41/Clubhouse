@@ -95,5 +95,15 @@ def add_checkin(member_id, clubhouse_id):
     cursor.close()
 
 # add a new check-out, edits checkins table
-def add_checkout():
-    pass
+def add_checkout(member_id, clubhouse_id):
+    current_time = datetime.now()
+    cursor = get_cursor()
+    # for testing, change later
+    cursor.execute("""UPDATE checkins
+                      SET checkout_datetime = %s
+                      WHERE member_id = %s
+                      AND clubhouse_id = %s
+                      AND checkout_datetime IS NULL""",
+                      (current_time, member_id, clubhouse_id))
+    conn.commit()
+    cursor.close()

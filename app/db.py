@@ -27,7 +27,7 @@ def get_specific_member(clubhouse_id, member_id):
     member = cursor.fetchall()
     if len(member) > 1:
         print("error: found more than two members with these ids") # shouldn't happen
-    return member
+    return member[0]
 
 # retrieve only certain members (for filtering)
 def query_members():

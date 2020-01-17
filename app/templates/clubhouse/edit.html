@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+<!--form for adding/editing members-->
+
+{% block title %} {{_("Clubhouse Members")}} {% endblock %}
+
+{% block navtabs %}
+<li><a href="/clubhouse">{{_("Clubhouse Home")}}</a></li>
+<li><a href="/clubhouse/checkin">{{_("Member Check-in")}}</a></li>
+<li><a href="/clubhouse/view">{{_("View Data")}}</a></li>
+{% endblock %}
+
+{% block content %}
+	<h1>{{_("Edit Member")}}</h1>
+	<a href='/clubhouse/members'>All members</a>
+	{% if new_member %}
+	<form action="" method="post" novalidate>
+	{% else %}
+	<form action="/clubhouse/editmember" method="post" novalidate>
+	{% endif %}
+		{{form.hidden_tag()}}
+		{{ form.firstname.label }}<br>
+		{{ form.firstname(size=20) }} <br>
+		{{ form.lastname.label }}<br>
+		{{ form.lastname(size=20) }}<br>
+		{{ form.address.label }}<br>
+		{{ form.address(size=20) }}<br>
+		{{ form.city.label }}<br>
+		{{ form.city(size=20) }}<br>
+		{{ form.state.label }}<br>
+		{{ form.state(size=20) }}<br>
+		{{ form.zipcode.label }}<br>
+		{{ form.zipcode(size=20) }}<br>
+		{{ form.email.label }}<br>
+		{{ form.email(size=20) }}<br>
+		{{ form.phone.label }}<br>
+		{{ form.phone(size=20) }}<br>
+		{{ form.joindate.label }}<br>
+		{{ form.joindate(size=20) }}<br>
+		{{ form.birthday.label }}<br>
+		{{ form.birthday(size=20) }}<br>
+		{{ form.school.label }}<br>
+		{{ form.school(size=20) }}<br>
+		{{ form.gender.label }}<br>
+		{{ form.gender(size=20) }}<br>
+		{{ form.race.label }}<br>
+		{{ form.race(size=20) }}<br>
+		{{ form.guardianfirstname.label }}<br>
+		{{ form.guardianfirstname(size=20) }}<br>
+		{{ form.guardianlastname.label }}<br>
+		{{ form.guardianlastname(size=20) }}<br>
+		{{ form.guardianrelationship.label }}<br>
+		{{ form.guardianrelationship(size=20) }}<br>
+		{{ form.guardianemail.label }}<br>
+		{{ form.guardianemail(size=20) }}<br>
+		{{ form.guardianphone.label }}<br>
+		{{ form.guardianphone(size=20) }}<br>
+		{% if new_member %}
+		{{ form.add_btn() }}
+		{% else %}
+		{{ form.update_btn() }}
+		{{ form.delete_btn() }}
+		{% endif %}
+		<br>
+		{{ form.cancel_btn() }}
+	</form>
+{% endblock %}

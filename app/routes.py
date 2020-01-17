@@ -1,9 +1,9 @@
 # handle all routing things
 
 # not sure what the imports should be but these seem to work?
-from flask import render_template, flash, redirect, request
+from flask import render_template, flash, redirect, request, url_for
 from app import app
-from app.forms import LoginForm, CheckinForm, CheckinManager, MemberManager
+from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler
 from flask_babel import lazy_gettext as _l
 from .db import *
 
@@ -67,33 +67,44 @@ def admin_login():
     return render_template('login.html', form=form)
 
 # rest of app routes for clubhouse home page
+
+# add new member
 @app.route('/clubhouse/addmember', methods=['GET','POST']) # might need a method -- better to make html name informative if different?
-def coord_members():
+def create_member():
     if request.method == 'POST':
+        # TODO: add member info to database
+        return request.form
         if request.form["button"] == "Update":
             return("updating member")
         else: # new member
             add_member()
             return request.form
     # add_member()
-    return render_template('/clubhouse/add.html')
+    return render_template('/clubhouse/edit.html', form=MemberAddForm(), new_member=True)
 
 @app.route('/clubhouse/members', methods=['GET','POST'])
 def manage_members():
     club_id = 1 # TODO: get actual clubhouse id
     form_manager = MemberManager(club_id)
     if request.method == "POST":
-        if "new_member" in request.form:
+        if "new_member" in request.form: # add new member
             return redirect('/clubhouse/addmember')
         # view or edit button pressed but no member selected
-        if "memberselect" not in request.form:
+        if "memberselect" not in request.form: # this is invalid
             return redirect('/clubhouse/members')
         member_id = int(request.form['memberselect'])
-        if "view" in request.form:
-            return str(get_specific_member(club_id, member_id))
-        if "edit" in request.form:
-            return "pre-populate form fields"
+        if "edit" in request.form: # everything else should fall here
+            handle = MemberInfoHandler(get_specific_member(club_id, member_id))
+            # go to form to edit member information
+            # NOTE: there may be errors with form resubmission and back button handling here
+            return render_template('/clubhouse/edit.html',form=handle.form, new_member=False)
     return render_template('/clubhouse/membership.html', form=form_manager.member_form)
+
+@app.route('/clubhouse/editmember',methods=['GET','POST'])
+def edit_member():
+    if request.method == 'POST':
+        # TODO: update member info in database
+        return request.form
 
 @app.route('/clubhouse/viewmembers')
 def view_members():

@@ -145,10 +145,12 @@ class CheckinManager:
             # check syntax on later updates
             self.members_in = []
             # parse checked-in members and remove them from checked-out list
-            for mem_id, first, last in get_checked_in_members(self.clubhouse):
+            for mem_id, name in get_checked_in_members(self.clubhouse):
                 member = self.get_member_display(mem_id)
                 self.members_in.append(member)
                 self.members_out.remove(member)
+            # sort members in, change this later
+            self.members_in.sort(key = lambda x: self.id_to_name[x[0]][1] + ", " + self.id_to_name[x[0]][0])
         if not clubhouse: # testing purposes
             # NOTE: translation not needed here because names are displayed
             self.members_in = [(123,"manager signed-in 1"), (234,"manager signed-in 2")]

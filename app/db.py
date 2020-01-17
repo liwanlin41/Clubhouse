@@ -14,7 +14,8 @@ def get_clubhouse_members(clubhouse_id, sort_by_last=True):
     sorting = "first_name, last_name" # can collapse if statement to one line
     if sort_by_last:
         sorting = "last_name, first_name"
-    cursor.execute("SELECT member_id, first_name, last_name FROM members WHERE clubhouse_id = %s ORDER BY %s" %(clubhouse_id, sorting))
+    # temporarily hard-coded sort order
+    cursor.execute("SELECT member_id, first_name, last_name FROM members WHERE clubhouse_id = %s ORDER BY last_name, first_name", (clubhouse_id,))
     rows = cursor.fetchall()
 #    for row in rows: # for debugging purposes?
 #        print(row)
@@ -54,7 +55,7 @@ def get_checked_in_members(clubhouse_id, sort_by_last=True):
 
     result = []
     for (member_id, clubhouse_id) in members:
-        result.append(get_specific_member(clubhouse_id, member_id, True, sort_by_last))
+        result.append((member_id,get_specific_member(clubhouse_id, member_id, True, sort_by_last)))
     cursor.close()
     return result
 

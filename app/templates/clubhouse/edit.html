@@ -11,15 +11,22 @@
 
 {% block content %}
 	<h1>{{_("Edit Member")}}</h1>
-	<a href='/clubhouse/members'>All members</a>
+	<a href='/clubhouse/members'>All members</a><br>
+	{% with messages = get_flashed_messages() %}
+	{% for message in messages %}
+	<span style="color: red;">{{ message }}</span>
+	{% endfor %}
+	{% endwith %}
 	{% if new_member %}
 	<form action="" method="post" novalidate>
 	{% else %}
 	<form action="/clubhouse/editmember" method="post" novalidate>
+		<!--onSubmit="return confirm('Are you sure?')" novalidate>-->
 	<!--have the editmember page handle the edits-->
 	{% endif %}
 		{{form.hidden_tag()}}
 		{{ form.mem_id() }}
+		{{ form.club_id() }}
 		{{ form.firstname.label }}<br>
 		{% for error in form.firstname.errors %}
 		<span style="color: red;">[{{ error }}]</span><br>
@@ -66,7 +73,11 @@
 		{{ form.add_btn() }}
 		{% else %}
 		{{ form.update_btn() }}
-		{{ form.delete_btn() }}
+		{% if second_del %}
+		{{ form.delete_btn2() }}
+		{% else %}
+		{{ form.delete_btn1() }}
+		{% endif %}
 		{% endif %}
 		<br>
 		{{ form.cancel_btn() }}

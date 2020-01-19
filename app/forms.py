@@ -41,6 +41,7 @@ class MemberManager:
 # form and handler for adding or editing member
 class MemberAddForm(FlaskForm):
     mem_id = HiddenField() # store member id for post request when editing member
+    club_id = HiddenField() # store club id
     firstname = StringField(_l('First Name'), validators = [DataRequired()])
     lastname = StringField(_l('Last Name'), validators = [DataRequired()])
     address = StringField(_l('Street Address'))
@@ -62,7 +63,9 @@ class MemberAddForm(FlaskForm):
     add_btn = SubmitField(_l('Add Member'))
     update_btn = SubmitField(_l('Update Member Info'))
     cancel_btn = SubmitField(_l('Cancel'))
-    delete_btn = SubmitField(_l('Remove Member'))
+    # two delete buttons to handle confirmation of member deletion
+    delete_btn1 = SubmitField(_l('Remove Member'))
+    delete_btn2 = SubmitField(_l('Remove Member'))
 
 # handle form pre-population, loading data, etc.
 class MemberInfoHandler:
@@ -75,6 +78,7 @@ class MemberInfoHandler:
         self.mem_id = mem_id
         self.club_id = club_id
         self.form.mem_id.render_kw = {'value': mem_id}
+        self.form.club_id.render_kw = {'value': club_id}
         if firstname:
             self.form.firstname.render_kw = {'value': firstname, 'disabled': 'disabled'}
         if lastname:

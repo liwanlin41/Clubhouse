@@ -106,16 +106,28 @@ def manage_members():
             return render_template('/clubhouse/edit.html',form=handle.form, new_member=False)
     return render_template('/clubhouse/membership.html', form=form_manager.member_form)
 
-@app.route('/clubhouse/editmember',methods=['GET','POST'])
+@app.route('/clubhouse/editmember',methods=['POST'])
 def edit_member():
     if request.method == 'POST':
         if "cancel_btn" in request.form: # cancel the updates
             return redirect('/clubhouse/members')
-        if "delete_btn" in request.form: # delete member from active members
-            # TODO: add confirmation step
+        if "delete_btn1" in request.form: # first click of delete button
+            # go to confirmation step
+            club_id = int(request.form['club_id'])
+            mem_id = int(request.form['mem_id'])
+            flash("WARNING: Attempting to delete member - this action is irreversible. Click 'Remove Member' again to confirm.")
+            # display message and require resubmit
+            # note this will also clear all fields
+            # TODO: store data if remove is clicked but then canceled?
+            # alternatively just find a better confirmation solution
+            handle = MemberInfoHandler(get_specific_member(club_id, mem_id))
+            return render_template('/clubhouse/edit.html',form=handle.form, new_member=False, second_del = True)
+        if "delete_btn2" in request.form: # delete member from active members
+            # TODO: delete member
             return request.form
+        # otherwise update info
         # TODO: update member info in database
-        # this post request contains the member id
+        # this post request contains the member id and club id
         return request.form
 
 # TODO: remove this route

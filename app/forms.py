@@ -141,8 +141,6 @@ class CheckinManager:
                 self.id_to_name[(mem_id)] = (first, last)
                 # list is already sorted, initialize members_out here
                 self.members_out.append(self.get_member_display(mem_id))
-            # TODO: load actual check in/out lists from database
-            # check syntax on later updates
             self.members_in = []
             # parse checked-in members and remove them from checked-out list
             for mem_id, name in get_checked_in_members(self.clubhouse):
@@ -150,9 +148,9 @@ class CheckinManager:
                 self.members_in.append(member)
                 self.members_out.remove(member)
             # sort members in, change this later
+            # TODO: sorting from database is still broken
             self.members_in.sort(key = lambda x: self.id_to_name[x[0]][1] + ", " + self.id_to_name[x[0]][0])
         if not clubhouse: # testing purposes
-            # NOTE: translation not needed here because names are displayed
             self.members_in = [(123,"manager signed-in 1"), (234,"manager signed-in 2")]
             self.members_out = [(12,"manager signed-out 3"),(23,"manager signed-out 4")]
             # dictionary linking member id to member name
@@ -182,7 +180,6 @@ class CheckinManager:
         member = self.get_member_display(id_num)
         self.members_out.remove(member)
         # check-in to database
-        # TODO: check syntax
         add_checkin(id_num, self.clubhouse)
         # insert member into sorted members_in list
         # x[0] gets member id, the rest gets last, first for sorting order

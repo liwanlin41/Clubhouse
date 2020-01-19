@@ -32,10 +32,16 @@ def coord_view():
     # 0 is meant to be raw data, e.g. number of people on each day
     data_format = [(0, _l("Check-ins")), (1, _l("Time of day")), (2, _l("Day of week"))]
     if request.method == 'POST':
-        #TODO: actually pull data
-        return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format, plot=plot(request.form['range'], request.form['format']))
+        # TODO: title the graph and update to getting checkins for a given clubhouse
+        # extract relevant information
+        cur_range = request.form['range']
+        cur_format = request.form['format']
+        # pass cur_range, cur_format to template 
+        # to keep them displayed on the page (minimize confusion)
+        return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format, plot=plot(cur_range, cur_format), cur_range =int(cur_range), cur_format = int(cur_format))
     if request.method == 'GET':
-        return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format)
+        # default cur_range, cur_format to be the first in the list
+        return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format, cur_range = time_ranges[0][0], cur_format = data_format[0][0])
 
 @app.route('/admin/view', methods=['GET', 'POST'])
 def admin_view():
@@ -112,6 +118,7 @@ def edit_member():
         # this post request contains the member id
         return request.form
 
+# TODO: remove this route
 @app.route('/clubhouse/viewmembers')
 def view_members():
     return str(get_clubhouse_members(1))
@@ -119,7 +126,6 @@ def view_members():
 # check-in page, main functionality of website
 @app.route('/clubhouse/checkin', methods=['GET','POST'])
 def checkin_handler():
-    # TODO: database connections
     if request.method == "GET":
         # TODO: this is currently a test clubhouse id
         # will need to get the actual clubhouse id eventually

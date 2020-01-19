@@ -6,6 +6,7 @@ from app import app
 from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler
 from flask_babel import lazy_gettext as _l
 from .db import *
+from .plot import *
 
 ### homepages
 
@@ -32,7 +33,7 @@ def coord_view():
     data_format = [(0, _l("Check-ins")), (1, _l("Time of day")), (2, _l("Day of week"))]
     if request.method == 'POST':
         #TODO: actually pull data
-        return "this method has not been implemented"
+        return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format, plot=plot(request.form['range'], request.form['format']))
     if request.method == 'GET':
         return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format)
 

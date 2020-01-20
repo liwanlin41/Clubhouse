@@ -11,11 +11,6 @@
 
 {% block content %}
 	<h1>{{_("Clubhouse Members")}}</h1>
-	{% with messages = get_flashed_messages() %}
-	{% for message in messages %}
-	<span style="color: red;">{{ message }}</span>
-	{% endfor %}
-	{% endwith %}
 	<form action="" method="post" novalidate>
 		{{form.hidden_tag()}}
 		<div class="select-field-wrapper">

@@ -14,9 +14,17 @@
 		<a href="/" id="logo"><img src = "{{ url_for('static',filename='images/small.jpg') }}"></a>
 		<ul>
                         {% block navtabs %}{% endblock %}
+			{% if not current_user.is_anonymous %}
+			<li><a href="{{ url_for('logout') }}">Logout</a></li>
+			{% endif %}
                     </ul>
                 </div>
 		</nav>
+		{% with messages = get_flashed_messages() %}
+		{% for message in messages %}
+		<span style="color: red;">{{ message }}</span>
+		{% endfor %}
+		{% endwith %}
             </header>
 
             <main>

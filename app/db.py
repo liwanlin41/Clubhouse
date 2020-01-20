@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from app import conn
+from werkzeug.security import generate_password_hash
 
 # retrieve cursor for MySQL database defined in env vars
 def get_cursor():
@@ -108,3 +109,22 @@ def add_checkout(member_id, clubhouse_id):
                       (current_time, member_id, clubhouse_id))
     conn.commit()
     cursor.close()
+
+# get login information
+# on an attempted login with username username,
+# retrieve the user id from table
+# return id or None if username is invalid
+# can we give the admin a special id that doesn't clash with clubhouses?
+def get_id_from_username(username):
+    # for testing
+    if username == "hi":
+        return 1
+    else:
+        return None
+
+# given id number of user, retrieve user info or tuple of None
+def get_user_from_id(id_num):
+    # for testing
+    if id_num == 1:
+        return (1, "hi", generate_password_hash("test"))
+    return (None, None, None)

@@ -44,6 +44,8 @@ export MYSQL_DATABASE_PASSWORD=<yourPassword>
 export MYSQL_DATABASE_DB=<yourDbName>
 ```
 
+Alternatively, there is a bash script called `setup_sql` that contains these commands. Move it to the `bin` folder of the virtual environment and set the fields shown above; then running `setup_sql` inside the environment will run these commands.
+
 Visit the `flask-mysql` [documentation](https://flask-mysql.readthedocs.io/en/latest/) for further reference if needed.
 
 To obtain the tables needed for this app, if not done so already, create the tables specified in the schema file (this has been done already for the test database).

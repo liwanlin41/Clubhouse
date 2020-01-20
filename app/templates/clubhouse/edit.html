@@ -12,11 +12,6 @@
 {% block content %}
 	<h1>{{_("Edit Member")}}</h1>
 	<a href='/clubhouse/members'>All members</a><br>
-	{% with messages = get_flashed_messages() %}
-	{% for message in messages %}
-	<span style="color: red;">{{ message }}</span>
-	{% endfor %}
-	{% endwith %}
 	{% if new_member %}
 	<form action="" method="post" novalidate>
 	{% else %}

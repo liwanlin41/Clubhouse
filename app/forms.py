@@ -10,14 +10,13 @@ from .db import *
 # this form doesn't do anything yet
 class LoginForm(FlaskForm):
     user = StringField(_l('Username'), validators = [DataRequired()])
-    password = StringField(_l('Password'), validators = [DataRequired()])
+    password = PasswordField(_l('Password'), validators = [DataRequired()])
     remember = BooleanField(_l('Remember Me'))
     submit = SubmitField(_l('Sign In'))
 
 # form to view and manage clubhouse members
 class MemberViewForm(FlaskForm):
         memberselect = SelectField(_l("Member List"), choices = [])
-#        view = SubmitField(_l("View"))
         edit = SubmitField(_l("View/Edit"))
         new_member = SubmitField(_l("New Member"))
 

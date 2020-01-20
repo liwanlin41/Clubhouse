@@ -66,7 +66,6 @@ def query_members():
 # register a new member
 def add_member():
     cursor = get_cursor()
-    # for testing, change later
     cursor.execute("""INSERT INTO members (first_name, last_name, clubhouse_id)
                     VALUES ('carolyn', 'mei', 1)""")
     conn.commit()

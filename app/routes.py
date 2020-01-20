@@ -115,7 +115,7 @@ def edit_member():
             # go to confirmation step
             club_id = int(request.form['club_id'])
             mem_id = int(request.form['mem_id'])
-            flash("WARNING: Attempting to delete member - this action is irreversible. Click 'Remove Member' again to confirm.")
+            flash(_l("WARNING: Attempting to delete member - this action is irreversible. Click 'Remove Member' again to confirm."))
             # display message and require resubmit
             # note this will also clear all fields
             # TODO: store data if remove is clicked but then canceled?

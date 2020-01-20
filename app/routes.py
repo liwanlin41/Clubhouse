@@ -151,10 +151,10 @@ def edit_member():
     if request.method == 'POST':
         if "cancel_btn" in request.form: # cancel the updates
             return redirect('/clubhouse/members')
+        club_id = int(request.form['club_id'])
+        mem_id = int(request.form['mem_id'])
         if "delete_btn1" in request.form: # first click of delete button
             # go to confirmation step
-            club_id = int(request.form['club_id'])
-            mem_id = int(request.form['mem_id'])
             flash(_l("WARNING: Attempting to delete member - this action is irreversible. Click 'Remove Member' again to confirm."))
             # display message and require resubmit
             # note this will also clear all fields
@@ -163,8 +163,9 @@ def edit_member():
             handle = MemberInfoHandler(get_specific_member(club_id, mem_id))
             return render_template('/clubhouse/edit.html',form=handle.form, new_member=False, second_del = True)
         if "delete_btn2" in request.form: # delete member from active members
-            # TODO: delete member
-            return request.form
+            flash(_l(delete_specific_member(club_id, mem_id))) # delete from db, returns success/error message
+            # need to delete from request.form? unclear? probs not bc redirect not render_template
+            return redirect('/clubhouse/members')
         # otherwise update info
         # TODO: update member info in database
         # this post request contains the member id and club id

@@ -73,6 +73,17 @@ def add_member():
     conn.commit()
     cursor.close()
 
+# delete a specific member
+def delete_specific_member(club_id, mem_id):
+    cursor = get_cursor()
+    cursor.execute("""DELETE FROM members
+                        WHERE clubhouse_id = %s
+                        AND member_id = %s""",
+                        (club_id, mem_id))
+    conn.commit()
+    cursor.close()
+    return "Member deleted successfully." # could be more specific but that requires getting more info
+
 # retrieve all check-ins
 def get_all_checkins():
     cursor = get_cursor()

@@ -75,7 +75,13 @@ def add_member():
 # delete a specific member
 def delete_specific_member(club_id, mem_id):
     cursor = get_cursor()
+    # delete from members table
     cursor.execute("""DELETE FROM members
+                        WHERE clubhouse_id = %s
+                        AND member_id = %s""",
+                        (club_id, mem_id))
+    # delete from checkins table
+    cursor.execute("""DELETE FROM checkins
                         WHERE clubhouse_id = %s
                         AND member_id = %s""",
                         (club_id, mem_id))

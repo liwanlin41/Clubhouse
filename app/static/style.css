@@ -28,6 +28,7 @@ nav ul li {
 nav a {
 	text-decoration: none;
 	padding: 10px;
+	color: #2D2769;
 }
 
 nav a:visited {
@@ -49,6 +50,15 @@ nav #logo {
 /* find some better way to make the logo link look nice? */
 nav a#logo:hover {
 	background-color: rgba(0,0,0,0);
+}
+
+/* all links */
+a {
+	color: #005B9E;
+}
+
+a:visited {
+	color: #2D2769;
 }
 
 /* submit button on forms */

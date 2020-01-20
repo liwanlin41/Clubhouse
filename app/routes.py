@@ -6,6 +6,7 @@ from app import app
 from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler
 from flask_babel import lazy_gettext as _l
 from .db import *
+from .plot import *
 
 ### homepages
 
@@ -31,10 +32,16 @@ def coord_view():
     # 0 is meant to be raw data, e.g. number of people on each day
     data_format = [(0, _l("Check-ins")), (1, _l("Time of day")), (2, _l("Day of week"))]
     if request.method == 'POST':
-        #TODO: actually pull data
-        return "this method has not been implemented"
+        # TODO: title the graph and update to getting checkins for a given clubhouse
+        # extract relevant information
+        cur_range = request.form['range']
+        cur_format = request.form['format']
+        # pass cur_range, cur_format to template 
+        # to keep them displayed on the page (minimize confusion)
+        return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format, plot=plot(cur_range, cur_format), cur_range =int(cur_range), cur_format = int(cur_format))
     if request.method == 'GET':
-        return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format)
+        # default cur_range, cur_format to be the first in the list
+        return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format, cur_range = time_ranges[0][0], cur_format = data_format[0][0])
 
 @app.route('/admin/view', methods=['GET', 'POST'])
 def admin_view():
@@ -99,18 +106,31 @@ def manage_members():
             return render_template('/clubhouse/edit.html',form=handle.form, new_member=False)
     return render_template('/clubhouse/membership.html', form=form_manager.member_form)
 
-@app.route('/clubhouse/editmember',methods=['GET','POST'])
+@app.route('/clubhouse/editmember',methods=['POST'])
 def edit_member():
     if request.method == 'POST':
         if "cancel_btn" in request.form: # cancel the updates
             return redirect('/clubhouse/members')
-        if "delete_btn" in request.form: # delete member from active members
-            # TODO: add confirmation step
+        if "delete_btn1" in request.form: # first click of delete button
+            # go to confirmation step
+            club_id = int(request.form['club_id'])
+            mem_id = int(request.form['mem_id'])
+            flash("WARNING: Attempting to delete member - this action is irreversible. Click 'Remove Member' again to confirm.")
+            # display message and require resubmit
+            # note this will also clear all fields
+            # TODO: store data if remove is clicked but then canceled?
+            # alternatively just find a better confirmation solution
+            handle = MemberInfoHandler(get_specific_member(club_id, mem_id))
+            return render_template('/clubhouse/edit.html',form=handle.form, new_member=False, second_del = True)
+        if "delete_btn2" in request.form: # delete member from active members
+            # TODO: delete member
             return request.form
+        # otherwise update info
         # TODO: update member info in database
-        # this post request contains the member id
+        # this post request contains the member id and club id
         return request.form
 
+# TODO: remove this route
 @app.route('/clubhouse/viewmembers')
 def view_members():
     return str(get_clubhouse_members(1))
@@ -118,7 +138,6 @@ def view_members():
 # check-in page, main functionality of website
 @app.route('/clubhouse/checkin', methods=['GET','POST'])
 def checkin_handler():
-    # TODO: database connections
     if request.method == "GET":
         # TODO: this is currently a test clubhouse id
         # will need to get the actual clubhouse id eventually

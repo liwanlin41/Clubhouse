@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# move this to venv/bin
+# change fields as necessary
+# change commands to os suitable ones as necessary
+
+echo "Setting Flask db info"
+
+export MYSQL_DATABASE_HOST=remotemysql.com
+export MYSQL_DATABASE_USER=plaintext username here
+export MYSQL_DATABASE_PASSWORD=plaintext password here
+export MYSQL_DATABASE_DB=plaintext here

@@ -1,12 +1,30 @@
 # handle all routing things
 
 # not sure what the imports should be but these seem to work?
+from functools import wraps
 from flask import render_template, flash, redirect, request, url_for
 from app import app
 from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler
 from flask_babel import lazy_gettext as _l
+from flask_login import current_user, login_user, logout_user
 from .db import *
 from .plot import *
+from .models import *
+
+# function for two-level authentication
+def login_required(access="basic"):
+    def wrapper(fn):
+        @wraps(fn)
+        def decorated_view(*args, **kwargs):
+            if not current_user.is_authenticated: # user not logged in
+                return login_manager.unauthorized()
+            # access is either basic or admin
+            if current_user.access != access and access != "basic":
+                # TODO: route this better, right now it's weird
+                return login_manager.unauthorized()
+            return fn(*args, **kwargs)
+        return decorated_view
+    return wrapper
 
 ### homepages
 
@@ -15,10 +33,12 @@ def home():
     return render_template('index.html')
 
 @app.route('/clubhouse')
+@login_required()
 def club_home():
     return render_template('/clubhouse/home.html')
 
 @app.route('/admin')
+@login_required(access="admin")
 def admin_home():
     return render_template('/admin/home.html')
 
@@ -54,14 +74,34 @@ def admin_view():
     if request.method == 'GET':
         return render_template('/admin/view.html', time_ranges=time_ranges, data_format=data_format)
 
+# logins and logouts
+
+# logout routing
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect('/')
+
 # basic login form, it doesn't post anything yet
-@app.route('/clubhouse/login', methods=['GET','POST'])
-def coord_login():
+@app.route('/login', methods=['GET','POST'])
+def login():
+    if current_user.is_authenticated:
+        # TODO: do something based on user role
+        return redirect('/')
     form = LoginForm()
     if form.validate_on_submit():
-        raw_data = request.form # read user input to form
-        # TODO: check if username & password are valid
-        return redirect('/clubhouse')
+        # read user input to form
+        username = request.form['user']
+        password = request.form['password']
+        club_id = get_id_from_username(username)
+        if club_id: # valid user
+            user = User(club_id) # generate user object
+            if user.check_password(password): # login success
+                login_user(user, remember=form.remember.data)
+                return redirect('/clubhouse')
+        # display that credentials are incorrecrt
+        flash(_l("Username/password combination incorrect."))
+        return redirect('/login')
     return render_template('login.html', form=form)
 
 # same as above, only for admins

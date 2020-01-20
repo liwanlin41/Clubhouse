@@ -5,3 +5,4 @@ flask-wtf
 flask-mysql
 matplotlib
 mpld3
+gunicorn

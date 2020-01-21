@@ -34,9 +34,12 @@ def get_specific_member(clubhouse_id, member_id, short_form=False):
     else:
         cursor.execute("SELECT * FROM members WHERE clubhouse_id = %s AND member_id = %s", (clubhouse_id, member_id))
     member = cursor.fetchall()
-    if len(member) > 1:
-        print("error: found more than two members with these ids") # shouldn't happen
+    if len(member) > 1: # error statements don't actually work lol
+        app.logger.error("error: found more than two members with these ids") # shouldn't happen
+    if len(member) < 1:
+        app.logger.error("error: didn't find anyone with these ids")
     cursor.close()
+    app.logger.info("get specific member debug: ", member)
     return member[0]
 
 # retrieve a list of members that are currently checked into a clubhouse: returns (id, (first, last))

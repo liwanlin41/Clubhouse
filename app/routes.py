@@ -221,7 +221,12 @@ def edit():
         if "update_btn" in request.form:
             # convert to mutable dictionary
             update_dict = dict(request.form)
-            for field in ["csrf_token","mem_id","club_id","update_btn"]:
+            # remove all empty/unnecessary fields
+            to_remove = ["csrf_token","mem_id","club_id","update_btn"]
+            for field in update_dict:
+                if len(update_dict[field]) == 0:
+                    to_remove.append(field)
+            for field in to_remove:
                 del update_dict[field]
             flash(edit_member(club_id, mem_id, update_dict))
             return redirect('/clubhouse/members')

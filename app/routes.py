@@ -35,6 +35,7 @@ def fresh_login_required(access="basic"):
             elif current_user.access != access and access !="basic":
                 flash(_l("Insufficient credentials."))
                 return redirect('/')
+            # TODO: determine if login_fresh is needed
             elif not app.fresh:
                 return login_manager.needs_refresh()
             return fn(*args, **kwargs)
@@ -140,6 +141,7 @@ def reauthenticate():
         if current_user.check_password(password): # login success
             app.fresh = True # session is now fresh
             # redirect based on user status
+            # TODO: redirect to 'next' page
             if current_user.access == "admin":
                 return redirect('/admin')
             return redirect('/clubhouse')

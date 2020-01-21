@@ -2,6 +2,7 @@
 
 # not sure what the imports should be but these seem to work?
 from functools import wraps
+from datetime import datetime
 from flask import render_template, flash, redirect, request, url_for
 from app import app
 from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler, AuthenticateForm
@@ -168,6 +169,8 @@ def reauthenticate():
 @fresh_login_required()
 def create_member():
     form = MemberAddForm()
+    # default join date
+    form.join_date.render_kw = {'value': datetime.now().date()}
     if request.method == 'POST':
         if "cancel_btn" in request.form:
             return redirect('/clubhouse/members')

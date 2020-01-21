@@ -76,7 +76,7 @@ def coord_view():
         # extract relevant information
         cur_range = request.form['range']
         cur_format = request.form['format']
-        # pass cur_range, cur_format to template 
+        # pass cur_range, cur_format to template
         # to keep them displayed on the page (minimize confusion)
         return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format, plot=plot(cur_range, cur_format), cur_range =int(cur_range), cur_format = int(cur_format))
     if request.method == 'GET':
@@ -219,6 +219,7 @@ def edit():
         # otherwise update info
         # TODO: update member info in database
         if "update_btn" in request.form:
+<<<<<<< HEAD
             # convert to mutable dictionary
             update_dict = dict(request.form)
             for field in ["csrf_token","mem_id","club_id","update_btn"]:
@@ -226,6 +227,11 @@ def edit():
             flash(edit_member(club_id, mem_id, update_dict))
             return redirect('/clubhouse/members')
             # already have club and member id
+=======
+            # oop no time
+            pass
+        # this post request contains the member id and club id
+>>>>>>> beb371edb4d7528411f45382bc9d6c8706f541be
         return request.form
 
 # TODO: remove this route

@@ -6,15 +6,19 @@
     <h1>{{ _("Sign In")}}</h1>
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
+	{% if not refresh %}
         <p>
             {{ form.user.label }}<br>
             {{ form.user(size=32) }}
         </p>
+	{% endif %}
         <p>
             {{ form.password.label }}<br>
             {{ form.password(size=32) }}
         </p>
+	{% if not refresh %}
         <p>{{ form.remember() }} {{ form.remember.label }}</p>
+	{% endif %}
         <p>{{ form.submit() }}</p>
     </form>
 {% endblock %}

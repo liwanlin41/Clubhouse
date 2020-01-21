@@ -4,7 +4,7 @@
 from functools import wraps
 from flask import render_template, flash, redirect, request, url_for
 from app import app
-from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler
+from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler, AuthenticateForm
 from flask_babel import lazy_gettext as _l
 from flask_login import current_user, login_user, logout_user
 from .db import *
@@ -20,8 +20,23 @@ def login_required(access="basic"):
                 return login_manager.unauthorized()
             # access is either basic or admin
             if current_user.access != access and access != "basic":
-                # TODO: route this better, right now it's weird
+                flash(_l("Insufficient credentials."))
+                return redirect('/')
+            return fn(*args, **kwargs)
+        return decorated_view
+    return wrapper
+
+def fresh_login_required(access="basic"):
+    def wrapper(fn):
+        @wraps(fn)
+        def decorated_view(*args, **kwargs):
+            if not current_user.is_authenticated:
                 return login_manager.unauthorized()
+            elif current_user.access != access and access !="basic":
+                flash(_l("Insufficient credentials."))
+                return redirect('/')
+            elif not app.fresh:
+                return login_manager.needs_refresh()
             return fn(*args, **kwargs)
         return decorated_view
     return wrapper
@@ -33,17 +48,21 @@ def home():
     return render_template('index.html')
 
 @app.route('/clubhouse')
-@login_required()
+@fresh_login_required()
 def club_home():
+    if current_user.access == "admin":
+        # TODO: implement this
+        return("please choose a clubhouse to view")
     return render_template('/clubhouse/home.html')
 
 @app.route('/admin')
-@login_required(access="admin")
+@fresh_login_required(access="admin")
 def admin_home():
     return render_template('/admin/home.html')
 
 # view data pages
 @app.route('/clubhouse/view', methods=['GET','POST'])
+@fresh_login_required()
 def coord_view():
     # the time_range will return the number of days to be considered
     # [1, 7, 30, 365] corresponding to day, week, month, year
@@ -64,6 +83,7 @@ def coord_view():
         return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format, cur_range = time_ranges[0][0], cur_format = data_format[0][0])
 
 @app.route('/admin/view', methods=['GET', 'POST'])
+@fresh_login_required(access="admin")
 def admin_view():
     # copied from coord_view
     time_ranges = [(1,_l("Last 24 hours")), (7,_l("Last 7 days")), (30,_l("Last month")), (365,_l("Last year"))]
@@ -85,9 +105,10 @@ def logout():
 # basic login form, it doesn't post anything yet
 @app.route('/login', methods=['GET','POST'])
 def login():
-    if current_user.is_authenticated:
-        # TODO: do something based on user role
-        return redirect('/')
+    if current_user.is_authenticated: # already logged in, redirect based on account type
+        if current_user.access == "admin":
+            return redirect('/admin')
+        return redirect('/clubhouse')
     form = LoginForm()
     if form.validate_on_submit():
         # read user input to form
@@ -98,25 +119,51 @@ def login():
             user = User(club_id) # generate user object
             if user.check_password(password): # login success
                 login_user(user, remember=form.remember.data)
+                app.fresh = True # manually set fresh session
+                # redirect based on user status
+                if user.access == "admin":
+                    return redirect('/admin')
                 return redirect('/clubhouse')
         # display that credentials are incorrecrt
         flash(_l("Username/password combination incorrect."))
         return redirect('/login')
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, refresh = False)
 
-# same as above, only for admins
-@app.route('/admin/login', methods=['GET','POST'])
-def admin_login():
-    form = LoginForm()
+# page for reauthentication
+@app.route('/reauthenticate', methods=['GET','POST'])
+@login_required()
+def reauthenticate():
+    form = AuthenticateForm()
     if form.validate_on_submit():
-        raw_data = request.form
-        return redirect('/admin')
-    return render_template('login.html', form=form)
+        # read user input to form
+        password = request.form['password']
+        if current_user.check_password(password): # login success
+            app.fresh = True # session is now fresh
+            # redirect based on user status
+            if current_user.access == "admin":
+                return redirect('/admin')
+            return redirect('/clubhouse')
+        # display that credentials are incorrecrt
+        flash(_l("Incorrect password."))
+        return redirect('/reauthenticate')
+    return render_template('login.html', form=form, refresh = True)
+
+
+# this is no longer needed, one login handles everything
+# same as above, only for admins
+#@app.route('/admin/login', methods=['GET','POST'])
+#def admin_login():
+#    form = LoginForm()
+#    if form.validate_on_submit():
+#        raw_data = request.form
+#        return redirect('/admin')
+#    return render_template('login.html', form=form)
 
 # rest of app routes for clubhouse home page
 
 # add new member
 @app.route('/clubhouse/addmember', methods=['GET','POST']) # might need a method -- better to make html name informative if different?
+@fresh_login_required()
 def create_member():
     form = MemberAddForm()
     if request.method == 'POST':
@@ -129,6 +176,7 @@ def create_member():
     return render_template('/clubhouse/edit.html', form=form, new_member=True)
 
 @app.route('/clubhouse/members', methods=['GET','POST'])
+@fresh_login_required()
 def manage_members():
     club_id = 1 # TODO: get actual clubhouse id
     form_manager = MemberManager(club_id)
@@ -147,6 +195,7 @@ def manage_members():
     return render_template('/clubhouse/membership.html', form=form_manager.member_form)
 
 @app.route('/clubhouse/editmember',methods=['POST'])
+@fresh_login_required()
 def edit_member():
     if request.method == 'POST':
         if "cancel_btn" in request.form: # cancel the updates
@@ -164,7 +213,6 @@ def edit_member():
             return render_template('/clubhouse/edit.html',form=handle.form, new_member=False, second_del = True)
         if "delete_btn2" in request.form: # delete member from active members
             flash(_l(delete_specific_member(club_id, mem_id))) # delete from db, returns success/error message
-            # need to delete from request.form? unclear? probs not bc redirect not render_template
             return redirect('/clubhouse/members')
         # otherwise update info
         # TODO: update member info in database
@@ -178,7 +226,10 @@ def view_members():
 
 # check-in page, main functionality of website
 @app.route('/clubhouse/checkin', methods=['GET','POST'])
+@login_required()
 def checkin_handler():
+    # manually set session to stale
+    app.fresh = False
     if request.method == "GET":
         # TODO: this is currently a test clubhouse id
         # will need to get the actual clubhouse id eventually
@@ -198,5 +249,6 @@ def checkin_handler():
 
 # rest of app routes for admin home page (aka just editclubhouses)
 @app.route('/admin/editclubhouses')
+@fresh_login_required(access="admin")
 def admin_clubhouses():
     return render_template('/admin/add.html')

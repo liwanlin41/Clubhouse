@@ -84,10 +84,18 @@ def delete_specific_member(club_id, mem_id):
                         AND member_id = %s""",
                         (club_id, mem_id))
     # delete from checkins table
-    cursor.execute("""DELETE FROM checkins
-                        WHERE clubhouse_id = %s
-                        AND member_id = %s""",
-                        (club_id, mem_id))
+    # temporary patch to ensure user does not appear in checked-in users
+    current_time = datetime.now()
+    cursor.execute("""UPDATE checkins
+                      SET checkout_datetime = %s
+                      WHERE member_id = %s
+                      AND clubhouse_id = %s
+                      AND checkout_datetime IS NULL""",
+                      (current_time, mem_id, club_id))
+#    cursor.execute("""DELETE FROM checkins
+#                        WHERE clubhouse_id = %s
+#                        AND member_id = %s""",
+#                        (club_id, mem_id))
     conn.commit()
     cursor.close()
     return "Member deleted successfully." # could be more specific but that requires getting more info
@@ -138,6 +146,8 @@ def get_id_from_username(username):
     # for testing
     if username == "hi":
         return 1
+    elif username == "admin":
+        return 2
     else:
         return None
 
@@ -146,4 +156,6 @@ def get_user_from_id(id_num):
     # for testing
     if id_num == 1:
         return (1, "hi", generate_password_hash("test"))
+    elif id_num == 2:
+        return (2, "admin", generate_password_hash("admin"))
     return (None, None, None)

@@ -14,6 +14,10 @@ class LoginForm(FlaskForm):
     remember = BooleanField(_l('Remember Me'))
     submit = SubmitField(_l('Sign In'))
 
+class AuthenticateForm(FlaskForm):
+    password = PasswordField(_l("Re-enter your password"), validators = [DataRequired()])
+    submit = SubmitField(_l('Sign In'))
+
 # form to view and manage clubhouse members
 class MemberViewForm(FlaskForm):
         memberselect = SelectField(_l("Member List"), choices = [])

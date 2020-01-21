@@ -216,6 +216,8 @@ def edit_member():
             return redirect('/clubhouse/members')
         # otherwise update info
         # TODO: update member info in database
+        if "update_btn" in request.form:
+            # oop no time
         # this post request contains the member id and club id
         return request.form
 

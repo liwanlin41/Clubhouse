@@ -75,7 +75,7 @@ def coord_view():
         # extract relevant information
         cur_range = request.form['range']
         cur_format = request.form['format']
-        # pass cur_range, cur_format to template 
+        # pass cur_range, cur_format to template
         # to keep them displayed on the page (minimize confusion)
         return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format, plot=plot(cur_range, cur_format), cur_range =int(cur_range), cur_format = int(cur_format))
     if request.method == 'GET':
@@ -218,6 +218,7 @@ def edit_member():
         # TODO: update member info in database
         if "update_btn" in request.form:
             # oop no time
+            pass
         # this post request contains the member id and club id
         return request.form
 

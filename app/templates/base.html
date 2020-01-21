@@ -20,6 +20,15 @@
                     </ul>
                 </div>
 		</nav>
+		{% if not current_user.is_anonymous %}
+		<div id="welcome">
+			{% if current_user.access == "admin" %}
+			<h1>{{_("Welcome, Administrator")}}
+			{% else %}
+			<h1>{{current_user.name}}</h1>
+			{% endif %}
+		</div>
+		{% endif %}
 		{% with messages = get_flashed_messages() %}
 		{% for message in messages %}
 		<span style="color: red;">{{ message }}</span>

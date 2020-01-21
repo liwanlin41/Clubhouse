@@ -21,7 +21,12 @@ class User(UserMixin):
             self.username = username
             self.id = id_num
             self.hash = password_hash
-            self.access = "clubhouse" # TODO: eventually pull this from database based on id
+            # TODO: eventually pull these from database based on id
+            self.access = "clubhouse" 
+            self.name = "Clubhouse" 
+            if username == "admin": # for testing
+                self.access = "admin"
+                self.name = "Administrator"
         else: # I want to see if this ever happens
             return None
             raise ValueError

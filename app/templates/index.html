@@ -4,12 +4,17 @@
 {% block title %} {{ _("Home")}} {% endblock %}
 
 {% block navtabs %}
-<li><a href="/admin">{{_("Administrator Login")}}</a></li>
-<li><a href="/clubhouse">{{_("Coordinator Login")}}</a></li>
+<li><a href="/admin">{{_("Administrator Home")}}</a></li>
+<li><a href="/clubhouse">{{_("Coordinator Home")}}</a></li>
+{% if current_user.is_anonymous %}
+<li><a href="/login">{{_("Login")}}</a></li>
+{% endif %}
 {% endblock %}
 
 {% block content %}
+{% if current_user.is_anonymous %}
 <h1>{{_("Welcome! Sign in to your respective account.")}}</h1>
+{% endif %}
 
 <div>
 	<a href="/admin">{{_("where sign in to administrators go")}} </a>

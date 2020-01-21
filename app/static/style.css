@@ -52,6 +52,11 @@ nav a#logo:hover {
 	background-color: rgba(0,0,0,0);
 }
 
+/* welcome message */
+#welcome {
+	color: #005B9E;
+}
+
 /* all links */
 a {
 	color: #005B9E;

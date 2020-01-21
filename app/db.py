@@ -42,32 +42,36 @@ def get_specific_member(clubhouse_id, member_id, short_form=False):
 #    app.logger.info("get specific member debug: ", member)
     return member[0]
 
+# returns True if the member is currently checked in, False otherwise
+def is_checked_in(clubhouse_id, member_id):
+    cursor = get_cursor()
+    cursor.execute("""SELECT is_checked_in
+                      FROM members
+                      WHERE clubhouse_id = %s
+                      AND member_id = %s""", (clubhouse_id, member_id))
+    member = cursor.fetchall()
+    if len(member) > 1: # error statements don't actually work lol
+        app.logger.error("error: found more than two members with these ids") # shouldn't happen
+    if len(member) < 1:
+        app.logger.error("error: didn't find anyone with these ids")
+    cursor.close()
+    return member[0][0]
+
 # retrieve a list of members that are currently checked into a clubhouse: returns (id, (first, last))
 def get_checked_in_members(clubhouse_id, sort_by_last=True):
-    current_time = datetime.now()
-
-    sorting = "first_name, last_name" # can collapse if statement to one line
-    if sort_by_last:
-        sorting = "last_name, first_name"
-    cursor = get_cursor()
-    cursor.execute("""SELECT member_id, clubhouse_id FROM checkins
-                      WHERE clubhouse_id = %s
-                      AND checkin_datetime < %s
-                      AND checkout_datetime IS NULL""", (clubhouse_id, current_time))
-    members = cursor.fetchall()
+    members = get_clubhouse_members(clubhouse_id, sort_by_last)
 
     result = []
-    for (member_id, clubhouse_id) in members:
-        # TODO: sort result by sort_by_last
-        result.append((member_id,get_specific_member(clubhouse_id, member_id, True)))
-    cursor.close()
+    for (member_id, first, last) in members:
+        if is_checked_in(clubhouse_id, member_id):
+            result.append((member_id, (first, last)))
     return result
 
 # retrieve only certain members (for filtering)
 def query_members():
     pass
 
-# register a new member
+# register a new member, starts checked out by default
 def add_member():
     cursor = get_cursor()
     cursor.execute("""INSERT INTO members (first_name, last_name, clubhouse_id)
@@ -125,6 +129,17 @@ def get_all_checkins():
 def query_checkins():
     pass
 
+# changes the is_checked_in field for a given member
+def change_member_checkin(member_id, clubhouse_id, checked_in):
+    cursor = get_cursor()
+    cursor.execute("""UPDATE members
+                      SET is_checked_in = %s
+                      WHERE clubhouse_id = %s
+                      AND member_id = %s""", (checked_in, clubhouse_id, member_id))
+    conn.commit()
+    cursor.close()
+    return "Check-in status changed successfully."
+
 # add a new check-in
 def add_checkin(member_id, clubhouse_id):
     current_time = datetime.now()
@@ -135,6 +150,7 @@ def add_checkin(member_id, clubhouse_id):
                       (member_id, current_time, clubhouse_id))
     conn.commit()
     cursor.close()
+    change_member_checkin(member_id, clubhouse_id, True)
 
 # add a new check-out, edits checkins table
 def add_checkout(member_id, clubhouse_id):
@@ -149,6 +165,7 @@ def add_checkout(member_id, clubhouse_id):
                       (current_time, member_id, clubhouse_id))
     conn.commit()
     cursor.close()
+    change_member_checkin(member_id, clubhouse_id, False)
 
 # get login information
 # on an attempted login with username username,

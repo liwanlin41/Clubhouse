@@ -1,7 +1,7 @@
 # helper functions for database operations, all functions with db accesses should be here
 
 from datetime import datetime
-from app import conn
+from app import app, conn
 from werkzeug.security import generate_password_hash
 
 # retrieve cursor for MySQL database defined in env vars
@@ -39,7 +39,7 @@ def get_specific_member(clubhouse_id, member_id, short_form=False):
     if len(member) < 1:
         app.logger.error("error: didn't find anyone with these ids")
     cursor.close()
-    # app.logger.info("get specific member debug: ", member)
+    app.logger.info("get specific member debug: ", member)
     return member[0]
 
 # retrieve a list of members that are currently checked into a clubhouse: returns (id, (first, last))

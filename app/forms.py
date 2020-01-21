@@ -75,7 +75,7 @@ class MemberInfoHandler:
     def __init__(self, data):
         self.form = MemberAddForm()
         # painfully load all data
-        mem_id, firstname, lastname, address, city, state, zipcode, email, phone, joindate, birthday, school, gender, race, guardianfirstname, guardianlastname, guardianrelationship, guardianemail, guardianphone, club_id = data
+        mem_id, firstname, lastname, address, city, state, zipcode, email, phone, joindate, birthday, school, gender, race, guardianfirstname, guardianlastname, guardianrelationship, guardianemail, guardianphone, club_id, checked_in_now = data
         # someone please find a better way to do this
         # load default data, disable some fields
         self.mem_id = mem_id

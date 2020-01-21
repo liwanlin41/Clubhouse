@@ -79,11 +79,11 @@ def add_member():
 def edit_member(club_id, mem_id, updates_dict):
     cursor = get_cursor()
     for key in updates_dict: # key has to match exact vocabulary of table
-        cursor.execute("""UPDATE members
-                            SET %s = %s # unclear if this is allowed
-                            WHERE clubhouse_id = %s
-                            AND member_id = %s""",
-                            (key, updates_dict[key], club_id, member_id))
+        query = """UPDATE members
+                   SET %s = %%s
+                   WHERE clubhouse_id = %%s
+                   AND member_id = %%s""" % key
+        cursor.execute(query, (updates_dict[key], club_id, member_id))
     conn.commit()
     cursor.close()
     return "Member updated successfully." # could be more specific but that requires getting more info

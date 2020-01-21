@@ -42,5 +42,6 @@ CREATE TABLE IF NOT EXISTS logins (
   user_id             INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   username            TINYTEXT NOT NULL,
   password            VARCHAR(128),
+  clubhouse_id        INT,
   is_admin            BOOLEAN NOT NULL DEFAULT 0
 );

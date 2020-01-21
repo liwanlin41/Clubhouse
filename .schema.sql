@@ -32,14 +32,14 @@ CREATE TABLE IF NOT EXISTS checkins (
 
 CREATE TABLE IF NOT EXISTS clubhouses (
   clubhouse_id        INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  name                TINYTEXT NOT NULL,
-  address             TINYTEXT NOT NULL,
-  username            TINYTEXT NOT NULL,
-  password            VARCHAR(128)
+  short_name          TINYTEXT NOT NULL,
+  full_name           TINYTEXT NOT NULL,
+  image               TINYTEXT
 );
 
-CREATE TABLE IF NOT EXISTS admins (
-  admin_id            INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS users (
+  user_id             INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   username            TINYTEXT NOT NULL,
-  password            VARCHAR(128)
+  password            VARCHAR(128),
+  is_admin            BOOLEAN
 );

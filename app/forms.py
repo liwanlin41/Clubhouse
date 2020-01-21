@@ -99,7 +99,8 @@ class MemberInfoHandler:
         if phone:
             self.form.member_phone.render_kw = {'value': phone}
         if joindate:
-            self.form.join_date.render_kw = {'value': joindate, 'disabled': 'disabled'}
+#            self.form.join_date.render_kw = {'value': joindate, 'disabled': 'disabled'}
+            self.form.join_date.render_kw = {'value': joindate}
         if birthday:
             self.form.birthday.render_kw = {'value': birthday, 'disabled': 'disabled'}
         if school:

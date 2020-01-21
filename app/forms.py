@@ -1,7 +1,7 @@
 # login form and checkin form
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, HiddenField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, HiddenField, DateField
 from wtforms.validators import DataRequired
 from flask_babel import lazy_gettext as _l
 from helpers import binary_search
@@ -53,8 +53,8 @@ class MemberAddForm(FlaskForm):
     zip_code = StringField(_l('Zip/Postal Code'))
     member_email = StringField(_l('Email'))
     member_phone = StringField(_l('Phone'))
-    join_date = StringField(_l('Join Date'))
-    birthday = StringField(_l('Birthday'))
+    join_date = DateField(_l('Join Date (y-m-d)'),format="'%Y-%m-%d'")
+    birthday = DateField(_l('Birthday (y-m-d)'), format="'%Y-%m-%d'")
     school = StringField(_l('School'))
     gender = StringField(_l('Gender'))
     race_ethnicity = StringField(_l('Race and Ethnicity'))

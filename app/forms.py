@@ -45,24 +45,24 @@ class MemberManager:
 class MemberAddForm(FlaskForm):
     mem_id = HiddenField() # store member id for post request when editing member
     club_id = HiddenField() # store club id
-    firstname = StringField(_l('First Name'), validators = [DataRequired()])
-    lastname = StringField(_l('Last Name'), validators = [DataRequired()])
-    address = StringField(_l('Street Address'))
+    first_name = StringField(_l('First Name'), validators = [DataRequired()])
+    last_name = StringField(_l('Last Name'), validators = [DataRequired()])
+    street_address = StringField(_l('Street Address'))
     city = StringField(_l('City'))
     state = StringField(_l('State'))
-    zipcode = StringField(_l('Zip/Postal Code'))
-    email = StringField(_l('Email'))
-    phone = StringField(_l('Phone'))
-    joindate = StringField(_l('Join Date'))
+    zip_code = StringField(_l('Zip/Postal Code'))
+    member_email = StringField(_l('Email'))
+    member_phone = StringField(_l('Phone'))
+    join_date = StringField(_l('Join Date'))
     birthday = StringField(_l('Birthday'))
     school = StringField(_l('School'))
     gender = StringField(_l('Gender'))
-    race = StringField(_l('Race and Ethnicity'))
-    guardianfirstname = StringField(_l('Guardian First Name'))
-    guardianlastname = StringField(_l('Guardian Last Name'))
-    guardianrelationship = StringField(_l('Guardian Relationship to Member'))
-    guardianemail = StringField(_l('Guardian Email'))
-    guardianphone = StringField(_l('Guardian Phone'))
+    race_ethnicity = StringField(_l('Race and Ethnicity'))
+    guardian_first_name = StringField(_l('Guardian First Name'))
+    guardian_last_name = StringField(_l('Guardian Last Name'))
+    guardian_relation = StringField(_l('Guardian Relationship to Member'))
+    guardian_email = StringField(_l('Guardian Email'))
+    guardian_phone = StringField(_l('Guardian Phone'))
     add_btn = SubmitField(_l('Add Member'))
     update_btn = SubmitField(_l('Update Member Info'))
     cancel_btn = SubmitField(_l('Cancel'))
@@ -83,23 +83,23 @@ class MemberInfoHandler:
         self.form.mem_id.render_kw = {'value': mem_id}
         self.form.club_id.render_kw = {'value': club_id}
         if firstname:
-            self.form.firstname.render_kw = {'value': firstname, 'disabled': 'disabled'}
+            self.form.first_name.render_kw = {'value': firstname, 'disabled': 'disabled'}
         if lastname:
-            self.form.lastname.render_kw = {'value': lastname, 'disabled': 'disabled'}
+            self.form.last_name.render_kw = {'value': lastname, 'disabled': 'disabled'}
         if address:
-            self.form.address.render_kw = {'value': address}
+            self.form.street_address.render_kw = {'value': address}
         if city:
             self.form.city.render_kw = {'value': city}
         if state:
             self.form.state.render_kw = {'value': state}
         if zipcode:
-            self.form.zipcode.render_kw = {'value': zipcode}
+            self.form.zip_code.render_kw = {'value': zipcode}
         if email:
-            self.form.email.render_kw = {'value': email}
+            self.form.member_email.render_kw = {'value': email}
         if phone:
-            self.form.phone.render_kw = {'value': phone}
+            self.form.member_phone.render_kw = {'value': phone}
         if joindate:
-            self.form.joindate.render_kw = {'value': joindate, 'disabled': 'disabled'}
+            self.form.join_date.render_kw = {'value': joindate, 'disabled': 'disabled'}
         if birthday:
             self.form.birthday.render_kw = {'value': birthday, 'disabled': 'disabled'}
         if school:
@@ -107,17 +107,17 @@ class MemberInfoHandler:
         if gender:
             self.form.gender.render_kw = {'value': gender}
         if race:
-            self.form.race.render_kw = {'value': race}
+            self.form.race_ethnicity.render_kw = {'value': race}
         if guardianfirstname:
-            self.form.guardianfirstname.render_kw = {'value': guardianfirstname}
+            self.form.guardian_first_name.render_kw = {'value': guardianfirstname}
         if guardianlastname:
-            self.form.guardianlastname.render_kw = {'value': guardianlastname}
+            self.form.guardian_last_name.render_kw = {'value': guardianlastname}
         if guardianrelationship:
-            self.form.guardianrelationship.render_kw = {'value': guardianrelationship}
+            self.form.guardian_relation.render_kw = {'value': guardianrelationship}
         if guardianemail:
-            self.form.guardianemail.render_kw = {'value': guardianemail}
+            self.form.guardian_email.render_kw = {'value': guardianemail}
         if guardianphone:
-            self.form.guardianphone.render_kw = {'value': guardianphone}
+            self.form.guardian_phone.render_kw = {'value': guardianphone}
 
 # check-in form and handler, these are up and running
 class CheckinForm(FlaskForm):

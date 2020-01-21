@@ -198,7 +198,7 @@ def manage_members():
 
 @app.route('/clubhouse/editmember',methods=['POST'])
 @fresh_login_required()
-def edit_member():
+def edit():
     if request.method == 'POST':
         if "cancel_btn" in request.form: # cancel the updates
             return redirect('/clubhouse/members')
@@ -219,8 +219,13 @@ def edit_member():
         # otherwise update info
         # TODO: update member info in database
         if "update_btn" in request.form:
-            # oop no time
-        # this post request contains the member id and club id
+            # convert to mutable dictionary
+            update_dict = dict(request.form)
+            for field in ["csrf_token","mem_id","club_id","update_btn"]:
+                del update_dict[field]
+            flash(edit_member(club_id, mem_id, update_dict))
+            return redirect('/clubhouse/members')
+            # already have club and member id
         return request.form
 
 # TODO: remove this route

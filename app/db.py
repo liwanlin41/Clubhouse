@@ -39,7 +39,7 @@ def get_specific_member(clubhouse_id, member_id, short_form=False):
     if len(member) < 1:
         app.logger.error("error: didn't find anyone with these ids")
     cursor.close()
-    app.logger.info("get specific member debug: ", member)
+#    app.logger.info("get specific member debug: ", member)
     return member[0]
 
 # retrieve a list of members that are currently checked into a clubhouse: returns (id, (first, last))
@@ -79,11 +79,12 @@ def add_member():
 def edit_member(club_id, mem_id, updates_dict):
     cursor = get_cursor()
     for key in updates_dict: # key has to match exact vocabulary of table
+        # unclear if SET %s = %s is allowed
         cursor.execute("""UPDATE members
-                            SET %s = %s # unclear if this is allowed
+                            SET %s = %s 
                             WHERE clubhouse_id = %s
                             AND member_id = %s""",
-                            (key, updates_dict[key], club_id, member_id))
+                            (key, updates_dict[key], club_id, mem_id))
     conn.commit()
     cursor.close()
     return "Member updated successfully." # could be more specific but that requires getting more info

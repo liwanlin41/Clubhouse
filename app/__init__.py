@@ -35,6 +35,8 @@ def get_locale():
 # login setup
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+login_manager.refresh_view = 'reauthenticate'
+app.fresh = True # set session as fresh to avoid errors later
 
 # this import needs to come at the end, don't touch; later the other imported files will also be here
 from app import db

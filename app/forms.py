@@ -1,7 +1,7 @@
 # login form and checkin form
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, HiddenField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, HiddenField, DateField
 from wtforms.validators import DataRequired
 from flask_babel import lazy_gettext as _l
 from helpers import binary_search
@@ -53,8 +53,8 @@ class MemberAddForm(FlaskForm):
     zip_code = StringField(_l('Zip/Postal Code'))
     member_email = StringField(_l('Email'))
     member_phone = StringField(_l('Phone'))
-    join_date = StringField(_l('Join Date'))
-    birthday = StringField(_l('Birthday'))
+    join_date = DateField(_l('Join Date (y-m-d)'),format="'%Y-%m-%d'")
+    birthday = DateField(_l('Birthday (y-m-d)'), format="'%Y-%m-%d'")
     school = StringField(_l('School'))
     gender = StringField(_l('Gender'))
     race_ethnicity = StringField(_l('Race and Ethnicity'))
@@ -75,7 +75,7 @@ class MemberInfoHandler:
     def __init__(self, data):
         self.form = MemberAddForm()
         # painfully load all data
-        mem_id, firstname, lastname, address, city, state, zipcode, email, phone, joindate, birthday, school, gender, race, guardianfirstname, guardianlastname, guardianrelationship, guardianemail, guardianphone, club_id = data
+        mem_id, firstname, lastname, address, city, state, zipcode, email, phone, joindate, birthday, school, gender, race, guardianfirstname, guardianlastname, guardianrelationship, guardianemail, guardianphone, club_id, checked_in_now = data
         # someone please find a better way to do this
         # load default data, disable some fields
         self.mem_id = mem_id
@@ -99,7 +99,8 @@ class MemberInfoHandler:
         if phone:
             self.form.member_phone.render_kw = {'value': phone}
         if joindate:
-            self.form.join_date.render_kw = {'value': joindate, 'disabled': 'disabled'}
+#            self.form.join_date.render_kw = {'value': joindate, 'disabled': 'disabled'}
+            self.form.join_date.render_kw = {'value': joindate}
         if birthday:
             self.form.birthday.render_kw = {'value': birthday, 'disabled': 'disabled'}
         if school:

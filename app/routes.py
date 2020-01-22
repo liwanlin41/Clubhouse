@@ -6,7 +6,7 @@ from functools import wraps
 from datetime import datetime
 from flask import render_template, flash, redirect, request, url_for, session
 from app import app
-from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler, AuthenticateForm, ClubhouseViewForm, ClubhouseAddForm
+from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler, AuthenticateForm, ClubhouseViewForm, ClubhouseAddForm, PasswordChangeForm
 from flask_babel import lazy_gettext as _l
 from flask_login import current_user, login_user, logout_user
 from .db import *
@@ -206,7 +206,7 @@ def manage_members():
 
 @app.route('/clubhouse/editmember',methods=['POST'])
 @fresh_login_required(impersonate = True)
-def edit():
+def edit_member_info():
     if request.method == 'POST':
         if "cancel_btn" in request.form: # cancel the updates
             return redirect('/clubhouse/members')
@@ -283,8 +283,10 @@ def manage_clubhouses():
                 session['impersonation'] = get_clubhouse_from_id(session['club_id'])
                 return redirect('/clubhouse')
             # otherwise edit button pressed, edit clubhouse
-            # TODO: implement
-            return "this method has not been implemented"
+            # get and save id of clubhouse being edited
+            session['edit_club_id'] = int(request.form['clubhouseselect'])
+            return redirect('/admin/editclubhouse')
+#            return render_template('/admin/change.html', form=PasswordChangeForm(), clubhouse_name = get_clubhouse_from_id(club_id))
     return render_template('/admin/clubhouses.html', form=form)
 
 # page to select clubhouse to impersonate
@@ -298,6 +300,30 @@ def choose_clubhouse():
         session['impersonation'] = get_clubhouse_from_id(session['club_id'])
         return redirect('/clubhouse')
     return render_template('/admin/clubhouses.html', form=form, select_only = True)
+
+@app.route('/admin/editclubhouse', methods=['GET','POST'])
+@fresh_login_required(access="admin")
+def change_clubhouse_password():
+    if 'edit_club_id' not in session:
+        # this page is not accessible without choosing a clubhouse to edit
+        return redirect('/admin/clubhouses')
+    form = PasswordChangeForm()
+    working_id = session['edit_club_id']
+    club_name = get_clubhouse_from_id(working_id)
+    if request.method == 'POST': 
+        if "cancel_btn" in request.form: # cancel update
+            session.pop('edit_club_id')
+            return redirect('/admin/clubhouses')
+        # first check if password is valid
+        if User(working_id).check_password(request.form['old_password']):
+            if form.validate_on_submit():
+                # TODO: update password field in database
+                # session['edit_club_id'] contains id of clubhouse being edited
+                session.pop('edit_club_id') # remove
+                return("password changed successfully")
+        else:
+            flash(_l("Incorrect password."))
+    return render_template('/admin/change.html', form=form, clubhouse_name=club_name)
 
 @app.route('/admin/addclubhouse', methods=['GET','POST'])
 @fresh_login_required(access="admin")

@@ -7,11 +7,6 @@ from flask_babel import lazy_gettext as _l
 from helpers import binary_search
 from .db import *
 
-# function to validate SelectField
-def require_select(form, field):
-    if field.data is None:
-        raise ValidationError("Please make a selection.")
-
 # login forms
 
 class LoginForm(FlaskForm):
@@ -147,6 +142,13 @@ class ClubhouseAddForm(FlaskForm):
     confirm = PasswordField(_l('Re-enter Password'), validators = [EqualTo('password', message=_l("Passwords do not match."))])
     # TODO: image field for logo upload
     add_btn = SubmitField(_l('Add Clubhouse'))
+    cancel_btn = SubmitField(_l('Cancel'))
+
+class PasswordChangeForm(FlaskForm):
+    old_password = PasswordField(_l('Enter Current Password'))
+    password = PasswordField(_l('New Password'), validators = [DataRequired()])
+    confirm = PasswordField(_l('Re-enter New Password'), validators = [EqualTo('password', message = _l("Passwords do not match."))])
+    submit_btn = SubmitField(_l('Update Password'))
     cancel_btn = SubmitField(_l('Cancel'))
 
 # check-in form and handler, these are up and running

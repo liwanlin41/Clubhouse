@@ -1,7 +1,7 @@
 # initialization file, a bunch of imports and stuff
 
 import os
-from flask import Flask, request
+from flask import Flask, request, session
 from config import Config
 from flask_babel import Babel, _
 from flask_login import LoginManager

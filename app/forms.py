@@ -166,7 +166,7 @@ class CheckinManager:
             self.members_out = []
             for mem_id, first, last in get_clubhouse_members(self.clubhouse):
                 # separate first and last names for sorting purposes
-                self.id_to_name[(mem_id)] = (first, last)
+                self.id_to_name[str(mem_id)] = (first, last)
                 # list is already sorted, initialize members_out here
                 self.members_out.append(self.get_member_display(mem_id))
             self.members_in = []
@@ -194,11 +194,13 @@ class CheckinManager:
         self.check_in_form.check_out_id.choices = self.members_in
 
     # return (id_num, first last) or (id_num, last first)
+    # id_num gets cast to a string
     def get_member_display(self, id_num):
-        first, last = self.id_to_name[id_num]
+        mem_id = str(id_num)
+        first, last = self.id_to_name[mem_id]
         if self.display_last:
-            return (id_num, last + ", " + first)
-        return (id_num, first + " " + last)
+            return (mem_id, last + ", " + first)
+        return (mem_id, first + " " + last)
 
     # check in member id_num
     # move from out list to in list

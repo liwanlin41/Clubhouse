@@ -1,9 +1,10 @@
 # handle all routing things
 
 # not sure what the imports should be but these seem to work?
+import jsonpickle
 from functools import wraps
 from datetime import datetime
-from flask import render_template, flash, redirect, request, url_for
+from flask import render_template, flash, redirect, request, url_for, session
 from app import app
 from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler, AuthenticateForm, ClubhouseViewForm, ClubhouseAddForm
 from flask_babel import lazy_gettext as _l
@@ -37,7 +38,7 @@ def fresh_login_required(access="basic"):
                 flash(_l("Insufficient credentials."))
                 return redirect('/')
             # TODO: determine if login_fresh is needed
-            elif not app.fresh:
+            elif not session['fresh']:
                 return login_manager.needs_refresh()
             return fn(*args, **kwargs)
         return decorated_view
@@ -53,8 +54,8 @@ def home():
 @fresh_login_required()
 def club_home():
     if current_user.access == "admin":
-        if app.club_id:
-            return render_template('/clubhouse/home.html', impersonate=app.impersonation_name)
+        if 'club_id' in session:
+            return render_template('/clubhouse/home.html', impersonate=session['impersonation'])
         else:
             flash(_l("Please choose a clubhouse to impersonate."))
             return redirect('/admin/clubhouses')
@@ -126,15 +127,17 @@ def login():
             user = User(club_id) # generate user object
             if user.check_password(password): # login success
                 login_user(user, remember=form.remember.data)
-                app.fresh = True # manually set fresh session
+                session['fresh'] = True # manually set fresh session
                 # redirect based on user status
                 if user.access == "admin":
                     # reset stored club id and impersonation name
-                    app.club_id = None
-                    app.impersonation_name = None
+                    if 'club_id' in session:
+                        session.pop('club_id')
+                    if 'impersonation' in session:
+                        session.pop('impersonation')
                     return redirect('/admin')
                 # otherwise this user is a clubhouse coordinator
-                app.club_id = club_id # store club id in use
+                session['club_id'] = club_id # store club id in use
                 return redirect('/clubhouse')
         # display that credentials are incorrect
         flash(_l("Username/password combination incorrect."))
@@ -150,7 +153,7 @@ def reauthenticate():
         # read user input to form
         password = request.form['password']
         if current_user.check_password(password): # login success
-            app.fresh = True # session is now fresh
+            session['fresh'] = True # session is now fresh
             # redirect based on user status
             # TODO: redirect to 'next' page
             if current_user.access == "admin":
@@ -182,7 +185,7 @@ def create_member():
 @app.route('/clubhouse/members', methods=['GET','POST'])
 @fresh_login_required()
 def manage_members():
-    club_id = 1 # TODO: get actual clubhouse id
+    club_id = session['club_id'] # TODO: test if this works
     form_manager = MemberManager(club_id)
     if request.method == "POST":
         if "new_member" in request.form: # add new member
@@ -232,9 +235,9 @@ def edit():
                 del update_dict[field]
             flash(edit_member(club_id, mem_id, update_dict))
             return redirect('/clubhouse/members')
-            # already have club and member id
-        # this post request contains the member id and club id
-        return request.form
+#            # already have club and member id
+#        # this post request contains the member id and club id
+#        return request.form
 
 # TODO: remove this route
 @app.route('/clubhouse/viewmembers')
@@ -246,22 +249,29 @@ def view_members():
 @login_required()
 def checkin_handler():
     # manually set session to stale
-    app.fresh = False
+    session['fresh'] = False
     if request.method == "GET":
-        # TODO: this is currently a test clubhouse id
+        # TODO: make sure this works
         # will need to get the actual clubhouse id eventually
-        app.testform = CheckinManager(1) # persistence
+        testform = CheckinManager(session['club_id'])
     if request.method == "POST":
+        # deserialize testform and rebind fields
+        testform = jsonpickle.decode(session['testform'])
+        testform.check_in_form.__init__()
+        testform.setfields()
         # TODO: find a better solution to form resubmission error
         try:
             if "check_in" in request.form and "check_in_id" in request.form: # check-in button clicked
-                app.testform.checkin_member(int(request.form["check_in_id"]))
+                testform.checkin_member(int(request.form["check_in_id"]))
             elif "check_out_id" in request.form: # check-out button
-                app.testform.checkout_member(int(request.form["check_out_id"]))
-            return render_template('/clubhouse/checkin.html',form=app.testform.check_in_form)
+                testform.checkout_member(int(request.form["check_out_id"]))
+            # serialize for persistence
+            session['testform'] = jsonpickle.encode(testform)
+            return render_template('/clubhouse/checkin.html',form=testform.check_in_form)
         except ValueError: # cheating way to handle form resubmission
             return redirect('/clubhouse/checkin')
-    return render_template('/clubhouse/checkin.html',form=app.testform.check_in_form)
+    session['testform'] = jsonpickle.encode(testform) # serialize, persistence
+    return render_template('/clubhouse/checkin.html',form=testform.check_in_form)
 
 
 # rest of app routes for admin home page
@@ -277,8 +287,8 @@ def manage_clubhouses():
         if "clubhouseselect" not in request.form:
             return redirect('/admin/clubhouses')
         # otherwise impersonate clubhouse
-        app.club_id = int(request.form['clubhouseselect'])
-        app.impersonation_name = get_clubhouse_from_id(app.club_id)
+        session['club_id'] = int(request.form['clubhouseselect'])
+        session['impersonation'] = get_clubhouse_from_id(session['club_id'])
         # TODO: implement impersonation
         return redirect('/clubhouse')
     return render_template('/admin/clubhouses.html', form=ClubhouseViewForm())

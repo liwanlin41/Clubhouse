@@ -96,9 +96,8 @@ class MemberInfoHandler:
             self.form.state.render_kw = {'value': state}
         if zipcode:
             self.form.zip_code.render_kw = {'value': zipcode}
-        # TODO: uncomment once implemented and add to form
-#        if country:
-#            self.form.country.render_kw = {'value': country}
+        if country:
+            self.form.country.render_kw = {'value': country}
         if email:
             self.form.member_email.render_kw = {'value': email}
         if phone:

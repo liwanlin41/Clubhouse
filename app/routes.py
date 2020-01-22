@@ -185,7 +185,7 @@ def create_member():
 @app.route('/clubhouse/members', methods=['GET','POST'])
 @fresh_login_required()
 def manage_members():
-    club_id = session['club_id'] # TODO: test if this works
+    club_id = session['club_id'] 
     form_manager = MemberManager(club_id)
     if request.method == "POST":
         if "new_member" in request.form: # add new member
@@ -222,7 +222,6 @@ def edit():
             flash(_l(delete_specific_member(club_id, mem_id))) # delete from db, returns success/error message
             return redirect('/clubhouse/members')
         # otherwise update info
-        # TODO: update member info in database
         if "update_btn" in request.form:
             # convert to mutable dictionary
             update_dict = dict(request.form)
@@ -235,14 +234,6 @@ def edit():
                 del update_dict[field]
             flash(edit_member(club_id, mem_id, update_dict))
             return redirect('/clubhouse/members')
-#            # already have club and member id
-#        # this post request contains the member id and club id
-#        return request.form
-
-# TODO: remove this route
-@app.route('/clubhouse/viewmembers')
-def view_members():
-    return str(get_clubhouse_members(1))
 
 # check-in page, main functionality of website
 @app.route('/clubhouse/checkin', methods=['GET','POST'])
@@ -251,8 +242,7 @@ def checkin_handler():
     # manually set session to stale
     session['fresh'] = False
     if request.method == "GET":
-        # TODO: make sure this works
-        # will need to get the actual clubhouse id eventually
+        # get checkin manager for this specific clubhouse
         testform = CheckinManager(session['club_id'])
     if request.method == "POST":
         # deserialize testform and rebind fields

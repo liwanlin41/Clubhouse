@@ -7,6 +7,34 @@
  * 80/60/40/20: #4478B1, #7290C0, #9BAED2, #C9D2E6
 */
 
+/* overall styling */
+
+@font-face {
+  font-family: Montserrat;
+  src: url(fonts/montserrat/Montserrat-Regular.otf);
+}
+
+@font-face {
+  font-family: Montserrat;
+  src: url(fonts/montserrat/Montserrat-Bold.otf);
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: OpenSans;
+  src: url(fonts/open_sans/OpenSans-Regular.ttf);
+}
+
+@font-face {
+  font-family: OpenSans;
+  src: url(fonts/open_sans/OpenSans-Bold.ttf);
+  font-weight: bold;
+}
+
+body {
+	font-family: Montserrat;
+}
+
 /* navbar */
 nav {
 	color: #2D2769;

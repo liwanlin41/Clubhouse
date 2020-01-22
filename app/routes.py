@@ -176,8 +176,8 @@ def create_member():
             return redirect('/clubhouse/members')
         elif form.validate_on_submit():
         # TODO: add member info to database
-            add_member()
-            return request.form
+            flash(_l(add_member(form)))
+            return redirect('/clubhouse/editmember') # shows the posted data of newly created member
     return render_template('/clubhouse/edit.html', form=form, new_member=True)
 
 @app.route('/clubhouse/members', methods=['GET','POST'])

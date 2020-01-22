@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+<!--view all clubhouses page, allows adding and impersonation-->
+
+{% block title %} {{_("Clubhouses")}} {% endblock %}
+
+{% block navtabs %}
+<li><a href="/admin">{{_("Admin Home")}}</a></li>
+<li><a href="/admin/view">{{_("View Data")}}</a></li>
+{% endblock %}
+
+{% block content %}
+	<h1>{{_("Clubhouses")}}</h1>
+	<form action="" method="post" novalidate>
+		{{form.hidden_tag()}}
+		<div class="select-field-wrapper">
+			{{ form.clubhouseselect.label() }}<br>
+			{{ form.clubhouseselect(size=20) }}<br>
+			{{ form.view() }}<br>
+			{{ form.new_clubhouse() }}
+		</div>
+	</form>
+{% endblock %}
+

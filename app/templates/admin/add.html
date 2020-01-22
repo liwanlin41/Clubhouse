@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-<!-- add/remove or modify clubhouse information -->
+<!-- add clubhouse information -->
 
-{% block title %} {{_("Edit Clubhouses")}} {% endblock %}
+{% block title %} {{_("Add Clubhouse")}} {% endblock %}
 
 {% block navtabs %}
 <li><a href="/admin">{{_("Admin Home")}}</a></li>
@@ -9,13 +9,17 @@
 {% endblock %}
 
 {% block content %}
-<form>
-	{{_("Clubhouse Name")}}<br>
-	<input type="text" name="name"><br>
-	{{_("Address")}}<br>
-	<input type="text" name="address"><br><br>
-	<input type="submit" value="New">
-	<input type="submit" value="Update">
-	<input type="submit" value="Cancel">
+<h1>{{_("Add New Clubhouse")}}</h1>
+<form action="" method="post" novalidate>
+	{{ form.hidden_tag() }}
+	{{ form.full_name.label }}<br>
+	{% for error in form.full_name.errors %}
+	<span style="color: red;">[{{ error }}]</span><br>
+	{% endfor %}
+	{{ form.full_name(size=20) }}<br>
+	{{ form.short_name.label }}<br>
+	{{ form.short_name(size=20) }}<br>
+	{{ form.add_btn() }}<br>
+	{{ form.cancel_btn() }}
 </form>
 {% endblock %}

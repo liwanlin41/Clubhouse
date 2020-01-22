@@ -5,7 +5,7 @@ from functools import wraps
 from datetime import datetime
 from flask import render_template, flash, redirect, request, url_for
 from app import app
-from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler, AuthenticateForm
+from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler, AuthenticateForm, ClubhouseViewForm, ClubhouseAddForm
 from flask_babel import lazy_gettext as _l
 from flask_login import current_user, login_user, logout_user
 from .db import *
@@ -53,8 +53,11 @@ def home():
 @fresh_login_required()
 def club_home():
     if current_user.access == "admin":
-        # TODO: implement this
-        return("please choose a clubhouse to view")
+        if app.club_id:
+            return render_template('/clubhouse/home.html', impersonate=app.impersonation_name)
+        else:
+            flash(_l("Please choose a clubhouse to impersonate."))
+            return redirect('/admin/clubhouses')
     return render_template('/clubhouse/home.html')
 
 @app.route('/admin')
@@ -92,9 +95,11 @@ def admin_view():
     data_format = [(0, _l("Check-ins")), (1, _l("Time of day")), (2, _l("Day of week"))]
     if request.method == 'POST':
         #TODO: actually pull data
+        cur_range = request.form['range']
+        cur_format = request.form['format']
         return "this method has not been implemented"
     if request.method == 'GET':
-        return render_template('/admin/view.html', time_ranges=time_ranges, data_format=data_format)
+        return render_template('/admin/view.html', time_ranges=time_ranges, data_format=data_format, cur_range = time_ranges[0][0], cur_format = data_format[0][0])
 
 # logins and logouts
 
@@ -124,9 +129,14 @@ def login():
                 app.fresh = True # manually set fresh session
                 # redirect based on user status
                 if user.access == "admin":
+                    # reset stored club id and impersonation name
+                    app.club_id = None
+                    app.impersonation_name = None
                     return redirect('/admin')
+                # otherwise this user is a clubhouse coordinator
+                app.club_id = club_id # store club id in use
                 return redirect('/clubhouse')
-        # display that credentials are incorrecrt
+        # display that credentials are incorrect
         flash(_l("Username/password combination incorrect."))
         return redirect('/login')
     return render_template('login.html', form=form, refresh = False)
@@ -150,17 +160,6 @@ def reauthenticate():
         flash(_l("Incorrect password."))
         return redirect('/reauthenticate')
     return render_template('login.html', form=form, refresh = True)
-
-
-# this is no longer needed, one login handles everything
-# same as above, only for admins
-#@app.route('/admin/login', methods=['GET','POST'])
-#def admin_login():
-#    form = LoginForm()
-#    if form.validate_on_submit():
-#        raw_data = request.form
-#        return redirect('/admin')
-#    return render_template('login.html', form=form)
 
 # rest of app routes for clubhouse home page
 
@@ -265,8 +264,34 @@ def checkin_handler():
     return render_template('/clubhouse/checkin.html',form=app.testform.check_in_form)
 
 
-# rest of app routes for admin home page (aka just editclubhouses)
-@app.route('/admin/editclubhouses')
+# rest of app routes for admin home page
+
+# largely copied from clubhouse/members
+@app.route('/admin/clubhouses', methods=['GET','POST'])
+@fresh_login_required(access="admin")
+def manage_clubhouses():
+    if request.method == "POST":
+        if "new_clubhouse" in request.form: # add new clubhouse
+            return redirect('/admin/addclubhouse')
+        # view button pressed but no clubhouse selected
+        if "clubhouseselect" not in request.form:
+            return redirect('/admin/clubhouses')
+        # otherwise impersonate clubhouse
+        app.club_id = int(request.form['clubhouseselect'])
+        app.impersonation_name = get_clubhouse_from_id(app.club_id)
+        # TODO: implement impersonation
+        return redirect('/clubhouse')
+    return render_template('/admin/clubhouses.html', form=ClubhouseViewForm())
+
+
+@app.route('/admin/addclubhouse', methods=['GET','POST'])
 @fresh_login_required(access="admin")
 def admin_clubhouses():
-    return render_template('/admin/add.html')
+    form = ClubhouseAddForm()
+    if request.method == "POST":
+        if "cancel_btn" in request.form: # cancel clubhouse add
+            return redirect('/admin/clubhouses')
+        elif form.validate_on_submit():
+            # TODO: add new clubhouse in database
+            return redirect('/admin/clubhouses')
+    return render_template('/admin/add.html', form=form)

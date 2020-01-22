@@ -7,7 +7,7 @@
 
 {% block navtabs %}
 <li><a href="/admin">{{_("Admin Home")}}</a></li>
-<li><a href="/admin/editclubhouses">{{_("Edit Clubhouses")}}</a></li>
+<li><a href="/admin/clubhouses">{{_("Clubhouses")}}</a></li>
 	<!--
         <div>
                 <a href="/clubhouse/checkin">{{_("Member Check-ins")}}</a>
@@ -21,7 +21,7 @@
                 <!--div class="dropdown"-->
                 <select name="range">
                         {% for x in time_ranges %}
-                        <option value="{{ x[0] }}"{% if loop.first %} SELECTED {% endif %}>{{ x[1] }}</option>
+                        <option value="{{ x[0] }}"{% if x[0] == cur_range %} SELECTED {% endif %}>{{ x[1] }}</option>
                         {% endfor %}
                 </select>
                 <!--/div-->
@@ -30,7 +30,7 @@
                 <!--div class="dropdown"-->
                 <select name="format">
                         {% for x in data_format %}
-                        <option value="{{ x[0] }}"{% if loop.first %} SELECTED {% endif %}>{{ x[1] }}</option>
+                        <option value="{{ x[0] }}"{% if x[0] == cur_format %} SELECTED {% endif %}>{{ x[1] }}</option>
                         {% endfor %}
                 </select>
                 <!--/div-->

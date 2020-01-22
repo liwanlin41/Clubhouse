@@ -23,7 +23,10 @@
 		{% if not current_user.is_anonymous %}
 		<div id="welcome">
 			{% if current_user.access == "admin" %}
-			<h1>{{_("Welcome, Administrator")}}
+			<h1>{{_("Welcome, Administrator")}}</h1>
+			{% if impersonate %}
+			<h3>{{_("You are currently impersonating") + " " + impersonate }}</h3>
+			{% endif %}
 			{% else %}
 			<h1>{{current_user.name}}</h1>
 			{% endif %}

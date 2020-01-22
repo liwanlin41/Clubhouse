@@ -36,7 +36,6 @@ def get_locale():
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.refresh_view = 'reauthenticate'
-app.fresh = True # set session as fresh to avoid errors later
 # TODO: localize messages
 
 # this import needs to come at the end, don't touch; later the other imported files will also be here

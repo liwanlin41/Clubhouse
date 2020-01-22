@@ -7,7 +7,8 @@ from flask_babel import lazy_gettext as _l
 from helpers import binary_search
 from .db import *
 
-# this form doesn't do anything yet
+# login forms
+
 class LoginForm(FlaskForm):
     user = StringField(_l('Username'), validators = [DataRequired()])
     password = PasswordField(_l('Password'), validators = [DataRequired()])
@@ -20,9 +21,9 @@ class AuthenticateForm(FlaskForm):
 
 # form to view and manage clubhouse members
 class MemberViewForm(FlaskForm):
-        memberselect = SelectField(_l("Member List"), choices = [])
-        edit = SubmitField(_l("View/Edit"))
-        new_member = SubmitField(_l("New Member"))
+    memberselect = SelectField(_l("Member List"), choices = [])
+    edit = SubmitField(_l("View/Edit"))
+    new_member = SubmitField(_l("New Member"))
 
 # wrapper class for MemberViewForm
 class MemberManager:
@@ -51,6 +52,7 @@ class MemberAddForm(FlaskForm):
     city = StringField(_l('City'))
     state = StringField(_l('State'))
     zip_code = StringField(_l('Zip/Postal Code'))
+    country = StringField(_l('Country'))
     member_email = StringField(_l('Email'))
     member_phone = StringField(_l('Phone'))
     join_date = DateField(_l('Join Date (y-m-d)'),format="'%Y-%m-%d'")
@@ -94,13 +96,15 @@ class MemberInfoHandler:
             self.form.state.render_kw = {'value': state}
         if zipcode:
             self.form.zip_code.render_kw = {'value': zipcode}
+        # TODO: uncomment once implemented and add to form
+#        if country:
+#            self.form.country.render_kw = {'value': country}
         if email:
             self.form.member_email.render_kw = {'value': email}
         if phone:
             self.form.member_phone.render_kw = {'value': phone}
         if joindate:
-#            self.form.join_date.render_kw = {'value': joindate, 'disabled': 'disabled'}
-            self.form.join_date.render_kw = {'value': joindate}
+            self.form.join_date.render_kw = {'value': joindate, 'disabled': 'disabled'}
         if birthday:
             self.form.birthday.render_kw = {'value': birthday, 'disabled': 'disabled'}
         if school:
@@ -119,6 +123,22 @@ class MemberInfoHandler:
             self.form.guardian_email.render_kw = {'value': guardianemail}
         if guardianphone:
             self.form.guardian_phone.render_kw = {'value': guardianphone}
+
+# forms to view and manage clubhouses
+
+# these are mostly copied from the member view
+class ClubhouseViewForm(FlaskForm):
+    all_clubhouses = get_all_clubhouses()
+    clubhouseselect = SelectField(_l("Clubhouse List"), choices = all_clubhouses)
+    view = SubmitField(_l("View as Clubhouse"))
+    new_clubhouse = SubmitField(_l("New Clubhouse"))
+
+class ClubhouseAddForm(FlaskForm):
+    full_name = StringField(_l('Clubhouse Full Name'), validators = [DataRequired()])
+    short_name = StringField(_l('Clubhouse Short Name (optional)'))
+    # TODO: image field for logo upload
+    add_btn = SubmitField(_l('Add Clubhouse'))
+    cancel_btn = SubmitField(_l('Cancel'))
 
 # check-in form and handler, these are up and running
 class CheckinForm(FlaskForm):
@@ -155,9 +175,8 @@ class CheckinManager:
                 member = self.get_member_display(mem_id)
                 self.members_in.append(member)
                 self.members_out.remove(member)
-            # sort members in, change this later
-            # TODO: sorting from database is still broken
-            self.members_in.sort(key = lambda x: self.id_to_name[x[0]][1] + ", " + self.id_to_name[x[0]][0])
+            # uncomment if sorting is broken
+#            self.members_in.sort(key = lambda x: self.id_to_name[x[0]][1] + ", " + self.id_to_name[x[0]][0])
         if not clubhouse: # testing purposes
             self.members_in = [(123,"manager signed-in 1"), (234,"manager signed-in 2")]
             self.members_out = [(12,"manager signed-out 3"),(23,"manager signed-out 4")]

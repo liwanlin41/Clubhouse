@@ -73,7 +73,7 @@ def query_members():
     pass
 
 # register a new member, starts checked out by default
-def add_member():
+def add_member(club_id, update_dict):
     cursor = get_cursor()
     cursor.execute("""INSERT INTO members (first_name, last_name, clubhouse_id)
                     VALUES ('carolyn', 'mei', 1)""")
@@ -81,14 +81,14 @@ def add_member():
     cursor.close()
 
 # edit a member
-def edit_member(club_id, mem_id, updates_dict):
+def edit_member(club_id, mem_id, update_dict):
     cursor = get_cursor()
-    for key in updates_dict: # key has to match exact vocabulary of table
+    for key in update_dict: # key has to match exact vocabulary of table
         query = """UPDATE members
                    SET %s = %%s
                    WHERE clubhouse_id = %%s
                    AND member_id = %%s""" % key
-        cursor.execute(query, (updates_dict[key], club_id, mem_id))
+        cursor.execute(query, (update_dict[key], club_id, mem_id))
     conn.commit()
     cursor.close()
     return _l("Member updated successfully.") # could be more specific but that requires getting more info

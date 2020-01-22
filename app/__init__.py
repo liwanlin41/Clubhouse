@@ -30,8 +30,6 @@ def get_locale():
 #    return 'es'
     return request.accept_languages.best_match(app.config['LANGUAGES'])
 
-# these things don't work yet, person working on these parts can do whatever necessary
-
 # login setup
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'

@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS members (
   city                TINYTEXT,
   state               TINYTEXT,
   zip_code            TINYTEXT,
+  country             TINYTEXT,
   member_email        TINYTEXT,
   member_phone        TINYTEXT,
   join_date           DATE,

@@ -16,19 +16,23 @@ class User(UserMixin):
     def __init__(self, id_num):
         super()
         # get user information
-        num, username, password_hash = get_user_from_id(id_num)
+        num, username, password_hash, is_admin = get_user_from_id(id_num)
         if username: # valid id
             self.username = username
             self.id = id_num
             self.hash = password_hash
-            # TODO: eventually pull these from database based on id
-            self.access = "clubhouse" 
-            self.name = "Clubhouse" 
-            if username == "admin": # for testing
+            # set user access level
+            if is_admin:
                 self.access = "admin"
                 self.name = "Administrator"
+                # setup impersonation info
+                self.club_id = None
+                self.impersonation = None
+            else:
+                self.access = "clubhouse"
+                self.name = get_clubhouse_from_id(self.id)
+            self.fresh = True # set as fresh session
         else: # I want to see if this ever happens
-            return None
             raise ValueError
 
     def check_password(self, password):

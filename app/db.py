@@ -3,6 +3,7 @@
 from datetime import datetime
 from app import app, conn
 from werkzeug.security import generate_password_hash
+from flask_babel import lazy_gettext as _l
 
 # retrieve cursor for MySQL database defined in env vars
 def get_cursor():
@@ -39,7 +40,7 @@ def get_specific_member(clubhouse_id, member_id, short_form=False):
     if len(member) < 1:
         app.logger.error("error: didn't find anyone with these ids")
     cursor.close()
-#    app.logger.info("get specific member debug: ", member)
+    app.logger.info("get specific member debug: ", member)
     return member[0]
 
 # returns True if the member is currently checked in, False otherwise
@@ -90,7 +91,7 @@ def edit_member(club_id, mem_id, update_dict):
         cursor.execute(query, (update_dict[key], club_id, mem_id))
     conn.commit()
     cursor.close()
-    return "Member updated successfully." # could be more specific but that requires getting more info
+    return _l("Member updated successfully.") # could be more specific but that requires getting more info
 
 # delete a specific member
 def delete_specific_member(club_id, mem_id):
@@ -115,7 +116,7 @@ def delete_specific_member(club_id, mem_id):
 #                        (club_id, mem_id))
     conn.commit()
     cursor.close()
-    return "Member deleted successfully." # could be more specific but that requires getting more info
+    return _l("Member deleted successfully.") # could be more specific but that requires getting more info
 
 # retrieve all check-ins
 def get_all_checkins():
@@ -167,6 +168,20 @@ def add_checkout(member_id, clubhouse_id):
     cursor.close()
     change_member_checkin(member_id, clubhouse_id, False)
 
+### admin side ###
+
+# given id number of clubhouse, get clubhouse name (either short or long)
+def get_clubhouse_from_id(club_id):
+    # TODO: implement
+    if club_id == 1:
+        return "Test Clubhouse"
+
+# analog to get_clubhouse_members, return id,name (either short or long name)
+# ordered alphabetically
+def get_all_clubhouses():
+    # TODO: implement
+    return [(1, "Test Clubhouse")]
+
 # get login information
 # on an attempted login with username username,
 # retrieve the user id from table
@@ -182,10 +197,11 @@ def get_id_from_username(username):
         return None
 
 # given id number of user, retrieve user info or tuple of None
+# return (id, username, password hash, is_admin)
 def get_user_from_id(id_num):
     # for testing
     if id_num == 1:
-        return (1, "hi", generate_password_hash("test"))
+        return (1, "hi", generate_password_hash("test"), False)
     elif id_num == 2:
-        return (2, "admin", generate_password_hash("admin"))
-    return (None, None, None)
+        return (2, "admin", generate_password_hash("admin"), True)
+    return (None, None, None, None)

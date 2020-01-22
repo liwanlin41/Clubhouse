@@ -28,7 +28,7 @@ def login_required(access="basic", impersonate = False):
             # club_id is always in session for a clubhouse account
             if impersonate and 'club_id' not in session: # impersonation not met
                 flash(_l("Please select a clubhouse to impersonate."))
-                return redirect('/admin/clubhouses')
+                return redirect('/admin/clubhouseselect')
             return fn(*args, **kwargs)
         return decorated_view
     return wrapper
@@ -47,7 +47,7 @@ def fresh_login_required(access="basic", impersonate = False):
                 return login_manager.needs_refresh()
             if impersonate and 'club_id' not in session: # same logic as above
                 flash(_l("Please select a clubhouse to impersonate."))
-                return redirect('/admin/clubhouses')
+                return redirect('/admin/clubhouseselect')
             return fn(*args, **kwargs)
         return decorated_view
     return wrapper
@@ -273,18 +273,31 @@ def checkin_handler():
 @app.route('/admin/clubhouses', methods=['GET','POST'])
 @fresh_login_required(access="admin")
 def manage_clubhouses():
+    form = ClubhouseViewForm()
     if request.method == "POST":
         if "new_clubhouse" in request.form: # add new clubhouse
             return redirect('/admin/addclubhouse')
-        # view button pressed but no clubhouse selected
-        if "clubhouseselect" not in request.form:
-            return redirect('/admin/clubhouses')
-        # otherwise impersonate clubhouse
+        if form.validate_on_submit():
+            if "view" in request.form: # impersonate clubhouse
+                session['club_id'] = int(request.form['clubhouseselect'])
+                session['impersonation'] = get_clubhouse_from_id(session['club_id'])
+                return redirect('/clubhouse')
+            # otherwise edit button pressed, edit clubhouse
+            # TODO: implement
+            return "this method has not been implemented"
+    return render_template('/admin/clubhouses.html', form=form)
+
+# page to select clubhouse to impersonate
+# basically the same as above but with fewer things to handle
+@app.route('/admin/clubhouseselect', methods=['GET','POST'])
+@fresh_login_required(access="admin")
+def choose_clubhouse():
+    form = ClubhouseViewForm()
+    if form.validate_on_submit():
         session['club_id'] = int(request.form['clubhouseselect'])
         session['impersonation'] = get_clubhouse_from_id(session['club_id'])
         return redirect('/clubhouse')
-    return render_template('/admin/clubhouses.html', form=ClubhouseViewForm())
-
+    return render_template('/admin/clubhouses.html', form=form, select_only = True)
 
 @app.route('/admin/addclubhouse', methods=['GET','POST'])
 @fresh_login_required(access="admin")

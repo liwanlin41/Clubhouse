@@ -2,10 +2,15 @@
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, HiddenField, DateField
-from wtforms.validators import DataRequired, Optional
+from wtforms.validators import DataRequired, Optional, EqualTo, Length
 from flask_babel import lazy_gettext as _l
 from helpers import binary_search
 from .db import *
+
+# function to validate SelectField
+def require_select(form, field):
+    if field.data is None:
+        raise ValidationError("Please make a selection.")
 
 # login forms
 
@@ -128,13 +133,18 @@ class MemberInfoHandler:
 # these are mostly copied from the member view
 class ClubhouseViewForm(FlaskForm):
     all_clubhouses = get_all_clubhouses()
-    clubhouseselect = SelectField(_l("Clubhouse List"), choices = all_clubhouses)
+    clubhouseselect = SelectField(_l("Clubhouse List"), choices = all_clubhouses, validators = [DataRequired(_l("Please select a clubhouse."))], coerce = int)
     view = SubmitField(_l("View as Clubhouse"))
+    edit = SubmitField(_l("Edit Clubhouse"))
     new_clubhouse = SubmitField(_l("New Clubhouse"))
 
 class ClubhouseAddForm(FlaskForm):
     full_name = StringField(_l('Clubhouse Full Name'), validators = [DataRequired()])
     short_name = StringField(_l('Clubhouse Short Name (optional)'))
+    # TODO: set username and password lengths
+    username = StringField(_l('Username'), validators = [Length(min=2)])
+    password = PasswordField(_l('Password'), validators = [DataRequired()])
+    confirm = PasswordField(_l('Re-enter Password'), validators = [EqualTo('password', message=_l("Passwords do not match."))])
     # TODO: image field for logo upload
     add_btn = SubmitField(_l('Add Clubhouse'))
     cancel_btn = SubmitField(_l('Cancel'))

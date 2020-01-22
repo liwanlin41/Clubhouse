@@ -4,9 +4,12 @@
 {% block title %} {{ _("Home")}} {% endblock %}
 
 {% block navtabs %}
+{% if not current_user.is_anonymous %}
+{% if current_user.access == "admin" %}
 <li><a href="/admin">{{_("Administrator Home")}}</a></li>
+{% endif %}
 <li><a href="/clubhouse">{{_("Coordinator Home")}}</a></li>
-{% if current_user.is_anonymous %}
+{% else %}
 <li><a href="/login">{{_("Login")}}</a></li>
 {% endif %}
 {% endblock %}

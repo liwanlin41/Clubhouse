@@ -15,8 +15,14 @@
 		<div class="select-field-wrapper">
 			{{ form.clubhouseselect.label() }}<br>
 			{{ form.clubhouseselect(size=20) }}<br>
+			{% for error in form.clubhouseselect.errors %}
+			<span style="color: red;">{{ error }}</span><br>
+			{% endfor %}
 			{{ form.view() }}<br>
+			{% if not select_only %}
+			{{ form.edit() }}<br>
 			{{ form.new_clubhouse() }}
+			{% endif %}
 		</div>
 	</form>
 {% endblock %}

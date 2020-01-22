@@ -24,9 +24,7 @@
 		<div id="welcome">
 			{% if current_user.access == "admin" %}
 			<h1>{{_("Welcome, Administrator")}}</h1>
-			{% if impersonate %}
-			<h3>{{_("You are currently impersonating") + " " + impersonate }}</h3>
-			{% endif %}
+			{% block welcome_message %}{% endblock %}
 			{% else %}
 			<h1>{{current_user.name}}</h1>
 			{% endif %}

@@ -2,7 +2,7 @@
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, HiddenField, DateField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Optional
 from flask_babel import lazy_gettext as _l
 from helpers import binary_search
 from .db import *
@@ -55,8 +55,8 @@ class MemberAddForm(FlaskForm):
     country = StringField(_l('Country'))
     member_email = StringField(_l('Email'))
     member_phone = StringField(_l('Phone'))
-    join_date = DateField(_l('Join Date (y-m-d)'),format="'%Y-%m-%d'")
-    birthday = DateField(_l('Birthday (y-m-d)'), format="'%Y-%m-%d'")
+    join_date = DateField(_l('Join Date (y-m-d)'),format='%Y-%m-%d', validators = [Optional()])
+    birthday = DateField(_l('Birthday (y-m-d)'), format='%Y-%m-%d', validators = [Optional()])
     school = StringField(_l('School'))
     gender = StringField(_l('Gender'))
     race_ethnicity = StringField(_l('Race and Ethnicity'))

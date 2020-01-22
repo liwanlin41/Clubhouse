@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "clubhouse/club_base.html" %}
 <!--form for adding/editing members-->
 
 {% block title %} {{_("Clubhouse Members")}} {% endblock %}
@@ -10,7 +10,11 @@
 {% endblock %}
 
 {% block content %}
+	{% if new_member %}
+	<h1>{{_("Add Member")}}</h1>
+	{% else %}
 	<h1>{{_("Edit Member")}}</h1>
+	{% endif %}
 	<a href='/clubhouse/members'>All members</a><br>
 	{% if new_member %}
 	<form action="" method="post" novalidate>
@@ -47,8 +51,14 @@
 		{{ form.member_phone.label }}<br>
 		{{ form.member_phone(size=20) }}<br>
 		{{ form.join_date.label }}<br>
+		{% for error in form.join_date.errors %}
+                <span style="color: red;">[{{ error }}]</span><br>
+                {% endfor %}
 		{{ form.join_date(size=20) }}<br>
 		{{ form.birthday.label }}<br>
+		{% for error in form.birthday.errors %}
+                <span style="color: red;">[{{ error }}]</span><br>
+                {% endfor %}
 		{{ form.birthday(size=20) }}<br>
 		{{ form.school.label }}<br>
 		{{ form.school(size=20) }}<br>

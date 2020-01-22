@@ -14,7 +14,8 @@ from .plot import *
 from .models import *
 
 # function for two-level authentication
-def login_required(access="basic"):
+# also handles clubhouse impersonation
+def login_required(access="basic", impersonate = False):
     def wrapper(fn):
         @wraps(fn)
         def decorated_view(*args, **kwargs):
@@ -24,22 +25,29 @@ def login_required(access="basic"):
             if current_user.access != access and access != "basic":
                 flash(_l("Insufficient credentials."))
                 return redirect('/')
+            # club_id is always in session for a clubhouse account
+            if impersonate and 'club_id' not in session: # impersonation not met
+                flash(_l("Please select a clubhouse to impersonate."))
+                return redirect('/admin/clubhouses')
             return fn(*args, **kwargs)
         return decorated_view
     return wrapper
 
-def fresh_login_required(access="basic"):
+def fresh_login_required(access="basic", impersonate = False):
     def wrapper(fn):
         @wraps(fn)
         def decorated_view(*args, **kwargs):
             if not current_user.is_authenticated:
                 return login_manager.unauthorized()
-            elif current_user.access != access and access !="basic":
+            if current_user.access != access and access !="basic":
                 flash(_l("Insufficient credentials."))
                 return redirect('/')
             # TODO: determine if login_fresh is needed
-            elif not session['fresh']:
+            if not session['fresh']:
                 return login_manager.needs_refresh()
+            if impersonate and 'club_id' not in session: # same logic as above
+                flash(_l("Please select a clubhouse to impersonate."))
+                return redirect('/admin/clubhouses')
             return fn(*args, **kwargs)
         return decorated_view
     return wrapper
@@ -51,14 +59,8 @@ def home():
     return render_template('index.html')
 
 @app.route('/clubhouse')
-@fresh_login_required()
+@fresh_login_required(impersonate = True)
 def club_home():
-    if current_user.access == "admin":
-        if 'club_id' in session:
-            return render_template('/clubhouse/home.html', impersonate=session['impersonation'])
-        else:
-            flash(_l("Please choose a clubhouse to impersonate."))
-            return redirect('/admin/clubhouses')
     return render_template('/clubhouse/home.html')
 
 @app.route('/admin')
@@ -68,7 +70,7 @@ def admin_home():
 
 # view data pages
 @app.route('/clubhouse/view', methods=['GET','POST'])
-@fresh_login_required()
+@fresh_login_required(impersonate = True)
 def coord_view():
     # the time_range will return the number of days to be considered
     # [1, 7, 30, 365] corresponding to day, week, month, year
@@ -168,7 +170,7 @@ def reauthenticate():
 
 # add new member
 @app.route('/clubhouse/addmember', methods=['GET','POST']) # might need a method -- better to make html name informative if different?
-@fresh_login_required()
+@fresh_login_required(impersonate = True)
 def create_member():
     form = MemberAddForm()
     # default join date
@@ -177,13 +179,14 @@ def create_member():
         if "cancel_btn" in request.form:
             return redirect('/clubhouse/members')
         elif form.validate_on_submit():
-        # TODO: add member info to database
-            flash(_l(add_member(form)))
+        # TODO: add member info to database, parse form and remove empty fields
+            flash(_l(add_member(session['club_id'],form)))
+            # TODO: editmember does not currently support GET requests
             return redirect('/clubhouse/editmember') # shows the posted data of newly created member
     return render_template('/clubhouse/edit.html', form=form, new_member=True)
 
 @app.route('/clubhouse/members', methods=['GET','POST'])
-@fresh_login_required()
+@fresh_login_required(impersonate = True)
 def manage_members():
     club_id = session['club_id'] 
     form_manager = MemberManager(club_id)
@@ -202,7 +205,7 @@ def manage_members():
     return render_template('/clubhouse/membership.html', form=form_manager.member_form)
 
 @app.route('/clubhouse/editmember',methods=['POST'])
-@fresh_login_required()
+@fresh_login_required(impersonate = True)
 def edit():
     if request.method == 'POST':
         if "cancel_btn" in request.form: # cancel the updates
@@ -237,7 +240,7 @@ def edit():
 
 # check-in page, main functionality of website
 @app.route('/clubhouse/checkin', methods=['GET','POST'])
-@login_required()
+@login_required(impersonate = True)
 def checkin_handler():
     # manually set session to stale
     session['fresh'] = False
@@ -279,7 +282,6 @@ def manage_clubhouses():
         # otherwise impersonate clubhouse
         session['club_id'] = int(request.form['clubhouseselect'])
         session['impersonation'] = get_clubhouse_from_id(session['club_id'])
-        # TODO: implement impersonation
         return redirect('/clubhouse')
     return render_template('/admin/clubhouses.html', form=ClubhouseViewForm())
 

@@ -88,7 +88,11 @@ def edit_member(club_id, mem_id, update_dict):
                    SET %s = %%s
                    WHERE clubhouse_id = %%s
                    AND member_id = %%s""" % key
-        cursor.execute(query, (update_dict[key], club_id, mem_id))
+        try:
+            cursor.execute(query, (update_dict[key], club_id, mem_id))
+        except:
+            app.logger.error(key + " : " + update_dict[key])
+
     conn.commit()
     cursor.close()
     return _l("Member updated successfully.") # could be more specific but that requires getting more info

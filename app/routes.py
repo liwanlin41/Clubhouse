@@ -230,6 +230,9 @@ def edit_member_info():
             update_dict = dict(request.form)
             # remove all empty/unnecessary fields
             to_remove = ["csrf_token","mem_id","club_id","update_btn"]
+            for key in update_dict:
+                if type(update_dict[key]) == list and len(update_dict[key]) == 1:
+                    update_dict[key] = update_dict[key][0]
             for field in update_dict:
                 if len(update_dict[field]) == 0:
                     to_remove.append(field)

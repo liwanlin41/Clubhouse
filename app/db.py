@@ -186,6 +186,7 @@ def get_all_clubhouses():
     # TODO: implement
     return [(1, "Test Clubhouse")]
 
+# TODO: implement these
 # get login information
 # on an attempted login with username username,
 # retrieve the user id from table
@@ -209,3 +210,8 @@ def get_user_from_id(id_num):
     elif id_num == 2:
         return (2, "admin", generate_password_hash("admin"), True)
     return (None, None, None, None)
+
+#TODO: implement
+# set password of user id_num to password
+def update_password(id_num, password):
+    print((id_num, password))

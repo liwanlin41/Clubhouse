@@ -25,13 +25,9 @@ class User(UserMixin):
             if is_admin:
                 self.access = "admin"
                 self.name = "Administrator"
-                # setup impersonation info
-                self.club_id = None
-                self.impersonation = None
             else:
                 self.access = "clubhouse"
                 self.name = get_clubhouse_from_id(self.id)
-            self.fresh = True # set as fresh session
         else: # I want to see if this ever happens
             raise ValueError
 

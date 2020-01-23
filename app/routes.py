@@ -320,10 +320,10 @@ def change_clubhouse_password():
         # first check if password is valid
         if User(working_id).check_password(request.form['old_password']):
             if form.validate_on_submit():
-                # TODO: update password field in database
-                # session['edit_club_id'] contains id of clubhouse being edited
-                session.pop('edit_club_id') # remove
-                return("password changed successfully")
+                update_password(working_id, request.form['password'])
+                session.pop('edit_club_id') # remove club_id from memory
+                flash(_l("Password changed successfully."))
+                return redirect('/admin/clubhouses')
         else:
             flash(_l("Incorrect password."))
     return render_template('/admin/change.html', form=form, clubhouse_name=club_name)

@@ -54,6 +54,13 @@ def fresh_login_required(access="basic", impersonate = False):
 
 ### homepages
 
+# test page
+# TODO: remove
+@app.route('/test')
+def auto_test():
+    testform = CheckinManager(1)
+    return render_template('test.html',form=testform.check_in_form)
+
 @app.route('/')
 def home():
     return render_template('index.html')

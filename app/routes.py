@@ -227,7 +227,7 @@ def edit_member_info():
         # otherwise update info
         if "update_btn" in request.form:
             # convert to mutable dictionary
-            update_dict = dict(request.form)
+            update_dict = dict(request.form) # WARNING: values are in list form
             # remove all empty/unnecessary fields
             to_remove = ["csrf_token","mem_id","club_id","update_btn"]
             for key in update_dict:

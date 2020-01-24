@@ -35,6 +35,11 @@ body {
 	font-family: Montserrat;
 }
 
+#content {
+	width: 98%;
+	margin: 0 auto;
+}
+
 /* navbar */
 nav {
 	color: #2D2769;
@@ -97,14 +102,28 @@ a:visited {
 
 /* submit button on forms */
 input[type=submit]{
-	background-color: #9BAED2;
-	color: #2D2769;
+	background-color: #716998;
+	color: #E0EBF1;
+	border-radius: 5px;
+	margin: 1pt 0pt;
 }
 
 /* check-in and check-out div wrappers */
 .select-field-wrapper {
 	display: table-cell;
 	padding: 10px;
+	margin: 0 auto;
+	width: 50%;
+}
+
+select {
+	min-width: 33%;
+	margin: 0 auto;
+}
+
+/* different style for dropdown select */
+.dropdown {
+	min-width: 0;
 }
 
 h1, h2, h3 {

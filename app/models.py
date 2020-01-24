@@ -29,7 +29,7 @@ class User(UserMixin):
             else:
                 self.access = "clubhouse"
                 self.name = get_clubhouse_from_id(self.id)
-        else: # I want to see if this ever happens
+        else: # this shouldn't happen
             raise ValueError
 
     def check_password(self, password):

@@ -257,9 +257,9 @@ def get_id_from_username(username):
 def get_user_from_id(id_num):
     # for testing
     if id_num == 1:
-        return (1, "hi", generate_password_hash("test"), False, False)
+        return (1, "hi", generate_password_hash("test"), False, True)
     elif id_num == 2:
-        return (2, "admin", generate_password_hash("admin"), True, True)
+        return (2, "admin", generate_password_hash("admin"), True, False)
     return (None, None, None, None, None)
 
 # HELPER FUNCTION: also removes empty fields

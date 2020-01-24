@@ -202,6 +202,40 @@ def get_all_clubhouses():
     # TODO: implement
     return [(1, "Test Clubhouse")]
 
+# adds and creates a clubhouse, similar to add_member
+def add_clubhouse(update_dict):
+    cursor = get_cursor()
+    # create clubhouse row
+    cursor.execute("""INSERT INTO clubhouses (clubhouse_id, short_name, full_name)
+                        VALUES (DEFAULT, 'NULL', 'temp_full')""") # may error if other values have no default
+
+    # get this id that we just created 
+    cursor.execute("""SELECT LAST_INSERT_ID() FROM clubhouses""")
+    club_ids = cursor.fetchall()
+    if len(club_ids) != 1:
+        app.logger.error("There should only be one ID.")
+    new_club_id = club_ids[0]
+
+    # create login row
+    cursor.execute("""INSERT INTO logins (user_id, username, password, clubhouse_id, is_admin)
+                        VALUES (DEFAULT, %s, %s, %s, DEFAULT)""",
+                        (update_dict['username'], update_dict['password'], new_club_id))
+
+    # update each field separately
+    for key in update_dict:
+        # logins already done
+        if key == "username" or key == "password":
+            pass
+        # update clubhouse fields
+        else:
+            query = """UPDATE clubhouses
+                        SET %s = %%s
+                        WHERE clubhouse_id = %%s""" % key
+            cursor.execute(query, (update_dict[key], new_club_id))
+    conn.commit()
+    cursor.close()
+    return _l("Clubhouse added successfully.") # again could be more specific
+
 # TODO: implement these
 # get login information
 # on an attempted login with username username,

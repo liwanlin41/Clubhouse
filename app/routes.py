@@ -344,5 +344,7 @@ def admin_clubhouses():
             return redirect('/admin/clubhouses')
         elif form.validate_on_submit():
             # TODO: add new clubhouse in database
+            flash(_l(add_clubhouse(convert_form_to_dict(request.form, ["add_btn", "confirm", "csrf_token"]))))
+            # TODO: make editclubhouses have a GET method so can show individual clubhouse first, like add_member?
             return redirect('/admin/clubhouses')
     return render_template('/admin/add.html', form=form)

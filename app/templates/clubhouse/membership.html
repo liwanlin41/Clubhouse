@@ -1,6 +1,10 @@
 {% extends "clubhouse/club_base.html" %}
 <!--view all members page, links to member editing-->
 
+{% block scripts %}
+<script type="text/javascript" src ="{{ url_for('static',filename='search.js')}}"></script>
+{% endblock %}
+
 {% block title %} {{_("Clubhouse Members")}} {% endblock %}
 
 {% block navtabs %}
@@ -11,8 +15,9 @@
 
 {% block content %}
 	<h1>{{_("Clubhouse Members")}}</h1>
-	<form action="" method="post" novalidate>
+	<form id="chooseform" action="" method="post" novalidate>
 		{{form.hidden_tag()}}
+		<input id="search_name" type="text" placeholder="Enter member name"/>
 		<div class="select-field-wrapper">
 		{{ form.memberselect.label }}<br>
 		{{ form.memberselect(size=20) }} <br>
@@ -21,3 +26,15 @@
 		</div>
 	</form>
 {% endblock %}
+
+{% block endscripts %}
+<script>
+var cur_form = document.getElementById("chooseform");
+var cur_fields = ['memberselect'];
+function wrapper() {
+	return search(this.value, cur_form, cur_fields);
+}
+document.getElementById("search_name").addEventListener("input",wrapper);
+</script>
+{% endblock %}
+

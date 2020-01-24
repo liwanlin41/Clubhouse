@@ -1,6 +1,10 @@
 {% extends "clubhouse/club_base.html" %}
 <!-- check in page for members -->
 
+{% block scripts %}
+<script type="text/javascript" src ="{{ url_for('static',filename='search.js')}}"></script>
+{% endblock %}
+
 {% block title %} {{_("Check-in")}} {% endblock %}
 
 {% block navtabs %}
@@ -10,7 +14,7 @@
 {% block content %}
 <h1>{{ _("Clubhouse Check-in")}}</h1>
 <div style="display: table-row">
-<form id="check" method="POST" autocomplete="off" novalidate>
+<form id="chooseform" method="POST" autocomplete="off" novalidate>
 	{{form.hidden_tag()}}
 	<input id="search_name" type="text" placeholder="Enter your name"/>
 	<div class="select-field-wrapper">
@@ -25,69 +29,15 @@
 	</div>
 </form>
 </div>
+{% endblock %}
 
-<script type="text/javascript">
-var form = document.getElementById("check");
-function search() {
-	var cur_inp = this.value.toLowerCase();
-	var n = cur_inp.length;
-
-	var members_out = form.elements['check_in_id'].options;
-	for (i = 0; i<members_out.length; i++) {
-		var name = members_out[i].text;
-		/* display only the matching strings */
-		if (name.substring(0,n).toLowerCase() == cur_inp)
-		{
-			members_out[i].style.display = "block";
-		} else {
-			members_out[i].style.display = "none";
-		}
-	}
-
-	/* repeat for members currently checked in */
-	var members_in = form.elements['check_out_id'].options;
-	for (i = 0; i<members_in.length; i++) {
-		var name = members_in[i].text;
-		if (name.substring(0,n).toLowerCase() == cur_inp)
-		{
-			members_in[i].style.display = "block";
-		} else {
-			members_in[i].style.display = "none";
-		}
-	}
+{% block endscripts %}
+<script>
+var cur_form = document.getElementById("chooseform");
+var cur_fields = ["check_in_id","check_out_id"];
+function wrapper() {
+	return search(this.value, cur_form, cur_fields);
 }
-
-
-	/* stupidly parse member options because I don't know a better way 
-		to convert this to a list */
-//	var all_members_out = form.elements['check_in_id'].options;
-//	var members_out = [];
-//	for (i = 0; i<all_members_out.length; i++) {
-//		var cur_option = [all_members_out[i].value, all_members_out[i].text];
-//		/* add members whose names start with cur_inp to the list */
-//		if (cur_option[1].substring(0,n).toLowerCase() == cur_inp.toLowerCase()) {
-//			members_out.push(cur_option);
-//		}
-//	}
-//	/* members_out now contains all checked out members we want to display */
-//
-//	/* repeat for members to be checked out */
-//	var all_members_in = form.elements['check_out_id'].options;
-//	var members_in = [];
-//	for (i = 0; i<all_members_in.length; i++) {
-//		var cur_option = [all_members_in[i].value, all_members_in[i].text];
-//		if (cur_option[1].substring(0,n).toLowerCase() == cur_inp.toLowerCase()) {
-//			members_in.push(cur_option);
-//		}
-//	}
-//
-//        for (i = 0; i<all_members_out.length; i++) {
-//                var cur_option = [all_members_out[i].value, all_members_out[i].text];
-//                if (cur_option[1].substring(0,n).toLowerCase() != cur_inp.toLowerCase()) {
-//			all_members_out[i].style.display = "none";
-//		} else {
-//			all_members_out[i].style.display = "block";
-//        }
-document.getElementById("search_name").addEventListener("input", search);
+document.getElementById("search_name").addEventListener("input", wrapper);
 </script>
 {% endblock %}

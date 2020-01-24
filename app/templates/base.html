@@ -3,6 +3,8 @@
     <head>
         {% block head %}
         <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}" />
+	{% block scripts %}
+	{% endblock %}
         <title>{% block title %}{% endblock %} - The Clubhouse Network</title>
         {% endblock %}
     </head>
@@ -48,4 +50,6 @@
             </footer>
         </article>
     </body>
+    {% block endscripts %}
+    {% endblock %}
 </html>

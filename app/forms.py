@@ -21,19 +21,19 @@ class AuthenticateForm(FlaskForm):
 
 # form to view and manage clubhouse members
 class MemberViewForm(FlaskForm):
-    memberselect = SelectField(_l("Member List"), choices = [])
+    memberselect = SelectField(_l("Member List"), choices = [], validators = [DataRequired(_l("Please select a member."))], coerce = int)
     edit = SubmitField(_l("View/Edit"))
     new_member = SubmitField(_l("New Member"))
 
 # wrapper class for MemberViewForm
 class MemberManager:
-    def __init__(self, clubhouse=None):
+    def __init__(self, clubhouse=None, display_last=False):
         if clubhouse:
             self.clubhouse=clubhouse
         else:
             self.clubhouse = 1 # for testing only
         self.member_form = MemberViewForm()
-        self.display_last = False # TODO: pull from clubhouse
+        self.display_last = display_last
         # get all members in desired format
         if self.display_last:
             self.memberlist = [(num, last + ", " + first) for num, first, last in get_clubhouse_members(self.clubhouse)]
@@ -44,8 +44,6 @@ class MemberManager:
 
 # form and handler for adding or editing member
 class MemberAddForm(FlaskForm):
-    mem_id = HiddenField() # store member id for post request when editing member
-    club_id = HiddenField() # store club id
     first_name = StringField(_l('First Name'), validators = [DataRequired()])
     last_name = StringField(_l('Last Name'), validators = [DataRequired()])
     street_address = StringField(_l('Street Address'))
@@ -80,10 +78,6 @@ class MemberInfoHandler:
         mem_id, firstname, lastname, address, city, state, zipcode, country, email, phone, joindate, birthday, school, gender, race, guardianfirstname, guardianlastname, guardianrelationship, guardianemail, guardianphone, club_id, checked_in_now = data
         # someone please find a better way to do this
         # load default data, disable some fields
-        self.mem_id = mem_id
-        self.club_id = club_id
-        self.form.mem_id.render_kw = {'value': mem_id}
-        self.form.club_id.render_kw = {'value': club_id}
         if firstname:
             self.form.first_name.render_kw = {'value': firstname, 'disabled': 'disabled'}
         if lastname:
@@ -141,6 +135,7 @@ class ClubhouseAddForm(FlaskForm):
     password = PasswordField(_l('Password'), validators = [DataRequired()])
     confirm = PasswordField(_l('Re-enter Password'), validators = [EqualTo('password', message=_l("Passwords do not match."))])
     # TODO: image field for logo upload
+    name_display = BooleanField(_l('Display members by last name first'))
     add_btn = SubmitField(_l('Add Clubhouse'))
     cancel_btn = SubmitField(_l('Cancel'))
 
@@ -148,6 +143,8 @@ class PasswordChangeForm(FlaskForm):
     old_password = PasswordField(_l('Enter Current Password'))
     password = PasswordField(_l('New Password'), validators = [DataRequired()])
     confirm = PasswordField(_l('Re-enter New Password'), validators = [EqualTo('password', message = _l("Passwords do not match."))])
+    # TODO: set default based on current status of clubhouse
+    name_display = BooleanField(_l('Display members by last name first'))
     submit_btn = SubmitField(_l('Update Password'))
     cancel_btn = SubmitField(_l('Cancel'))
 
@@ -166,12 +163,11 @@ class CheckinForm(FlaskForm):
 
 # handle all check in/out operations
 class CheckinManager:
-    def __init__(self, clubhouse=None):
+    def __init__(self, clubhouse=None, display_last=False):
         self.check_in_form = CheckinForm()
         if clubhouse:
             self.clubhouse = clubhouse # clubhouse is id number
-            # TODO: actually set this field
-            self.display_last = False # whether to display last name first
+            self.display_last = display_last # whether to display last name first
             # get list of all members and key by member id
             self.id_to_name = {}
             self.members_out = []

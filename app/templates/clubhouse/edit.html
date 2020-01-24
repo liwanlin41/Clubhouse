@@ -24,8 +24,6 @@
 	<!--have the editmember page handle the edits-->
 	{% endif %}
 		{{form.hidden_tag()}}
-		{{ form.mem_id() }}
-		{{ form.club_id() }}
 		{{ form.first_name.label }}<br>
 		{% for error in form.first_name.errors %}
 		<span style="color: red;">[{{ error }}]</span><br>

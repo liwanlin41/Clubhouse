@@ -54,6 +54,13 @@ def fresh_login_required(access="basic", impersonate = False):
 
 ### homepages
 
+# test page
+# TODO: remove
+@app.route('/test')
+def auto_test():
+    testform = CheckinManager(1, False)
+    return render_template('test.html',form=testform.check_in_form)
+
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -130,6 +137,8 @@ def login():
             if user.check_password(password): # login success
                 login_user(user, remember=form.remember.data)
                 session['fresh'] = True # manually set fresh session
+                # determine whether this user prefers last, first or first last
+                session['last_name_first'] = user.last_name_first
                 # redirect based on user status
                 if user.access == "admin":
                     # reset stored club id and impersonation name
@@ -179,38 +188,37 @@ def create_member():
         if "cancel_btn" in request.form:
             return redirect('/clubhouse/members')
         elif form.validate_on_submit():
-            flash(_l(add_member(session['club_id'], convert_form_to_dict(request.form, ["csrf_token","mem_id","club_id", "add_btn"]))))
-            # TODO: editmember does not currently support GET requests
-            return redirect('/clubhouse/members') # shows the posted data of newly created member
+            flash(_l(add_member(session['club_id'], convert_form_to_dict(request.form, ["csrf_token", "add_btn"]))))
+            # TODO: pull new member id for this GET request to work
+            return redirect('/clubhouse/editmember') # shows the posted data of newly created member
     return render_template('/clubhouse/edit.html', form=form, new_member=True)
 
 @app.route('/clubhouse/members', methods=['GET','POST'])
 @fresh_login_required(impersonate = True)
 def manage_members():
     club_id = session['club_id'] 
-    form_manager = MemberManager(club_id)
+    form_manager = MemberManager(club_id, session['last_name_first'])
     if request.method == "POST":
         if "new_member" in request.form: # add new member
             return redirect('/clubhouse/addmember')
-        # view or edit button pressed but no member selected
-        if "memberselect" not in request.form: # this is invalid
-            return redirect('/clubhouse/members')
-        member_id = int(request.form['memberselect'])
-        if "edit" in request.form: # everything else should fall here
-            handle = MemberInfoHandler(get_specific_member(club_id, member_id))
-            # go to form to edit member information
-            # NOTE: there may be errors with form resubmission and back button handling here
-            return render_template('/clubhouse/edit.html',form=handle.form, new_member=False)
+        if form_manager.member_form.validate_on_submit(): # confirm member selected for edit
+            # temporarily store member id
+            session['edit_member_id'] = int(request.form['memberselect'])
+            return redirect('/clubhouse/editmember')
     return render_template('/clubhouse/membership.html', form=form_manager.member_form)
 
-@app.route('/clubhouse/editmember',methods=['POST'])
+@app.route('/clubhouse/editmember',methods=['GET','POST'])
 @fresh_login_required(impersonate = True)
 def edit_member_info():
+    if 'edit_member_id' not in session:
+        # this page is not accessible without choosing a member to edit
+        return redirect('/clubhouse/members')
+    club_id = session['club_id']
+    mem_id = session['edit_member_id']
     if request.method == 'POST':
         if "cancel_btn" in request.form: # cancel the updates
+            session.pop('edit_member_id') 
             return redirect('/clubhouse/members')
-        club_id = int(request.form['club_id'])
-        mem_id = int(request.form['mem_id'])
         if "delete_btn1" in request.form: # first click of delete button
             # go to confirmation step
             flash(_l("WARNING: Attempting to delete member - this action is irreversible. Click 'Remove Member' again to confirm."))
@@ -222,11 +230,19 @@ def edit_member_info():
             return render_template('/clubhouse/edit.html',form=handle.form, new_member=False, second_del = True)
         if "delete_btn2" in request.form: # delete member from active members
             flash(_l(delete_specific_member(club_id, mem_id))) # delete from db, returns success/error message
+            session.pop('edit_member_id') # clear stored id
             return redirect('/clubhouse/members')
         # otherwise update info
         if "update_btn" in request.form:
             flash(edit_member(club_id, mem_id, convert_form_to_dict(request.form, ["csrf_token","mem_id","club_id","update_btn"])))
-            return redirect('/clubhouse/members')
+            # clear stored info
+            session.pop('edit_member_id')
+            return redirect('/clubhouse/editmember')
+    # handle get portion - viewing info
+    if request.method == "GET":
+        # pull stored information
+        handle = MemberInfoHandler(get_specific_member(club_id, mem_id))
+        return render_template('/clubhouse/edit.html', form=handle.form, new_member=False)
 
 # check-in page, main functionality of website
 @app.route('/clubhouse/checkin', methods=['GET','POST'])
@@ -236,7 +252,7 @@ def checkin_handler():
     session['fresh'] = False
     if request.method == "GET":
         # get checkin manager for this specific clubhouse
-        testform = CheckinManager(session['club_id'])
+        testform = CheckinManager(session['club_id'], session['last_name_first'])
     if request.method == "POST":
         # deserialize testform and rebind fields
         testform = jsonpickle.decode(session['testform'])
@@ -307,10 +323,10 @@ def change_clubhouse_password():
         # first check if password is valid
         if User(working_id).check_password(request.form['old_password']):
             if form.validate_on_submit():
-                # TODO: update password field in database
-                # session['edit_club_id'] contains id of clubhouse being edited
-                session.pop('edit_club_id') # remove
-                return("password changed successfully")
+                update_password(working_id, request.form['password'])
+                session.pop('edit_club_id') # remove club_id from memory
+                flash(_l("Password changed successfully."))
+                return redirect('/admin/clubhouses')
         else:
             flash(_l("Incorrect password."))
     return render_template('/admin/change.html', form=form, clubhouse_name=club_name)

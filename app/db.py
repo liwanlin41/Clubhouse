@@ -202,6 +202,7 @@ def get_all_clubhouses():
     # TODO: implement
     return [(1, "Test Clubhouse")]
 
+# TODO: implement these
 # get login information
 # on an attempted login with username username,
 # retrieve the user id from table
@@ -217,14 +218,15 @@ def get_id_from_username(username):
         return None
 
 # given id number of user, retrieve user info or tuple of None
-# return (id, username, password hash, is_admin)
+# if last_name is True, members will be listed by last name
+# return (id, username, password hash, is_admin, last_name)
 def get_user_from_id(id_num):
     # for testing
     if id_num == 1:
-        return (1, "hi", generate_password_hash("test"), False)
+        return (1, "hi", generate_password_hash("test"), False, False)
     elif id_num == 2:
-        return (2, "admin", generate_password_hash("admin"), True)
-    return (None, None, None, None)
+        return (2, "admin", generate_password_hash("admin"), True, True)
+    return (None, None, None, None, None)
 
 # HELPER FUNCTION: also removes empty fields
 def convert_form_to_dict(form, to_remove):
@@ -240,3 +242,8 @@ def convert_form_to_dict(form, to_remove):
     for field in to_remove:
         del update_dict[field]
     return update_dict
+
+#TODO: implement
+# set password of user id_num to password
+def update_password(id_num, password):
+    print((id_num, password))

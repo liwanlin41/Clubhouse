@@ -107,7 +107,7 @@ def admin_view():
         #TODO: actually pull data
         cur_range = request.form['range']
         cur_format = request.form['format']
-        return "this method has not been implemented"
+        return render_template('/admin/view.html', time_ranges=time_ranges, data_format=data_format, plot=plot(cur_range, cur_format), cur_range=int(cur_range), cur_format=int(cur_format))
     if request.method == 'GET':
         return render_template('/admin/view.html', time_ranges=time_ranges, data_format=data_format, cur_range = time_ranges[0][0], cur_format = data_format[0][0])
 

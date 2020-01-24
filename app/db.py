@@ -190,7 +190,7 @@ def add_checkout(member_id, clubhouse_id):
 
 ### admin side ###
 
-# given id number of clubhouse, get clubhouse name (either short or long)
+# given id number of clubhouse, get clubhouse name (either 'short_name' or 'full_name')
 def get_clubhouse_from_id(club_id):
     # TODO: implement
     if club_id == 1:
@@ -198,9 +198,15 @@ def get_clubhouse_from_id(club_id):
 
 # analog to get_clubhouse_members, return id,name (either short or long name)
 # ordered alphabetically
-def get_all_clubhouses():
-    # TODO: implement
-    return [(1, "Test Clubhouse")]
+def get_all_clubhouses(name):
+    cursor = get_cursor()
+    cursor.execute("""SELECT clubhouse_id, %s FROM clubhouses
+                        ORDER BY %s""",
+                        (name, name))
+    rows = cursor.fetchall()
+    conn.commit()
+    cursor.close()
+    return rows
 
 # adds and creates a clubhouse, similar to add_member
 def add_clubhouse(update_dict):

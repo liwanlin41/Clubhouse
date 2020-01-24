@@ -19,11 +19,15 @@ To run language compilation:
 ```
 pybabel extract -F babel.cfg -k _l -o messages.pot --input-dirs=.
 ```
-to get started, then
+to get started, then **for a new language**
 ```
 pybabel init -i messages.pot -d app/translations -l (insert language abbrev here)
 ```
-which creates a language directory in the translations folder. This file (the .po one) can then be edited and translations inputted.
+which **creates** a language directory in the translations folder. To update the translation file **for a preexisting language**, run
+```
+pybabel update -i messages.pot -d app/translations -l (insert language abbrev here)
+```
+This file (the .po one) can then be edited and translations inputted.
 Finally to compile,
 ```
 pybabel compile -d app/translations

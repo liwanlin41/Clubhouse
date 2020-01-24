@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-01-12 14:19-0500\n"
+"POT-Creation-Date: 2020-01-24 14:03-0500\n"
 "PO-Revision-Date: 2020-01-12 14:19-0500\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -18,196 +18,439 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: app/forms.py:9
+#: app/__init__.py:38
+msgid "Please log in to access this page."
+msgstr "login needed"
+
+#: app/__init__.py:39
+msgid "Please reauthenticate to view this page."
+msgstr "reauthentication needed"
+
+#: app/db.py:100
+msgid "Member added successfully."
+msgstr "successful add"
+
+#: app/db.py:114
+msgid "Member updated successfully."
+msgstr "successful update"
+
+#: app/db.py:139
+msgid "Member deleted successfully."
+msgstr "successful delete"
+
+#: app/forms.py:13 app/forms.py:134
 msgid "Username"
 msgstr "translation for username here"
 
-#: app/forms.py:10
+#: app/forms.py:14 app/forms.py:135
 msgid "Password"
 msgstr "translation for password here"
 
-#: app/forms.py:11
+#: app/forms.py:15
 msgid "Remember Me"
-msgstr ""
+msgstr "remember translation"
 
-#: app/forms.py:12 app/templates/login.html:4
+#: app/forms.py:16 app/forms.py:20 app/templates/login.html:6
 msgid "Sign In"
-msgstr ""
+msgstr "sign in translation"
 
-#: app/forms.py:15 app/templates/clubhouse/view.html:35
+#: app/forms.py:19
+msgid "Re-enter your password"
+msgstr "password re-enter"
+
+#: app/forms.py:24 app/forms.py:157
+msgid "Member List"
+msgstr "member list"
+
+#: app/forms.py:24
+msgid "Please select a member."
+msgstr "select member"
+
+#: app/forms.py:25
+msgid "View/Edit"
+msgstr "view or edit"
+
+#: app/forms.py:26
+msgid "New Member"
+msgstr "member new"
+
+#: app/forms.py:47
+msgid "First Name"
+msgstr "name first"
+
+#: app/forms.py:48
+msgid "Last Name"
+msgstr "name last"
+
+#: app/forms.py:49
+msgid "Street Address"
+msgstr "address"
+
+#: app/forms.py:50
+msgid "City"
+msgstr "city"
+
+#: app/forms.py:51
+msgid "State"
+msgstr "province"
+
+#: app/forms.py:52
+msgid "Zip/Postal Code"
+msgstr "zipcode"
+
+#: app/forms.py:53
+msgid "Country"
+msgstr "country"
+
+#: app/forms.py:54
+msgid "Email"
+msgstr "gmail"
+
+#: app/forms.py:55
+msgid "Phone"
+msgstr "iphone"
+
+#: app/forms.py:56
+msgid "Join Date (y-m-d)"
+msgstr "join"
+
+#: app/forms.py:57
+msgid "Birthday (y-m-d)"
+msgstr "birthdate"
+
+#: app/forms.py:58
+msgid "School"
+msgstr "institution of learning"
+
+#: app/forms.py:59
+msgid "Gender"
+msgstr "gender"
+
+#: app/forms.py:60
+msgid "Race and Ethnicity"
+msgstr "cultural identity"
+
+#: app/forms.py:61
+msgid "Guardian First Name"
+msgstr "guardian name"
+
+#: app/forms.py:62
+msgid "Guardian Last Name"
+msgstr "guardian name 2"
+
+#: app/forms.py:63
+msgid "Guardian Relationship to Member"
+msgstr "relation"
+
+#: app/forms.py:64
+msgid "Guardian Email"
+msgstr "guard mail"
+
+#: app/forms.py:65
+msgid "Guardian Phone"
+msgstr "guard phone"
+
+#: app/forms.py:66 app/templates/clubhouse/edit.html:14
+msgid "Add Member"
+msgstr "add a member"
+
+#: app/forms.py:67
+msgid "Update Member Info"
+msgstr "update a member"
+
+#: app/forms.py:68 app/forms.py:140 app/forms.py:148
+msgid "Cancel"
+msgstr "bad decision"
+
+#: app/forms.py:70 app/forms.py:71
+msgid "Remove Member"
+msgstr "delete this person"
+
+#: app/forms.py:125
+msgid "Clubhouse List"
+msgstr "list of clubhouse"
+
+#: app/forms.py:125
+msgid "Please select a clubhouse."
+msgstr "you need to make a choice"
+
+#: app/forms.py:126
+msgid "View as Clubhouse"
+msgstr "impersonate"
+
+#: app/forms.py:127 app/templates/admin/change.html:4
+msgid "Edit Clubhouse"
+msgstr "change the password"
+
+#: app/forms.py:128
+msgid "New Clubhouse"
+msgstr "create a new clubhouse"
+
+#: app/forms.py:131
+msgid "Clubhouse Full Name"
+msgstr "the entire long name of this clubhouse"
+
+#: app/forms.py:132
+msgid "Clubhouse Short Name (optional)"
+msgstr "not the long name"
+
+#: app/forms.py:136
+msgid "Re-enter Password"
+msgstr "put in your password again"
+
+#: app/forms.py:136 app/forms.py:145
+msgid "Passwords do not match."
+msgstr "you have a bad memory"
+
+#: app/forms.py:138 app/forms.py:146
+msgid "Display members by last name first"
+msgstr "last name comes first"
+
+#: app/forms.py:139 app/templates/admin/add.html:4
+msgid "Add Clubhouse"
+msgstr "add a new house"
+
+#: app/forms.py:143
+msgid "Enter Current Password"
+msgstr "put in your password now"
+
+#: app/forms.py:144
+msgid "New Password"
+msgstr "change your password"
+
+#: app/forms.py:145
+msgid "Re-enter New Password"
+msgstr "confirm your password"
+
+#: app/forms.py:147
+msgid "Update Password"
+msgstr "password change"
+
+#: app/forms.py:159
+msgid "Members Currently in Clubhouse"
+msgstr "people checked in"
+
+#: app/forms.py:160
+msgid "Check In"
+msgstr "add"
+
+#: app/forms.py:161
+msgid "Check Out"
+msgstr "remove"
+
+#: app/routes.py:27 app/routes.py:44
+msgid "Insufficient credentials."
+msgstr "hacking failed"
+
+#: app/routes.py:31 app/routes.py:49
+msgid "Please select a clubhouse to impersonate."
+msgstr "make a selection"
+
+#: app/routes.py:77 app/routes.py:97 app/templates/clubhouse/view.html:39
 msgid "Last 24 hours"
-msgstr ""
+msgstr "24 hours"
 
-#: app/forms.py:15 app/templates/clubhouse/view.html:36
+#: app/routes.py:77 app/routes.py:97 app/templates/clubhouse/view.html:40
 msgid "Last 7 days"
 msgstr "168 hours"
 
-#: app/forms.py:15 app/templates/clubhouse/view.html:37
+#: app/routes.py:77 app/routes.py:97 app/templates/clubhouse/view.html:41
 msgid "Last month"
 msgstr "a long time"
 
-#: app/forms.py:15 app/templates/clubhouse/view.html:38
+#: app/routes.py:77 app/routes.py:97 app/templates/clubhouse/view.html:42
 msgid "Last year"
 msgstr "a very long time"
 
-#: app/forms.py:16 app/templates/clubhouse/view.html:23
-#: app/templates/clubhouse/view.html:33
-msgid "Time range"
-msgstr "Time?"
+#: app/routes.py:80 app/routes.py:98
+msgid "Check-ins"
+msgstr "these are the checkins"
+
+#: app/routes.py:80 app/routes.py:98 app/templates/clubhouse/view.html:49
+msgid "Time of day"
+msgstr "hour of rotation"
+
+#: app/routes.py:80 app/routes.py:98 app/templates/clubhouse/view.html:50
+msgid "Day of week"
+msgstr "rotation of week"
+
+#: app/routes.py:146
+msgid "Username/password combination incorrect."
+msgstr "password bad"
+
+#: app/routes.py:170 app/routes.py:335
+msgid "Incorrect password."
+msgstr "password also bad"
+
+#: app/routes.py:220
+msgid ""
+"WARNING: Attempting to delete member - this action is irreversible. Click"
+" 'Remove Member' again to confirm."
+msgstr "you're doing something illegal"
+
+#: app/routes.py:332
+msgid "Password changed successfully."
+msgstr "it worked"
+
+#: app/templates/base.html:22
+msgid "Logout"
+msgstr "go away"
+
+#: app/templates/base.html:30
+msgid "Welcome, Administrator"
+msgstr "hello"
 
 #: app/templates/index.html:4
 msgid "Home"
-msgstr ""
+msgstr "this is home"
 
-#: app/templates/index.html:7
-msgid "Welcome! Sign in to your respective account."
-msgstr ""
+#: app/templates/index.html:9
+msgid "Administrator Home"
+msgstr "admin home"
 
-#: app/templates/index.html:10
-msgid "where sign in to administrators go"
-msgstr ""
+#: app/templates/index.html:11
+msgid "Coordinator Home"
+msgstr "coord home"
 
-#: app/templates/index.html:14
-msgid "where sign in to coordinators go"
-msgstr ""
+#: app/templates/index.html:13 app/templates/login.html:3
+msgid "Login"
+msgstr "login button"
+
+#: app/templates/index.html:19
+msgid "Welcome! Please sign in."
+msgstr "go login"
+
+#: app/templates/index.html:23
+msgid "Admin or Clubhouse Sign-In"
+msgstr "go login?"
+
+#: app/templates/admin/add.html:7 app/templates/admin/change.html:7
+#: app/templates/admin/clubhouses.html:11 app/templates/admin/view.html:9
+msgid "Admin Home"
+msgstr "administrator home"
+
+#: app/templates/admin/add.html:8 app/templates/admin/change.html:9
+#: app/templates/admin/home.html:8 app/templates/clubhouse/home.html:16
+msgid "View Clubhouse Data"
+msgstr "club data"
 
 #: app/templates/admin/add.html:12
-msgid "Clubhouse Name"
-msgstr ""
+msgid "Add New Clubhouse Account"
+msgstr "add account"
 
-#: app/templates/admin/add.html:14
-msgid "Address"
-msgstr ""
+#: app/templates/admin/change.html:8 app/templates/admin/clubhouses.html:8
+#: app/templates/admin/clubhouses.html:16 app/templates/admin/home.html:7
+#: app/templates/admin/view.html:10
+msgid "Clubhouses"
+msgstr "clubs"
 
-#: app/templates/admin/home.html:7
-msgid "Admin of TCN"
-msgstr ""
+#: app/templates/admin/change.html:13
+msgid "Change Password"
+msgstr "password change"
 
-#: app/templates/admin/home.html:11
-msgid "Edit Clubhouses"
-msgstr ""
+#: app/templates/admin/clubhouses.html:12 app/templates/clubhouse/edit.html:9
+#: app/templates/clubhouse/home.html:9
+#: app/templates/clubhouse/membership.html:13
+msgid "View Data"
+msgstr "view your data"
 
-#: app/templates/admin/home.html:15 app/templates/clubhouse/home.html:22
-msgid "View Clubhouse Data"
-msgstr ""
+#: app/templates/admin/clubhouses.html:19
+msgid "Clubhouse name"
+msgstr "name of this house"
 
-#: app/templates/clubhouse/add.html:7
+#: app/templates/admin/home.html:4
+msgid "Clubhouse Administrator"
+msgstr "what is a clubhouse administrator"
+
+#: app/templates/admin/home.html:13
+msgid "Select Clubhouse"
+msgstr "choose a club"
+
+#: app/templates/admin/home.html:14
+msgid "View Overall Data"
+msgstr "look at all data"
+
+#: app/templates/admin/view.html:6
+msgid "Global Clubhouse Check-ins"
+msgstr "all checkins"
+
+#: app/templates/admin/view.html:13
+msgid "Member Check-ins"
+msgstr "some checkins"
+
+#: app/templates/admin/view.html:20 app/templates/clubhouse/view.html:15
+#: app/templates/clubhouse/view.html:37
+msgid "Time range"
+msgstr "Time?"
+
+#: app/templates/admin/view.html:29 app/templates/clubhouse/view.html:24
+msgid "Data format"
+msgstr "what is the format"
+
+#: app/templates/clubhouse/checkin.html:8
+msgid "Check-in"
+msgstr "checkin this person"
+
+#: app/templates/clubhouse/checkin.html:11 app/templates/clubhouse/edit.html:7
+#: app/templates/clubhouse/membership.html:11
+#: app/templates/clubhouse/view.html:7
+msgid "Clubhouse Home"
+msgstr "club homepage"
+
+#: app/templates/clubhouse/checkin.html:15
+msgid "Clubhouse Check-in"
+msgstr "club checkin"
+
+#: app/templates/clubhouse/checkin.html:19
+msgid "Enter your name"
+msgstr "your name goes here"
+
+#: app/templates/clubhouse/club_base.html:5
+msgid "You are currently impersonating"
+msgstr "you are being"
+
+#: app/templates/clubhouse/club_base.html:6
+msgid "Change"
+msgstr "different"
+
+#: app/templates/clubhouse/edit.html:4
+#: app/templates/clubhouse/membership.html:8
+#: app/templates/clubhouse/membership.html:17
+msgid "Clubhouse Members"
+msgstr "list of people"
+
+#: app/templates/clubhouse/edit.html:8 app/templates/clubhouse/home.html:7
+#: app/templates/clubhouse/membership.html:12
+#: app/templates/clubhouse/view.html:8
+msgid "Member Check-in"
+msgstr "person checkin"
+
+#: app/templates/clubhouse/edit.html:16
 msgid "Edit Member"
-msgstr ""
+msgstr "modify person"
 
-#: app/templates/clubhouse/add.html:12
-msgid "First Name (required)"
-msgstr ""
-
-#: app/templates/clubhouse/add.html:14
-msgid "Last Name (required)"
-msgstr ""
-
-#: app/templates/clubhouse/add.html:16
-msgid "Street Address"
-msgstr ""
-
-#: app/templates/clubhouse/add.html:18
-msgid "City"
-msgstr ""
-
-#: app/templates/clubhouse/add.html:20
-msgid "State"
-msgstr ""
-
-#: app/templates/clubhouse/add.html:22
-msgid "Zip/Postal Code"
-msgstr ""
-
-#: app/templates/clubhouse/add.html:24
-msgid "Email"
-msgstr ""
-
-#: app/templates/clubhouse/add.html:26
-msgid "Phone"
-msgstr ""
-
-#: app/templates/clubhouse/add.html:28
-msgid "Join Date"
-msgstr ""
-
-#: app/templates/clubhouse/add.html:30
-msgid "Birthday"
-msgstr ""
-
-#: app/templates/clubhouse/add.html:32
-msgid "School"
-msgstr ""
-
-#: app/templates/clubhouse/add.html:34
-msgid "Gender"
-msgstr ""
-
-#: app/templates/clubhouse/add.html:36
-msgid "Race and Ethnicity"
-msgstr ""
-
-#: app/templates/clubhouse/add.html:38
-msgid "Guardian First Name"
-msgstr ""
-
-#: app/templates/clubhouse/add.html:40
-msgid "Guardian Last Name"
-msgstr ""
-
-#: app/templates/clubhouse/add.html:42
-msgid "Guardian Relationship to Member"
-msgstr ""
-
-#: app/templates/clubhouse/add.html:44
-msgid "Guardian Email"
-msgstr ""
-
-#: app/templates/clubhouse/add.html:46
-msgid "Guardian Phone"
-msgstr ""
+#: app/templates/clubhouse/edit.html:18
+msgid "All members"
+msgstr "people all"
 
 #: app/templates/clubhouse/home.html:4
 msgid "Clubhouse Coordinator"
-msgstr ""
+msgstr "coord"
 
-#: app/templates/clubhouse/home.html:7
-msgid "Check-in"
-msgstr ""
-
-#: app/templates/clubhouse/home.html:8
-msgid "Add Student"
-msgstr ""
-
-#: app/templates/clubhouse/home.html:9
-msgid "View Data"
-msgstr ""
-
-#: app/templates/clubhouse/home.html:14 app/templates/clubhouse/view.html:11
+#: app/templates/clubhouse/home.html:8 app/templates/clubhouse/home.html:15
+#: app/templates/clubhouse/view.html:9
 msgid "Edit Members"
-msgstr ""
+msgstr "edit persons"
 
-#: app/templates/clubhouse/home.html:18 app/templates/clubhouse/view.html:15
-msgid "Member Check-ins"
-msgstr ""
+#: app/templates/clubhouse/home.html:14
+msgid "Member Check-Ins"
+msgstr "person checkin"
 
 #: app/templates/clubhouse/view.html:4
 msgid "Clubhouse Check-ins"
-msgstr ""
+msgstr "institution checkin"
 
-#: app/templates/clubhouse/view.html:8
-msgid "Clubhouse Home"
-msgstr ""
-
-#: app/templates/clubhouse/view.html:43
+#: app/templates/clubhouse/view.html:47
 msgid "Data options"
-msgstr ""
-
-#: app/templates/clubhouse/view.html:45
-msgid "Time of day"
-msgstr ""
-
-#: app/templates/clubhouse/view.html:46
-msgid "Day of week"
-msgstr ""
+msgstr "options"
 

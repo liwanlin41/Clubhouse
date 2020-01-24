@@ -9,6 +9,7 @@ from app import app
 from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler, AuthenticateForm, ClubhouseViewForm, ClubhouseAddForm, PasswordChangeForm
 from flask_babel import lazy_gettext as _l
 from flask_login import current_user, login_user, logout_user
+from werkzeug.urls import url_parse
 from .db import *
 from .plot import *
 from .models import *
@@ -156,12 +157,16 @@ def reauthenticate():
         password = request.form['password']
         if current_user.check_password(password): # login success
             session['fresh'] = True # session is now fresh
-            # redirect based on user status
-            # TODO: redirect to 'next' page
-            if current_user.access == "admin":
-                return redirect('/admin')
-            return redirect('/clubhouse')
-        # display that credentials are incorrecrt
+            # determine next page
+            next_page = request.args.get('next')
+            if not next_page or url_parse(next_page).netloc != '':
+                # redirect based on user status
+                if current_user.access == "admin":
+                    next_page = '/admin'
+                else:
+                    next_page = '/clubhouse'
+            return redirect(next_page)
+        # display that credentials are incorrect
         flash(_l("Incorrect password."))
         return redirect('/reauthenticate')
     return render_template('login.html', form=form, refresh = True)

@@ -18,22 +18,18 @@
 
 <form action="" method="post">
                 <label>{{_("Time range")}}</label>
-                <!--div class="dropdown"-->
-                <select name="range">
+                <select class="dropdown" name="range">
                         {% for x in time_ranges %}
                         <option value="{{ x[0] }}"{% if x[0] == cur_range %} SELECTED {% endif %}>{{ x[1] }}</option>
                         {% endfor %}
                 </select>
-                <!--/div-->
         <br>
                 <label>{{_("Data format")}}</label>
-                <!--div class="dropdown"-->
-                <select name="format">
+                <select class="dropdown" name="format">
                         {% for x in data_format %}
                         <option value="{{ x[0] }}"{% if x[0] == cur_format %} SELECTED {% endif %}>{{ x[1] }}</option>
                         {% endfor %}
                 </select>
-                <!--/div-->
         <br>
         <input type="submit" value="Fetch data">
 </form>

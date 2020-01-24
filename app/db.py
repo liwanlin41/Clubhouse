@@ -210,10 +210,8 @@ def get_clubhouse_from_id(club_id, name="short_name"):
 # ordered alphabetically
 def get_all_clubhouses(name="short_name"):
     cursor = get_cursor()
-    cursor.execute("""SELECT clubhouse_id, short_name FROM clubhouses ORDER BY short_name""")
-#    cursor.execute("""SELECT clubhouse_id, %s FROM clubhouses
-#                        ORDER BY %s""",
-#                        (name, name))
+    cursor.execute("""SELECT clubhouse_id, %s FROM clubhouses
+                        ORDER BY %s""" % (name, name))
     rows = cursor.fetchall()
     conn.commit()
     cursor.close()

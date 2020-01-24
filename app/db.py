@@ -226,6 +226,7 @@ def get_user_from_id(id_num):
         return (2, "admin", generate_password_hash("admin"), True)
     return (None, None, None, None)
 
+# HELPER FUNCTION: also removes empty fields
 def convert_form_to_dict(form, to_remove):
     # convert to mutable dictionary
     update_dict = dict(form) # WARNING: values are in list form

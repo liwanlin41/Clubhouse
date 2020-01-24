@@ -130,10 +130,6 @@ def delete_specific_member(club_id, mem_id):
                       AND clubhouse_id = %s
                       AND checkout_datetime IS NULL""",
                       (current_time, mem_id, club_id))
-#    cursor.execute("""DELETE FROM checkins
-#                        WHERE clubhouse_id = %s
-#                        AND member_id = %s""",
-#                        (club_id, mem_id))
     conn.commit()
     cursor.close()
     return _l("Member deleted successfully.") # could be more specific but that requires getting more info
@@ -196,18 +192,28 @@ def add_checkout(member_id, clubhouse_id):
 ### admin side ###
 
 # given id number of clubhouse, get clubhouse name (either 'short_name' or 'full_name')
-def get_clubhouse_from_id(club_id):
-    # TODO: implement
-    if club_id == 1:
-        return "Test Clubhouse"
+# mostly copied from get_specific_member
+def get_clubhouse_from_id(club_id, name="short_name"):
+    cursor = get_cursor()
+    query = """SELECT %s FROM clubhouses WHERE clubhouse_id = %%s""" % name
+    cursor.execute(query, (club_id,))
+    club_name = cursor.fetchall()
+    conn.commit()
+    cursor.close()
+    if len(club_name) > 1:
+        app.logger.error("error: found more than two clubhouses with these ids")
+    elif len(club_name) < 1:
+        app.logger.error("error: didn't find any clubhouse with this id")
+    return club_name[0][0]
 
 # analog to get_clubhouse_members, return id,name (either short or long name)
 # ordered alphabetically
-def get_all_clubhouses(name):
+def get_all_clubhouses(name="short_name"):
     cursor = get_cursor()
-    cursor.execute("""SELECT clubhouse_id, %s FROM clubhouses
-                        ORDER BY %s""",
-                        (name, name))
+    cursor.execute("""SELECT clubhouse_id, short_name FROM clubhouses ORDER BY short_name""")
+#    cursor.execute("""SELECT clubhouse_id, %s FROM clubhouses
+#                        ORDER BY %s""",
+#                        (name, name))
     rows = cursor.fetchall()
     conn.commit()
     cursor.close()

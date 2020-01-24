@@ -235,6 +235,8 @@ def add_clubhouse(update_dict):
     cursor.execute("""INSERT INTO logins (user_id, username, password, clubhouse_id, is_admin)
                         VALUES (DEFAULT, %s, %s, %s, DEFAULT)""",
                         (update_dict['username'], update_dict['password'], new_club_id))
+    # TODO: eventually switch to the bottom which stores the password hash instead of password
+#                        (update_dict['username'], generate_password_hash(update_dict['password']), new_club_id))
 
     # update each field separately
     for key in update_dict:
@@ -251,31 +253,79 @@ def add_clubhouse(update_dict):
     cursor.close()
     return _l("Clubhouse added successfully.") # again could be more specific
 
-# TODO: implement these
 # get login information
 # on an attempted login with username username,
 # retrieve the user id from table
-# return id or None if username is invalid
-# can we give the admin a special id that doesn't clash with clubhouses?
+# return user id or None if username is invalid
 def get_id_from_username(username):
-    # for testing
-    if username == "hi":
-        return 1
-    elif username == "admin":
-        return 2
-    else:
+    cursor = get_cursor()
+    cursor.execute("""SELECT user_id FROM logins
+                    WHERE username = %s""", (username,))
+    users = cursor.fetchall()
+    cursor.close()
+    if len(users) == 0: # no such user
         return None
+    if len(users) > 1:
+        # TODO: force unique usernames
+        app.logger.error("Multiple users with this username")
+    else:
+        return users[0][0]
+
+# given either the username or the id of a clubhouse account
+# return club id for that account
+# TODO: implement
+def get_club_id_from_user(user_id = None, username = None):
+    if user_id:
+        cursor = get_cursor()
+        cursor.execute("""SELECT clubhouse_id FROM logins
+                    WHERE user_id = %s""", (user_id,))
+        club_ids = cursor.fetchall()
+        cursor.close()
+        if len(club_ids) != 1:
+            app.logger.error("There should be exactly one clubhouse with this user id")
+        else:
+            return club_ids[0][0]
+    elif username: # get from username
+        if username == "hi":
+            return 1
+        elif username == "admin":
+            return 2
+        else:
+            return None
+
+# given id of clubhouse, get the corresponding user id
+def get_user_id_from_club(club_id):
+    cursor = get_cursor()
+    cursor.execute("""SELECT user_id FROM logins
+                    WHERE clubhouse_id = %s""", (club_id,))
+    user_ids = cursor.fetchall()
+    cursor.close()
+    if len(user_ids) != 1:
+        app.logger.error("Only one clubhouse should have this id.")
+    else:
+        return user_ids[0][0]
 
 # given id number of user, retrieve user info or tuple of None
 # if last_name is True, members will be listed by last name
-# return (id, username, password hash, is_admin, last_name)
+# return (id, username, password hash, club_id, is_admin, last_name)
+# here id is the user login id
 def get_user_from_id(id_num):
+    cursor = get_cursor()
+    cursor.execute("""SELECT * FROM logins
+                    WHERE user_id = %s""", (id_num,))
+    users = cursor.fetchall()
+    if len(users) != 1:
+        app.logger.error("There should be exactly one user with this user id.")
+    else:
+        # TODO: add last_name field and password hash so this is just a return
+        u_id, username, password, club_id, is_admin = users[0]
+        return (u_id, username, generate_password_hash(password), club_id, is_admin, False)
     # for testing
-    if id_num == 1:
-        return (1, "hi", generate_password_hash("test"), False, True)
-    elif id_num == 2:
-        return (2, "admin", generate_password_hash("admin"), True, False)
-    return (None, None, None, None, None)
+#    if id_num == 1:
+#        return (1, "hi", generate_password_hash("test"), False, True)
+#    elif id_num == 2:
+#        return (2, "admin", generate_password_hash("admin"), True, False)
+    return (None, None, None, None, None, None)
 
 # HELPER FUNCTION: also removes empty fields
 def convert_form_to_dict(form, to_remove):
@@ -295,5 +345,6 @@ def convert_form_to_dict(form, to_remove):
 #TODO: implement
 # set password of user id_num to password
 # update last_name field to last_name
+# id_num is user id
 def update_password(id_num, password, last_name):
     print((id_num, password, last_name))

@@ -123,9 +123,9 @@ def login():
         # read user input to form
         username = request.form['user']
         password = request.form['password']
-        club_id = get_id_from_username(username)
-        if club_id: # valid user
-            user = User(club_id) # generate user object
+        u_id = get_id_from_username(username)
+        if u_id: # valid user
+            user = User(u_id) # generate user object
             if user.check_password(password): # login success
                 login_user(user, remember=form.remember.data)
                 session['fresh'] = True # manually set fresh session
@@ -140,7 +140,7 @@ def login():
                         session.pop('impersonation')
                     return redirect('/admin')
                 # otherwise this user is a clubhouse coordinator
-                session['club_id'] = club_id # store club id in use
+                session['club_id'] = get_club_id_from_user(user_id=u_id) # store club id in use
                 return redirect('/clubhouse')
         # display that credentials are incorrect
         flash(_l("Username/password combination incorrect."))
@@ -282,13 +282,12 @@ def manage_clubhouses():
         if form.validate_on_submit():
             if "view" in request.form: # impersonate clubhouse
                 session['club_id'] = int(request.form['clubhouseselect'])
-                session['impersonation'] = get_clubhouse_from_id(session['club_id'])
+                session['impersonation'] = get_clubhouse_from_id(session['club_id'], "full_name")
                 return redirect('/clubhouse')
             # otherwise edit button pressed, edit clubhouse
             # get and save id of clubhouse being edited
             session['edit_club_id'] = int(request.form['clubhouseselect'])
             return redirect('/admin/editclubhouse')
-#            return render_template('/admin/change.html', form=PasswordChangeForm(), clubhouse_name = get_clubhouse_from_id(club_id))
     return render_template('/admin/clubhouses.html', form=form)
 
 # page to select clubhouse to impersonate
@@ -299,7 +298,7 @@ def choose_clubhouse():
     form = ClubhouseViewForm()
     if form.validate_on_submit():
         session['club_id'] = int(request.form['clubhouseselect'])
-        session['impersonation'] = get_clubhouse_from_id(session['club_id'])
+        session['impersonation'] = get_clubhouse_from_id(session['club_id'], "full_name")
         return redirect('/clubhouse')
     return render_template('/admin/clubhouses.html', form=form, select_only = True)
 
@@ -308,12 +307,13 @@ def choose_clubhouse():
 def change_clubhouse_password():
     if 'edit_club_id' not in session:
         # make this the admin password change page
-        working_id = current_user.id
+        working_id = current_user.id # login id
         club_name = None
         display_last = session['last_name_first']
     else:
-        working_id = session['edit_club_id']
-        club_name = get_clubhouse_from_id(working_id)
+        # retrieve login id
+        working_id = get_user_id_from_club(session['edit_club_id'])
+        club_name = get_clubhouse_from_id(session['edit_club_id'])
         display_last = get_user_from_id(working_id)[-1] # clubhouse customization
     form = PasswordChangeForm()
     if request.method == 'POST': 

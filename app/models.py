@@ -16,7 +16,7 @@ class User(UserMixin):
     def __init__(self, id_num):
         super()
         # get user information
-        num, username, password_hash, is_admin, last_name = get_user_from_id(id_num)
+        num, username, password_hash, club_id, is_admin, last_name = get_user_from_id(id_num)
         if username: # valid id
             self.username = username
             self.id = id_num
@@ -28,7 +28,7 @@ class User(UserMixin):
                 self.name = "Administrator"
             else:
                 self.access = "clubhouse"
-                self.name = get_clubhouse_from_id(self.id)
+                self.name = get_clubhouse_from_id(club_id)
         else: # this shouldn't happen
             raise ValueError
 

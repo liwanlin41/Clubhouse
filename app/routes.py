@@ -179,10 +179,9 @@ def create_member():
         if "cancel_btn" in request.form:
             return redirect('/clubhouse/members')
         elif form.validate_on_submit():
-        # TODO: add member info to database, parse form and remove empty fields
-            flash(_l(add_member(session['club_id'],form)))
+            flash(_l(add_member(session['club_id'], convert_form_to_dict(request.form, ["csrf_token","mem_id","club_id", "add_btn"]))))
             # TODO: editmember does not currently support GET requests
-            return redirect('/clubhouse/editmember') # shows the posted data of newly created member
+            return redirect('/clubhouse/members') # shows the posted data of newly created member
     return render_template('/clubhouse/edit.html', form=form, new_member=True)
 
 @app.route('/clubhouse/members', methods=['GET','POST'])
@@ -226,19 +225,7 @@ def edit_member_info():
             return redirect('/clubhouse/members')
         # otherwise update info
         if "update_btn" in request.form:
-            # convert to mutable dictionary
-            update_dict = dict(request.form) # WARNING: values are in list form
-            # remove all empty/unnecessary fields
-            to_remove = ["csrf_token","mem_id","club_id","update_btn"]
-            for key in update_dict:
-                if type(update_dict[key]) == list and len(update_dict[key]) == 1:
-                    update_dict[key] = update_dict[key][0]
-            for field in update_dict:
-                if len(update_dict[field]) == 0:
-                    to_remove.append(field)
-            for field in to_remove:
-                del update_dict[field]
-            flash(edit_member(club_id, mem_id, update_dict))
+            flash(edit_member(club_id, mem_id, convert_form_to_dict(request.form, ["csrf_token","mem_id","club_id","update_btn"])))
             return redirect('/clubhouse/members')
 
 # check-in page, main functionality of website

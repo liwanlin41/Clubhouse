@@ -75,10 +75,29 @@ def query_members():
 # register a new member, starts checked out by default
 def add_member(club_id, update_dict):
     cursor = get_cursor()
-    cursor.execute("""INSERT INTO members (first_name, last_name, clubhouse_id)
-                    VALUES ('carolyn', 'mei', 1)""")
+    # insert blank row with just member_id
+    cursor.execute("""INSERT INTO members (member_id, first_name, last_name, clubhouse_id) 
+                        VALUES (DEFAULT, 'temp_first', 'temp_last', %s)""", 
+                        (club_id))
+
+    # get this id that we just created (LAST_INSERT_ID() apparently not supported w/ our v of MySQL?)
+    cursor.execute("""SELECT LAST_INSERT_ID() FROM members""")
+    member_ids = cursor.fetchall()
+    if len(member_ids) != 1:
+        app.logger.error("There should only be one ID.")
+    new_member_id = member_ids[0]
+
+    # update each field separately
+    for key in update_dict:
+        query = """UPDATE members
+                    SET %s = %%s
+                    WHERE clubhouse_id = %%s
+                    AND member_id = %%s""" % key
+        cursor.execute(query, (update_dict[key], club_id, new_member_id))
+
     conn.commit()
     cursor.close()
+    return _l("Member added successfully.") # again could be more specific
 
 # edit a member
 def edit_member(club_id, mem_id, update_dict):
@@ -88,10 +107,7 @@ def edit_member(club_id, mem_id, update_dict):
                    SET %s = %%s
                    WHERE clubhouse_id = %%s
                    AND member_id = %%s""" % key
-        try:
-            cursor.execute(query, (update_dict[key], club_id, mem_id))
-        except:
-            app.logger.error(key + " : " + update_dict[key])
+        cursor.execute(query, (update_dict[key], club_id, mem_id))
 
     conn.commit()
     cursor.close()
@@ -209,3 +225,17 @@ def get_user_from_id(id_num):
     elif id_num == 2:
         return (2, "admin", generate_password_hash("admin"), True)
     return (None, None, None, None)
+
+def convert_form_to_dict(form, to_remove):
+    # convert to mutable dictionary
+    update_dict = dict(form) # WARNING: values are in list form
+    # remove all empty/unnecessary fields
+    for key in update_dict:
+        if type(update_dict[key]) == list and len(update_dict[key]) == 1:
+            update_dict[key] = update_dict[key][0]
+    for field in update_dict:
+        if len(update_dict[field]) == 0:
+            to_remove.append(field)
+    for field in to_remove:
+        del update_dict[field]
+    return update_dict

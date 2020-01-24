@@ -15,12 +15,15 @@
 
 {% block content %}
 	<h1>{{_("Clubhouse Members")}}</h1>
-	<form id="chooseform" action="" method="post" novalidate>
+	<form id="chooseform" action="" method="post" autocomplete="off" novalidate>
 		{{form.hidden_tag()}}
 		<input id="search_name" type="text" placeholder="Enter member name"/>
 		<div class="select-field-wrapper">
 		{{ form.memberselect.label }}<br>
 		{{ form.memberselect(size=20) }} <br>
+		{% for error in form.memberselect.errors %}
+		<span style="color: red;">{{ error }}</span><br>
+		{% endfor %}
 		{{ form.edit() }}<br>
 		{{ form.new_member() }}
 		</div>

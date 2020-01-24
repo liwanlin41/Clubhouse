@@ -21,7 +21,7 @@ class AuthenticateForm(FlaskForm):
 
 # form to view and manage clubhouse members
 class MemberViewForm(FlaskForm):
-    memberselect = SelectField(_l("Member List"), choices = [])
+    memberselect = SelectField(_l("Member List"), choices = [], validators = [DataRequired(_l("Please select a member."))], coerce = int)
     edit = SubmitField(_l("View/Edit"))
     new_member = SubmitField(_l("New Member"))
 
@@ -44,8 +44,6 @@ class MemberManager:
 
 # form and handler for adding or editing member
 class MemberAddForm(FlaskForm):
-    mem_id = HiddenField() # store member id for post request when editing member
-    club_id = HiddenField() # store club id
     first_name = StringField(_l('First Name'), validators = [DataRequired()])
     last_name = StringField(_l('Last Name'), validators = [DataRequired()])
     street_address = StringField(_l('Street Address'))
@@ -80,10 +78,6 @@ class MemberInfoHandler:
         mem_id, firstname, lastname, address, city, state, zipcode, country, email, phone, joindate, birthday, school, gender, race, guardianfirstname, guardianlastname, guardianrelationship, guardianemail, guardianphone, club_id, checked_in_now = data
         # someone please find a better way to do this
         # load default data, disable some fields
-        self.mem_id = mem_id
-        self.club_id = club_id
-        self.form.mem_id.render_kw = {'value': mem_id}
-        self.form.club_id.render_kw = {'value': club_id}
         if firstname:
             self.form.first_name.render_kw = {'value': firstname, 'disabled': 'disabled'}
         if lastname:

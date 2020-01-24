@@ -188,7 +188,7 @@ def create_member():
         elif form.validate_on_submit():
         # TODO: add member info to database, parse form and remove empty fields
             flash(_l(add_member(session['club_id'],form)))
-            # TODO: editmember does not currently support GET requests
+            # TODO: pull new member id for this GET request to work
             return redirect('/clubhouse/editmember') # shows the posted data of newly created member
     return render_template('/clubhouse/edit.html', form=form, new_member=True)
 
@@ -200,25 +200,24 @@ def manage_members():
     if request.method == "POST":
         if "new_member" in request.form: # add new member
             return redirect('/clubhouse/addmember')
-        # view or edit button pressed but no member selected
-        if "memberselect" not in request.form: # this is invalid
-            return redirect('/clubhouse/members')
-        member_id = int(request.form['memberselect'])
-        if "edit" in request.form: # everything else should fall here
-            handle = MemberInfoHandler(get_specific_member(club_id, member_id))
-            # go to form to edit member information
-            # NOTE: there may be errors with form resubmission and back button handling here
-            return render_template('/clubhouse/edit.html',form=handle.form, new_member=False)
+        if form_manager.member_form.validate_on_submit(): # confirm member selected for edit
+            # temporarily store member id
+            session['edit_member_id'] = int(request.form['memberselect'])
+            return redirect('/clubhouse/editmember')
     return render_template('/clubhouse/membership.html', form=form_manager.member_form)
 
-@app.route('/clubhouse/editmember',methods=['POST'])
+@app.route('/clubhouse/editmember',methods=['GET','POST'])
 @fresh_login_required(impersonate = True)
 def edit_member_info():
+    if 'edit_member_id' not in session:
+        # this page is not accessible without choosing a member to edit
+        return redirect('/clubhouse/members')
+    club_id = session['club_id']
+    mem_id = session['edit_member_id']
     if request.method == 'POST':
         if "cancel_btn" in request.form: # cancel the updates
+            session.pop('edit_member_id') 
             return redirect('/clubhouse/members')
-        club_id = int(request.form['club_id'])
-        mem_id = int(request.form['mem_id'])
         if "delete_btn1" in request.form: # first click of delete button
             # go to confirmation step
             flash(_l("WARNING: Attempting to delete member - this action is irreversible. Click 'Remove Member' again to confirm."))
@@ -230,13 +229,14 @@ def edit_member_info():
             return render_template('/clubhouse/edit.html',form=handle.form, new_member=False, second_del = True)
         if "delete_btn2" in request.form: # delete member from active members
             flash(_l(delete_specific_member(club_id, mem_id))) # delete from db, returns success/error message
+            session.pop('edit_member_id') # clear stored id
             return redirect('/clubhouse/members')
         # otherwise update info
         if "update_btn" in request.form:
             # convert to mutable dictionary
             update_dict = dict(request.form) # WARNING: values are in list form
             # remove all empty/unnecessary fields
-            to_remove = ["csrf_token","mem_id","club_id","update_btn"]
+            to_remove = ["csrf_token", "update_btn"]
             for key in update_dict:
                 if type(update_dict[key]) == list and len(update_dict[key]) == 1:
                     update_dict[key] = update_dict[key][0]
@@ -246,7 +246,14 @@ def edit_member_info():
             for field in to_remove:
                 del update_dict[field]
             flash(edit_member(club_id, mem_id, update_dict))
+            # clear stored info
+            session.pop('edit_member_id')
             return redirect('/clubhouse/members')
+    # handle get portion - viewing info
+    if request.method == "GET":
+        # pull stored information
+        handle = MemberInfoHandler(get_specific_member(club_id, mem_id))
+        return render_template('/clubhouse/edit.html', form=handle.form, new_member=False)
 
 # check-in page, main functionality of website
 @app.route('/clubhouse/checkin', methods=['GET','POST'])

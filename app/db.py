@@ -195,7 +195,7 @@ def add_checkout(member_id, clubhouse_id):
 
 ### admin side ###
 
-# given id number of clubhouse, get clubhouse name (either short or long)
+# given id number of clubhouse, get clubhouse name (either 'short_name' or 'full_name')
 def get_clubhouse_from_id(club_id):
     # TODO: implement
     if club_id == 1:
@@ -203,9 +203,49 @@ def get_clubhouse_from_id(club_id):
 
 # analog to get_clubhouse_members, return id,name (either short or long name)
 # ordered alphabetically
-def get_all_clubhouses():
-    # TODO: implement
-    return [(1, "Test Clubhouse")]
+def get_all_clubhouses(name):
+    cursor = get_cursor()
+    cursor.execute("""SELECT clubhouse_id, %s FROM clubhouses
+                        ORDER BY %s""",
+                        (name, name))
+    rows = cursor.fetchall()
+    conn.commit()
+    cursor.close()
+    return rows
+
+# adds and creates a clubhouse, similar to add_member
+def add_clubhouse(update_dict):
+    cursor = get_cursor()
+    # create clubhouse row
+    cursor.execute("""INSERT INTO clubhouses (clubhouse_id, short_name, full_name)
+                        VALUES (DEFAULT, 'NULL', 'temp_full')""") # may error if other values have no default
+
+    # get this id that we just created 
+    cursor.execute("""SELECT LAST_INSERT_ID() FROM clubhouses""")
+    club_ids = cursor.fetchall()
+    if len(club_ids) != 1:
+        app.logger.error("There should only be one ID.")
+    new_club_id = club_ids[0]
+
+    # create login row
+    cursor.execute("""INSERT INTO logins (user_id, username, password, clubhouse_id, is_admin)
+                        VALUES (DEFAULT, %s, %s, %s, DEFAULT)""",
+                        (update_dict['username'], update_dict['password'], new_club_id))
+
+    # update each field separately
+    for key in update_dict:
+        # logins already done
+        if key == "username" or key == "password":
+            pass
+        # update clubhouse fields
+        else:
+            query = """UPDATE clubhouses
+                        SET %s = %%s
+                        WHERE clubhouse_id = %%s""" % key
+            cursor.execute(query, (update_dict[key], new_club_id))
+    conn.commit()
+    cursor.close()
+    return _l("Clubhouse added successfully.") # again could be more specific
 
 # TODO: implement these
 # get login information
@@ -228,9 +268,9 @@ def get_id_from_username(username):
 def get_user_from_id(id_num):
     # for testing
     if id_num == 1:
-        return (1, "hi", generate_password_hash("test"), False, False)
+        return (1, "hi", generate_password_hash("test"), False, True)
     elif id_num == 2:
-        return (2, "admin", generate_password_hash("admin"), True, True)
+        return (2, "admin", generate_password_hash("admin"), True, False)
     return (None, None, None, None, None)
 
 # HELPER FUNCTION: also removes empty fields
@@ -250,5 +290,6 @@ def convert_form_to_dict(form, to_remove):
 
 #TODO: implement
 # set password of user id_num to password
-def update_password(id_num, password):
-    print((id_num, password))
+# update last_name field to last_name
+def update_password(id_num, password, last_name):
+    print((id_num, password, last_name))

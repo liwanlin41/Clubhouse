@@ -11,7 +11,9 @@
 
 {% block content %}
 <h1>{{_("Change Password")}}</h1>
+{% if clubhouse_name %}
 <h3>{{ clubhouse_name }}</h3>
+{% endif %}
 <form action="" method="post" novalidate>
 	{{ form.hidden_tag() }}
 	{{ form.old_password.label }}<br>
@@ -26,7 +28,7 @@
 	<span style="color: red;">[{{ error }}]</span><br>
 	{% endfor %}
 	{{ form.confirm(size=20) }}<br>
-	{{ form.name_display() }}
+	{{ form.name_display(checked=display_last) }}
 	{{ form.name_display.label }}<br>
 	{{ form.submit_btn() }}<br>
 	{{ form.cancel_btn() }}

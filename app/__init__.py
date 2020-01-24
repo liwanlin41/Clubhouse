@@ -1,9 +1,10 @@
 # initialization file, a bunch of imports and stuff
 
 import os
-from flask import Flask, request, session
+from flask import Flask, request
 from config import Config
 from flask_babel import Babel, _
+from flask_babel import lazy_gettext as _l
 from flask_login import LoginManager
 from flaskext.mysql import MySQL
 
@@ -34,7 +35,8 @@ def get_locale():
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.refresh_view = 'reauthenticate'
-# TODO: localize messages
+login_manager.login_message = _l("Please log in to access this page.")
+login_manager.needs_refresh_message = _l("Please reauthenticate to view this page.")
 
 # this import needs to come at the end, don't touch; later the other imported files will also be here
 from app import db

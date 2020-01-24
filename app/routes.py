@@ -9,6 +9,7 @@ from app import app
 from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler, AuthenticateForm, ClubhouseViewForm, ClubhouseAddForm, PasswordChangeForm
 from flask_babel import lazy_gettext as _l
 from flask_login import current_user, login_user, logout_user
+from werkzeug.urls import url_parse
 from .db import *
 from .plot import *
 from .models import *
@@ -42,7 +43,6 @@ def fresh_login_required(access="basic", impersonate = False):
             if current_user.access != access and access !="basic":
                 flash(_l("Insufficient credentials."))
                 return redirect('/')
-            # TODO: determine if login_fresh is needed
             if not session['fresh']:
                 return login_manager.needs_refresh()
             if impersonate and 'club_id' not in session: # same logic as above
@@ -53,13 +53,6 @@ def fresh_login_required(access="basic", impersonate = False):
     return wrapper
 
 ### homepages
-
-# test page
-# TODO: remove
-@app.route('/test')
-def auto_test():
-    testform = CheckinManager(1, False)
-    return render_template('test.html',form=testform.check_in_form)
 
 @app.route('/')
 def home():
@@ -104,7 +97,6 @@ def admin_view():
     time_ranges = [(1,_l("Last 24 hours")), (7,_l("Last 7 days")), (30,_l("Last month")), (365,_l("Last year"))]
     data_format = [(0, _l("Check-ins")), (1, _l("Time of day")), (2, _l("Day of week"))]
     if request.method == 'POST':
-        #TODO: actually pull data
         cur_range = request.form['range']
         cur_format = request.form['format']
         return render_template('/admin/view.html', time_ranges=time_ranges, data_format=data_format, plot=plot(cur_range, cur_format), cur_range=int(cur_range), cur_format=int(cur_format))
@@ -165,12 +157,16 @@ def reauthenticate():
         password = request.form['password']
         if current_user.check_password(password): # login success
             session['fresh'] = True # session is now fresh
-            # redirect based on user status
-            # TODO: redirect to 'next' page
-            if current_user.access == "admin":
-                return redirect('/admin')
-            return redirect('/clubhouse')
-        # display that credentials are incorrecrt
+            # determine next page
+            next_page = request.args.get('next')
+            if not next_page or url_parse(next_page).netloc != '':
+                # redirect based on user status
+                if current_user.access == "admin":
+                    next_page = '/admin'
+                else:
+                    next_page = '/clubhouse'
+            return redirect(next_page)
+        # display that credentials are incorrect
         flash(_l("Incorrect password."))
         return redirect('/reauthenticate')
     return render_template('login.html', form=form, refresh = True)
@@ -234,7 +230,7 @@ def edit_member_info():
             return redirect('/clubhouse/members')
         # otherwise update info
         if "update_btn" in request.form:
-            flash(edit_member(club_id, mem_id, convert_form_to_dict(request.form, ["csrf_token","mem_id","club_id","update_btn"])))
+            flash(edit_member(club_id, mem_id, convert_form_to_dict(request.form, ["csrf_token", "update_btn"])))
             # clear stored info
             session.pop('edit_member_id')
             return redirect('/clubhouse/editmember')
@@ -311,25 +307,33 @@ def choose_clubhouse():
 @fresh_login_required(access="admin")
 def change_clubhouse_password():
     if 'edit_club_id' not in session:
-        # this page is not accessible without choosing a clubhouse to edit
-        return redirect('/admin/clubhouses')
+        # make this the admin password change page
+        working_id = current_user.id
+        club_name = None
+        display_last = session['last_name_first']
+    else:
+        working_id = session['edit_club_id']
+        club_name = get_clubhouse_from_id(working_id)
+        display_last = get_user_from_id(working_id)[-1] # clubhouse customization
     form = PasswordChangeForm()
-    working_id = session['edit_club_id']
-    club_name = get_clubhouse_from_id(working_id)
-    if request.method == 'POST':
+    if request.method == 'POST': 
         if "cancel_btn" in request.form: # cancel update
-            session.pop('edit_club_id')
+            if 'edit_club_id' in session:
+                session.pop('edit_club_id')
             return redirect('/admin/clubhouses')
         # first check if password is valid
         if User(working_id).check_password(request.form['old_password']):
             if form.validate_on_submit():
-                update_password(working_id, request.form['password'])
-                session.pop('edit_club_id') # remove club_id from memory
+                # this contains the new value of last_name
+                new_last_name = form.name_display.data
+                update_password(working_id, request.form['password'], new_last_name)
+                if 'edit_club_id' in session:
+                    session.pop('edit_club_id') # remove club_id from memory
                 flash(_l("Password changed successfully."))
                 return redirect('/admin/clubhouses')
         else:
             flash(_l("Incorrect password."))
-    return render_template('/admin/change.html', form=form, clubhouse_name=club_name)
+    return render_template('/admin/change.html', form=form, clubhouse_name=club_name, display_last=display_last)
 
 @app.route('/admin/addclubhouse', methods=['GET','POST'])
 @fresh_login_required(access="admin")
@@ -340,5 +344,7 @@ def admin_clubhouses():
             return redirect('/admin/clubhouses')
         elif form.validate_on_submit():
             # TODO: add new clubhouse in database
+            flash(_l(add_clubhouse(convert_form_to_dict(request.form, ["add_btn", "confirm", "csrf_token"]))))
+            # TODO: make editclubhouses have a GET method so can show individual clubhouse first, like add_member?
             return redirect('/admin/clubhouses')
     return render_template('/admin/add.html', form=form)

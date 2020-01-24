@@ -121,7 +121,7 @@ class MemberInfoHandler:
 
 # these are mostly copied from the member view
 class ClubhouseViewForm(FlaskForm):
-    all_clubhouses = get_all_clubhouses()
+    all_clubhouses = get_all_clubhouses('full_name') # hardcoded in -- no use for short_name ?
     clubhouseselect = SelectField(_l("Clubhouse List"), choices = all_clubhouses, validators = [DataRequired(_l("Please select a clubhouse."))], coerce = int)
     view = SubmitField(_l("View as Clubhouse"))
     edit = SubmitField(_l("Edit Clubhouse"))
@@ -143,7 +143,6 @@ class PasswordChangeForm(FlaskForm):
     old_password = PasswordField(_l('Enter Current Password'))
     password = PasswordField(_l('New Password'), validators = [DataRequired()])
     confirm = PasswordField(_l('Re-enter New Password'), validators = [EqualTo('password', message = _l("Passwords do not match."))])
-    # TODO: set default based on current status of clubhouse
     name_display = BooleanField(_l('Display members by last name first'))
     submit_btn = SubmitField(_l('Update Password'))
     cancel_btn = SubmitField(_l('Cancel'))

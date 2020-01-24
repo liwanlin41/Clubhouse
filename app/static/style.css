@@ -11,6 +11,7 @@
 nav {
 	color: #2D2769;
 	font-weight: bold;
+	background-color: white;
 }
 
 nav ul {
@@ -76,6 +77,14 @@ input[type=submit]{
 .select-field-wrapper {
 	display: table-cell;
 	padding: 10px;
+}
+
+h1 {
+    text-align: center;
+}
+
+body {
+    background-color: #E0EBF1;
 }
 
 /* apparently necessary for keeping footer at bottom */

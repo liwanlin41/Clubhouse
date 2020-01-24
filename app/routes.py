@@ -78,7 +78,7 @@ def coord_view():
         cur_format = request.form['format']
         # pass cur_range, cur_format to template
         # to keep them displayed on the page (minimize confusion)
-        return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format, plot=plot(cur_range, cur_format), cur_range =int(cur_range), cur_format = int(cur_format))
+        return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format, plot=plot(cur_range, cur_format), cur_range=int(cur_range), cur_format=int(cur_format))
     if request.method == 'GET':
         # default cur_range, cur_format to be the first in the list
         return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format, cur_range = time_ranges[0][0], cur_format = data_format[0][0])
@@ -91,7 +91,9 @@ def admin_view():
     data_format = [(0, _l("Check-ins")), (1, _l("Time of day")), (2, _l("Day of week"))]
     if request.method == 'POST':
         #TODO: actually pull data
-        return "this method has not been implemented"
+        cur_range = request.form['range']
+        cur_format = request.form['format']
+        return render_template('/admin/view.html', time_ranges=time_ranges, data_format=data_format, plot=plot(cur_range, cur_format), cur_range=int(cur_range), cur_format=int(cur_format))
     if request.method == 'GET':
         return render_template('/admin/view.html', time_ranges=time_ranges, data_format=data_format)
 

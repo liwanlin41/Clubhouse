@@ -1,10 +1,12 @@
 # handle all routing things
 
 # not sure what the imports should be but these seem to work?
+import jsonpickle
 from functools import wraps
-from flask import render_template, flash, redirect, request, url_for
+from datetime import datetime
+from flask import render_template, flash, redirect, request, url_for, session
 from app import app
-from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler, AuthenticateForm
+from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler, AuthenticateForm, ClubhouseViewForm, ClubhouseAddForm, PasswordChangeForm
 from flask_babel import lazy_gettext as _l
 from flask_login import current_user, login_user, logout_user
 from .db import *
@@ -12,7 +14,8 @@ from .plot import *
 from .models import *
 
 # function for two-level authentication
-def login_required(access="basic"):
+# also handles clubhouse impersonation
+def login_required(access="basic", impersonate = False):
     def wrapper(fn):
         @wraps(fn)
         def decorated_view(*args, **kwargs):
@@ -22,38 +25,49 @@ def login_required(access="basic"):
             if current_user.access != access and access != "basic":
                 flash(_l("Insufficient credentials."))
                 return redirect('/')
+            # club_id is always in session for a clubhouse account
+            if impersonate and 'club_id' not in session: # impersonation not met
+                flash(_l("Please select a clubhouse to impersonate."))
+                return redirect('/admin/clubhouseselect')
             return fn(*args, **kwargs)
         return decorated_view
     return wrapper
 
-def fresh_login_required(access="basic"):
+def fresh_login_required(access="basic", impersonate = False):
     def wrapper(fn):
         @wraps(fn)
         def decorated_view(*args, **kwargs):
             if not current_user.is_authenticated:
                 return login_manager.unauthorized()
-            elif current_user.access != access and access !="basic":
+            if current_user.access != access and access !="basic":
                 flash(_l("Insufficient credentials."))
                 return redirect('/')
             # TODO: determine if login_fresh is needed
-            elif not app.fresh:
+            if not session['fresh']:
                 return login_manager.needs_refresh()
+            if impersonate and 'club_id' not in session: # same logic as above
+                flash(_l("Please select a clubhouse to impersonate."))
+                return redirect('/admin/clubhouseselect')
             return fn(*args, **kwargs)
         return decorated_view
     return wrapper
 
 ### homepages
 
+# test page
+# TODO: remove
+@app.route('/test')
+def auto_test():
+    testform = CheckinManager(1, False)
+    return render_template('test.html',form=testform.check_in_form)
+
 @app.route('/')
 def home():
     return render_template('index.html')
 
 @app.route('/clubhouse')
-@fresh_login_required()
+@fresh_login_required(impersonate = True)
 def club_home():
-    if current_user.access == "admin":
-        # TODO: implement this
-        return("please choose a clubhouse to view")
     return render_template('/clubhouse/home.html')
 
 @app.route('/admin')
@@ -63,7 +77,7 @@ def admin_home():
 
 # view data pages
 @app.route('/clubhouse/view', methods=['GET','POST'])
-@fresh_login_required()
+@fresh_login_required(impersonate = True)
 def coord_view():
     # the time_range will return the number of days to be considered
     # [1, 7, 30, 365] corresponding to day, week, month, year
@@ -78,7 +92,7 @@ def coord_view():
         cur_format = request.form['format']
         # pass cur_range, cur_format to template
         # to keep them displayed on the page (minimize confusion)
-        return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format, plot=plot(cur_range, cur_format), cur_range=int(cur_range), cur_format=int(cur_format))
+        return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format, plot=plot(cur_range, cur_format), cur_range =int(cur_range), cur_format = int(cur_format))
     if request.method == 'GET':
         # default cur_range, cur_format to be the first in the list
         return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format, cur_range = time_ranges[0][0], cur_format = data_format[0][0])
@@ -93,9 +107,9 @@ def admin_view():
         #TODO: actually pull data
         cur_range = request.form['range']
         cur_format = request.form['format']
-        return render_template('/admin/view.html', time_ranges=time_ranges, data_format=data_format, plot=plot(cur_range, cur_format), cur_range=int(cur_range), cur_format=int(cur_format))
+        return "this method has not been implemented"
     if request.method == 'GET':
-        return render_template('/admin/view.html', time_ranges=time_ranges, data_format=data_format)
+        return render_template('/admin/view.html', time_ranges=time_ranges, data_format=data_format, cur_range = time_ranges[0][0], cur_format = data_format[0][0])
 
 # logins and logouts
 
@@ -122,12 +136,21 @@ def login():
             user = User(club_id) # generate user object
             if user.check_password(password): # login success
                 login_user(user, remember=form.remember.data)
-                app.fresh = True # manually set fresh session
+                session['fresh'] = True # manually set fresh session
+                # determine whether this user prefers last, first or first last
+                session['last_name_first'] = user.last_name_first
                 # redirect based on user status
                 if user.access == "admin":
+                    # reset stored club id and impersonation name
+                    if 'club_id' in session:
+                        session.pop('club_id')
+                    if 'impersonation' in session:
+                        session.pop('impersonation')
                     return redirect('/admin')
+                # otherwise this user is a clubhouse coordinator
+                session['club_id'] = club_id # store club id in use
                 return redirect('/clubhouse')
-        # display that credentials are incorrecrt
+        # display that credentials are incorrect
         flash(_l("Username/password combination incorrect."))
         return redirect('/login')
     return render_template('login.html', form=form, refresh = False)
@@ -141,7 +164,7 @@ def reauthenticate():
         # read user input to form
         password = request.form['password']
         if current_user.check_password(password): # login success
-            app.fresh = True # session is now fresh
+            session['fresh'] = True # session is now fresh
             # redirect based on user status
             # TODO: redirect to 'next' page
             if current_user.access == "admin":
@@ -152,60 +175,50 @@ def reauthenticate():
         return redirect('/reauthenticate')
     return render_template('login.html', form=form, refresh = True)
 
-
-# this is no longer needed, one login handles everything
-# same as above, only for admins
-#@app.route('/admin/login', methods=['GET','POST'])
-#def admin_login():
-#    form = LoginForm()
-#    if form.validate_on_submit():
-#        raw_data = request.form
-#        return redirect('/admin')
-#    return render_template('login.html', form=form)
-
 # rest of app routes for clubhouse home page
 
 # add new member
 @app.route('/clubhouse/addmember', methods=['GET','POST']) # might need a method -- better to make html name informative if different?
-@fresh_login_required()
+@fresh_login_required(impersonate = True)
 def create_member():
     form = MemberAddForm()
+    # default join date
+    form.join_date.render_kw = {'value': datetime.now().date()}
     if request.method == 'POST':
         if "cancel_btn" in request.form:
             return redirect('/clubhouse/members')
         elif form.validate_on_submit():
-        # TODO: add member info to database
-            add_member()
-            return request.form
+            flash(_l(add_member(session['club_id'], convert_form_to_dict(request.form, ["csrf_token", "add_btn"]))))
+            # TODO: pull new member id for this GET request to work
+            return redirect('/clubhouse/editmember') # shows the posted data of newly created member
     return render_template('/clubhouse/edit.html', form=form, new_member=True)
 
 @app.route('/clubhouse/members', methods=['GET','POST'])
-@fresh_login_required()
+@fresh_login_required(impersonate = True)
 def manage_members():
-    club_id = 1 # TODO: get actual clubhouse id
-    form_manager = MemberManager(club_id)
+    club_id = session['club_id'] 
+    form_manager = MemberManager(club_id, session['last_name_first'])
     if request.method == "POST":
         if "new_member" in request.form: # add new member
             return redirect('/clubhouse/addmember')
-        # view or edit button pressed but no member selected
-        if "memberselect" not in request.form: # this is invalid
-            return redirect('/clubhouse/members')
-        member_id = int(request.form['memberselect'])
-        if "edit" in request.form: # everything else should fall here
-            handle = MemberInfoHandler(get_specific_member(club_id, member_id))
-            # go to form to edit member information
-            # NOTE: there may be errors with form resubmission and back button handling here
-            return render_template('/clubhouse/edit.html',form=handle.form, new_member=False)
+        if form_manager.member_form.validate_on_submit(): # confirm member selected for edit
+            # temporarily store member id
+            session['edit_member_id'] = int(request.form['memberselect'])
+            return redirect('/clubhouse/editmember')
     return render_template('/clubhouse/membership.html', form=form_manager.member_form)
 
-@app.route('/clubhouse/editmember',methods=['POST'])
-@fresh_login_required()
-def edit():
+@app.route('/clubhouse/editmember',methods=['GET','POST'])
+@fresh_login_required(impersonate = True)
+def edit_member_info():
+    if 'edit_member_id' not in session:
+        # this page is not accessible without choosing a member to edit
+        return redirect('/clubhouse/members')
+    club_id = session['club_id']
+    mem_id = session['edit_member_id']
     if request.method == 'POST':
         if "cancel_btn" in request.form: # cancel the updates
+            session.pop('edit_member_id') 
             return redirect('/clubhouse/members')
-        club_id = int(request.form['club_id'])
-        mem_id = int(request.form['mem_id'])
         if "delete_btn1" in request.form: # first click of delete button
             # go to confirmation step
             flash(_l("WARNING: Attempting to delete member - this action is irreversible. Click 'Remove Member' again to confirm."))
@@ -217,55 +230,115 @@ def edit():
             return render_template('/clubhouse/edit.html',form=handle.form, new_member=False, second_del = True)
         if "delete_btn2" in request.form: # delete member from active members
             flash(_l(delete_specific_member(club_id, mem_id))) # delete from db, returns success/error message
+            session.pop('edit_member_id') # clear stored id
             return redirect('/clubhouse/members')
         # otherwise update info
-        # TODO: update member info in database
         if "update_btn" in request.form:
-            # convert to mutable dictionary
-            update_dict = dict(request.form)
-            # remove all empty/unnecessary fields
-            to_remove = ["csrf_token","mem_id","club_id","update_btn"]
-            for field in update_dict:
-                if len(update_dict[field]) == 0:
-                    to_remove.append(field)
-            for field in to_remove:
-                del update_dict[field]
-            flash(edit_member(club_id, mem_id, update_dict))
-            return redirect('/clubhouse/members')
-            # already have club and member id
-        # this post request contains the member id and club id
-        return request.form
-
-# TODO: remove this route
-@app.route('/clubhouse/viewmembers')
-def view_members():
-    return str(get_clubhouse_members(1))
+            flash(edit_member(club_id, mem_id, convert_form_to_dict(request.form, ["csrf_token","mem_id","club_id","update_btn"])))
+            # clear stored info
+            session.pop('edit_member_id')
+            return redirect('/clubhouse/editmember')
+    # handle get portion - viewing info
+    if request.method == "GET":
+        # pull stored information
+        handle = MemberInfoHandler(get_specific_member(club_id, mem_id))
+        return render_template('/clubhouse/edit.html', form=handle.form, new_member=False)
 
 # check-in page, main functionality of website
 @app.route('/clubhouse/checkin', methods=['GET','POST'])
-@login_required()
+@login_required(impersonate = True)
 def checkin_handler():
     # manually set session to stale
-    app.fresh = False
+    session['fresh'] = False
     if request.method == "GET":
-        # TODO: this is currently a test clubhouse id
-        # will need to get the actual clubhouse id eventually
-        app.testform = CheckinManager(1) # persistence
+        # get checkin manager for this specific clubhouse
+        testform = CheckinManager(session['club_id'], session['last_name_first'])
     if request.method == "POST":
+        # deserialize testform and rebind fields
+        testform = jsonpickle.decode(session['testform'])
+        testform.check_in_form.__init__()
+        testform.setfields()
         # TODO: find a better solution to form resubmission error
         try:
             if "check_in" in request.form and "check_in_id" in request.form: # check-in button clicked
-                app.testform.checkin_member(int(request.form["check_in_id"]))
+                testform.checkin_member(int(request.form["check_in_id"]))
             elif "check_out_id" in request.form: # check-out button
-                app.testform.checkout_member(int(request.form["check_out_id"]))
-            return render_template('/clubhouse/checkin.html',form=app.testform.check_in_form)
+                testform.checkout_member(int(request.form["check_out_id"]))
+            # serialize for persistence
+            session['testform'] = jsonpickle.encode(testform)
+            return render_template('/clubhouse/checkin.html',form=testform.check_in_form)
         except ValueError: # cheating way to handle form resubmission
             return redirect('/clubhouse/checkin')
-    return render_template('/clubhouse/checkin.html',form=app.testform.check_in_form)
+    session['testform'] = jsonpickle.encode(testform) # serialize, persistence
+    return render_template('/clubhouse/checkin.html',form=testform.check_in_form)
 
 
-# rest of app routes for admin home page (aka just editclubhouses)
-@app.route('/admin/editclubhouses')
+# rest of app routes for admin home page
+
+# largely copied from clubhouse/members
+@app.route('/admin/clubhouses', methods=['GET','POST'])
+@fresh_login_required(access="admin")
+def manage_clubhouses():
+    form = ClubhouseViewForm()
+    if request.method == "POST":
+        if "new_clubhouse" in request.form: # add new clubhouse
+            return redirect('/admin/addclubhouse')
+        if form.validate_on_submit():
+            if "view" in request.form: # impersonate clubhouse
+                session['club_id'] = int(request.form['clubhouseselect'])
+                session['impersonation'] = get_clubhouse_from_id(session['club_id'])
+                return redirect('/clubhouse')
+            # otherwise edit button pressed, edit clubhouse
+            # get and save id of clubhouse being edited
+            session['edit_club_id'] = int(request.form['clubhouseselect'])
+            return redirect('/admin/editclubhouse')
+#            return render_template('/admin/change.html', form=PasswordChangeForm(), clubhouse_name = get_clubhouse_from_id(club_id))
+    return render_template('/admin/clubhouses.html', form=form)
+
+# page to select clubhouse to impersonate
+# basically the same as above but with fewer things to handle
+@app.route('/admin/clubhouseselect', methods=['GET','POST'])
+@fresh_login_required(access="admin")
+def choose_clubhouse():
+    form = ClubhouseViewForm()
+    if form.validate_on_submit():
+        session['club_id'] = int(request.form['clubhouseselect'])
+        session['impersonation'] = get_clubhouse_from_id(session['club_id'])
+        return redirect('/clubhouse')
+    return render_template('/admin/clubhouses.html', form=form, select_only = True)
+
+@app.route('/admin/editclubhouse', methods=['GET','POST'])
+@fresh_login_required(access="admin")
+def change_clubhouse_password():
+    if 'edit_club_id' not in session:
+        # this page is not accessible without choosing a clubhouse to edit
+        return redirect('/admin/clubhouses')
+    form = PasswordChangeForm()
+    working_id = session['edit_club_id']
+    club_name = get_clubhouse_from_id(working_id)
+    if request.method == 'POST': 
+        if "cancel_btn" in request.form: # cancel update
+            session.pop('edit_club_id')
+            return redirect('/admin/clubhouses')
+        # first check if password is valid
+        if User(working_id).check_password(request.form['old_password']):
+            if form.validate_on_submit():
+                update_password(working_id, request.form['password'])
+                session.pop('edit_club_id') # remove club_id from memory
+                flash(_l("Password changed successfully."))
+                return redirect('/admin/clubhouses')
+        else:
+            flash(_l("Incorrect password."))
+    return render_template('/admin/change.html', form=form, clubhouse_name=club_name)
+
+@app.route('/admin/addclubhouse', methods=['GET','POST'])
 @fresh_login_required(access="admin")
 def admin_clubhouses():
-    return render_template('/admin/add.html')
+    form = ClubhouseAddForm()
+    if request.method == "POST":
+        if "cancel_btn" in request.form: # cancel clubhouse add
+            return redirect('/admin/clubhouses')
+        elif form.validate_on_submit():
+            # TODO: add new clubhouse in database
+            return redirect('/admin/clubhouses')
+    return render_template('/admin/add.html', form=form)

@@ -1,13 +1,14 @@
 # login form and checkin form
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, HiddenField
-from wtforms.validators import DataRequired
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, HiddenField, DateField
+from wtforms.validators import DataRequired, Optional, EqualTo, Length
 from flask_babel import lazy_gettext as _l
 from helpers import binary_search
 from .db import *
 
-# this form doesn't do anything yet
+# login forms
+
 class LoginForm(FlaskForm):
     user = StringField(_l('Username'), validators = [DataRequired()])
     password = PasswordField(_l('Password'), validators = [DataRequired()])
@@ -20,19 +21,19 @@ class AuthenticateForm(FlaskForm):
 
 # form to view and manage clubhouse members
 class MemberViewForm(FlaskForm):
-        memberselect = SelectField(_l("Member List"), choices = [])
-        edit = SubmitField(_l("View/Edit"))
-        new_member = SubmitField(_l("New Member"))
+    memberselect = SelectField(_l("Member List"), choices = [], validators = [DataRequired(_l("Please select a member."))], coerce = int)
+    edit = SubmitField(_l("View/Edit"))
+    new_member = SubmitField(_l("New Member"))
 
 # wrapper class for MemberViewForm
 class MemberManager:
-    def __init__(self, clubhouse=None):
+    def __init__(self, clubhouse=None, display_last=False):
         if clubhouse:
             self.clubhouse=clubhouse
         else:
             self.clubhouse = 1 # for testing only
         self.member_form = MemberViewForm()
-        self.display_last = False # TODO: pull from clubhouse
+        self.display_last = display_last
         # get all members in desired format
         if self.display_last:
             self.memberlist = [(num, last + ", " + first) for num, first, last in get_clubhouse_members(self.clubhouse)]
@@ -43,18 +44,17 @@ class MemberManager:
 
 # form and handler for adding or editing member
 class MemberAddForm(FlaskForm):
-    mem_id = HiddenField() # store member id for post request when editing member
-    club_id = HiddenField() # store club id
     first_name = StringField(_l('First Name'), validators = [DataRequired()])
     last_name = StringField(_l('Last Name'), validators = [DataRequired()])
     street_address = StringField(_l('Street Address'))
     city = StringField(_l('City'))
     state = StringField(_l('State'))
     zip_code = StringField(_l('Zip/Postal Code'))
+    country = StringField(_l('Country'))
     member_email = StringField(_l('Email'))
     member_phone = StringField(_l('Phone'))
-    join_date = StringField(_l('Join Date'))
-    birthday = StringField(_l('Birthday'))
+    join_date = DateField(_l('Join Date (y-m-d)'),format='%Y-%m-%d', validators = [Optional()])
+    birthday = DateField(_l('Birthday (y-m-d)'), format='%Y-%m-%d', validators = [Optional()])
     school = StringField(_l('School'))
     gender = StringField(_l('Gender'))
     race_ethnicity = StringField(_l('Race and Ethnicity'))
@@ -75,13 +75,9 @@ class MemberInfoHandler:
     def __init__(self, data):
         self.form = MemberAddForm()
         # painfully load all data
-        mem_id, firstname, lastname, address, city, state, zipcode, email, phone, joindate, birthday, school, gender, race, guardianfirstname, guardianlastname, guardianrelationship, guardianemail, guardianphone, club_id, checked_in_now = data
+        mem_id, firstname, lastname, address, city, state, zipcode, country, email, phone, joindate, birthday, school, gender, race, guardianfirstname, guardianlastname, guardianrelationship, guardianemail, guardianphone, club_id, checked_in_now = data
         # someone please find a better way to do this
         # load default data, disable some fields
-        self.mem_id = mem_id
-        self.club_id = club_id
-        self.form.mem_id.render_kw = {'value': mem_id}
-        self.form.club_id.render_kw = {'value': club_id}
         if firstname:
             self.form.first_name.render_kw = {'value': firstname, 'disabled': 'disabled'}
         if lastname:
@@ -94,13 +90,14 @@ class MemberInfoHandler:
             self.form.state.render_kw = {'value': state}
         if zipcode:
             self.form.zip_code.render_kw = {'value': zipcode}
+        if country:
+            self.form.country.render_kw = {'value': country}
         if email:
             self.form.member_email.render_kw = {'value': email}
         if phone:
             self.form.member_phone.render_kw = {'value': phone}
         if joindate:
-#            self.form.join_date.render_kw = {'value': joindate, 'disabled': 'disabled'}
-            self.form.join_date.render_kw = {'value': joindate}
+            self.form.join_date.render_kw = {'value': joindate, 'disabled': 'disabled'}
         if birthday:
             self.form.birthday.render_kw = {'value': birthday, 'disabled': 'disabled'}
         if school:
@@ -120,6 +117,37 @@ class MemberInfoHandler:
         if guardianphone:
             self.form.guardian_phone.render_kw = {'value': guardianphone}
 
+# forms to view and manage clubhouses
+
+# these are mostly copied from the member view
+class ClubhouseViewForm(FlaskForm):
+    all_clubhouses = get_all_clubhouses()
+    clubhouseselect = SelectField(_l("Clubhouse List"), choices = all_clubhouses, validators = [DataRequired(_l("Please select a clubhouse."))], coerce = int)
+    view = SubmitField(_l("View as Clubhouse"))
+    edit = SubmitField(_l("Edit Clubhouse"))
+    new_clubhouse = SubmitField(_l("New Clubhouse"))
+
+class ClubhouseAddForm(FlaskForm):
+    full_name = StringField(_l('Clubhouse Full Name'), validators = [DataRequired()])
+    short_name = StringField(_l('Clubhouse Short Name (optional)'))
+    # TODO: set username and password lengths
+    username = StringField(_l('Username'), validators = [Length(min=2)])
+    password = PasswordField(_l('Password'), validators = [DataRequired()])
+    confirm = PasswordField(_l('Re-enter Password'), validators = [EqualTo('password', message=_l("Passwords do not match."))])
+    # TODO: image field for logo upload
+    name_display = BooleanField(_l('Display members by last name first'))
+    add_btn = SubmitField(_l('Add Clubhouse'))
+    cancel_btn = SubmitField(_l('Cancel'))
+
+class PasswordChangeForm(FlaskForm):
+    old_password = PasswordField(_l('Enter Current Password'))
+    password = PasswordField(_l('New Password'), validators = [DataRequired()])
+    confirm = PasswordField(_l('Re-enter New Password'), validators = [EqualTo('password', message = _l("Passwords do not match."))])
+    # TODO: set default based on current status of clubhouse
+    name_display = BooleanField(_l('Display members by last name first'))
+    submit_btn = SubmitField(_l('Update Password'))
+    cancel_btn = SubmitField(_l('Cancel'))
+
 # check-in form and handler, these are up and running
 class CheckinForm(FlaskForm):
     '''create the checkin form template, not specialized for any data'''
@@ -135,18 +163,17 @@ class CheckinForm(FlaskForm):
 
 # handle all check in/out operations
 class CheckinManager:
-    def __init__(self, clubhouse=None):
+    def __init__(self, clubhouse=None, display_last=False):
         self.check_in_form = CheckinForm()
         if clubhouse:
             self.clubhouse = clubhouse # clubhouse is id number
-            # TODO: actually set this field
-            self.display_last = False # whether to display last name first
+            self.display_last = display_last # whether to display last name first
             # get list of all members and key by member id
             self.id_to_name = {}
             self.members_out = []
             for mem_id, first, last in get_clubhouse_members(self.clubhouse):
                 # separate first and last names for sorting purposes
-                self.id_to_name[(mem_id)] = (first, last)
+                self.id_to_name[str(mem_id)] = (first, last)
                 # list is already sorted, initialize members_out here
                 self.members_out.append(self.get_member_display(mem_id))
             self.members_in = []
@@ -155,9 +182,8 @@ class CheckinManager:
                 member = self.get_member_display(mem_id)
                 self.members_in.append(member)
                 self.members_out.remove(member)
-            # sort members in, change this later
-            # TODO: sorting from database is still broken
-            self.members_in.sort(key = lambda x: self.id_to_name[x[0]][1] + ", " + self.id_to_name[x[0]][0])
+            # uncomment if sorting is broken
+#            self.members_in.sort(key = lambda x: self.id_to_name[x[0]][1] + ", " + self.id_to_name[x[0]][0])
         if not clubhouse: # testing purposes
             self.members_in = [(123,"manager signed-in 1"), (234,"manager signed-in 2")]
             self.members_out = [(12,"manager signed-out 3"),(23,"manager signed-out 4")]
@@ -175,11 +201,13 @@ class CheckinManager:
         self.check_in_form.check_out_id.choices = self.members_in
 
     # return (id_num, first last) or (id_num, last first)
+    # id_num gets cast to a string
     def get_member_display(self, id_num):
-        first, last = self.id_to_name[id_num]
+        mem_id = str(id_num)
+        first, last = self.id_to_name[mem_id]
         if self.display_last:
-            return (id_num, last + ", " + first)
-        return (id_num, first + " " + last)
+            return (mem_id, last + ", " + first)
+        return (mem_id, first + " " + last)
 
     # check in member id_num
     # move from out list to in list

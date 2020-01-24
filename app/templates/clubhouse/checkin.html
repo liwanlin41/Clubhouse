@@ -1,5 +1,9 @@
-{% extends "base.html" %}
+{% extends "clubhouse/club_base.html" %}
 <!-- check in page for members -->
+
+{% block scripts %}
+<script type="text/javascript" src ="{{ url_for('static',filename='search.js')}}"></script>
+{% endblock %}
 
 {% block title %} {{_("Check-in")}} {% endblock %}
 
@@ -8,21 +12,32 @@
 {% endblock %}
 
 {% block content %}
-	<h1>{{ _("Clubhouse Check-in")}}</h1>
-	<div style="display: table-row">
-	<form action="" method="post" novalidate>
-		{{form.hidden_tag()}}
-		<div class="select-field-wrapper">
-		{{ form.check_in_id.label }}<br>
-		{{ form.check_in_id(size=20) }} <br>
-		{{form.check_in() }}
-		</div>
-		<div class="select-field-wrapper">
-		{{ form.check_out_id.label }}<br>
-		{{ form.check_out_id(size=20) }}<br>
-		{{form.check_out() }}
-		</div>
-	</form>
+<h1>{{ _("Clubhouse Check-in")}}</h1>
+<div style="display: table-row">
+<form id="chooseform" method="POST" autocomplete="off" novalidate>
+	{{form.hidden_tag()}}
+	<input id="search_name" type="text" placeholder="Enter your name"/>
+	<div class="select-field-wrapper">
+	{{form.check_in_id.label}}<br>
+	{{form.check_in_id(size=20)}}<br>
+	{{form.check_in()}}
 	</div>
+	<div class="select-field-wrapper">
+	{{ form.check_out_id.label }}<br>
+	{{ form.check_out_id(size=20) }}<br>
+	{{ form.check_out() }}
+	</div>
+</form>
+</div>
+{% endblock %}
 
+{% block endscripts %}
+<script>
+var cur_form = document.getElementById("chooseform");
+var cur_fields = ["check_in_id","check_out_id"];
+function wrapper() {
+	return search(this.value, cur_form, cur_fields);
+}
+document.getElementById("search_name").addEventListener("input", wrapper);
+</script>
 {% endblock %}

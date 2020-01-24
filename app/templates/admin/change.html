@@ -1,29 +1,21 @@
 {% extends "base.html" %}
-<!-- add clubhouse information -->
+<!-- allow clubhouse to change password -->
 
-{% block title %} {{_("Add Clubhouse")}} {% endblock %}
+{% block title %} {{_("Edit Clubhouse")}} {% endblock %}
 
 {% block navtabs %}
 <li><a href="/admin">{{_("Admin Home")}}</a></li>
+<li><a href="/admin/clubhouses">{{_("Clubhouses")}}</a></li>
 <li><a href="/admin/view">{{_("View Clubhouse Data")}}</a></li>
 {% endblock %}
 
 {% block content %}
-<h1>{{_("Add New Clubhouse Account")}}</h1>
+<h1>{{_("Change Password")}}</h1>
+<h3>{{ clubhouse_name }}</h3>
 <form action="" method="post" novalidate>
 	{{ form.hidden_tag() }}
-	{{ form.full_name.label }}<br>
-	{% for error in form.full_name.errors %}
-	<span style="color: red;">[{{ error }}]</span><br>
-	{% endfor %}
-	{{ form.full_name(size=20) }}<br>
-	{{ form.short_name.label }}<br>
-	{{ form.short_name(size=20) }}<br>
-	{{ form.username.label }}<br>
-	{% for error in form.username.errors %}
-	<span style="color: red;">[{{ error }}]</span><br>
-	{% endfor %}
-	{{ form.username(size=20) }}<br>
+	{{ form.old_password.label }}<br>
+	{{ form.old_password(size=20) }}<br>
 	{{ form.password.label }}<br>
 	{% for error in form.password.errors %}
 	<span style="color: red;">[{{ error }}]</span><br>
@@ -36,7 +28,7 @@
 	{{ form.confirm(size=20) }}<br>
 	{{ form.name_display() }}
 	{{ form.name_display.label }}<br>
-	{{ form.add_btn() }}<br>
+	{{ form.submit_btn() }}<br>
 	{{ form.cancel_btn() }}
 </form>
 {% endblock %}

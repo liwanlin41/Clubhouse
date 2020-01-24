@@ -4,22 +4,17 @@
 {% block title %} {{_("Clubhouse Administrator")}} {% endblock %}
 
 {% block navtabs %}
-<li><a href="admin/editclubhouses">{{_("Edit Clubhouses")}}</a></li>
+<li><a href="admin/clubhouses">{{_("Clubhouses")}}</a></li>
 <li><a href="admin/view">{{_("View Clubhouse Data")}}</a></li>
 {% endblock %}
 
 {% block content %}
-<div class="w3-center">
 <div class="w3-bar">
-	<a href="admin/editclubhouses" class="w3-button w3-xxxlarge w3-indigo w3-hover-blue w3-round-large">{{_("Edit Clubhouses")}}</a>
-	<a href="admin/view" class="w3-button w3-xxxlarge w3-indigo w3-hover-blue w3-round-large">{{_("View Clubhouse Data")}}</a>
+	<a href="admin/clubhouseselect" class="w3-button w3-bar-item w3-xxxlarge w3-indigo w3-hover-blue w3-border w3-border-blue w3-round-large" style="width:50%">{{_("Select Clubhouse")}}</a>
+	<a href="admin/view" class="w3-button w3-bar-item w3-xxxlarge w3-indigo w3-hover-blue w3-border w3-border-blue w3-round-large" style="width:50%">{{_("View Overall Data")}}</a>
 </div>
-</div>
-<div>
-	<a href="admin/editclubhouses">{{_("Edit Clubhouses")}}</a>
-</div>
-
-<div>
-	<a href="admin/view">{{_("View Clubhouse Data")}}</a>
+<div class="w3-bar">
+	<a href="admin/editclubhouse" class="w3-button w3-bar-item w3-xxxlarge w3-indigo w3-hover-blue w3-border w3-border-blue w3-round-large" style="width:50%">{{_("Edit Clubhouses")}}</a>
+	<a href="admin/addclubhouse" class="w3-button w3-bar-item w3-xxxlarge w3-indigo w3-hover-blue w3-border w3-border-blue w3-round-large" style="width:50%">{{_("Add a Clubhouse")}}</a>
 </div>
 {% endblock %}

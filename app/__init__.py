@@ -1,7 +1,7 @@
 # initialization file, a bunch of imports and stuff
 
 import os
-from flask import Flask, request
+from flask import Flask, request, session
 from config import Config
 from flask_babel import Babel, _
 from flask_login import LoginManager
@@ -30,13 +30,10 @@ def get_locale():
 #    return 'es'
     return request.accept_languages.best_match(app.config['LANGUAGES'])
 
-# these things don't work yet, person working on these parts can do whatever necessary
-
 # login setup
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.refresh_view = 'reauthenticate'
-app.fresh = True # set session as fresh to avoid errors later
 # TODO: localize messages
 
 # this import needs to come at the end, don't touch; later the other imported files will also be here

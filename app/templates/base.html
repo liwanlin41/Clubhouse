@@ -4,6 +4,8 @@
         {% block head %}
 	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
         <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}" />
+	{% block scripts %}
+	{% endblock %}
         <title>{% block title %}{% endblock %} - The Clubhouse Network</title>
         {% endblock %}
     </head>
@@ -24,7 +26,8 @@
 		{% if not current_user.is_anonymous %}
 		<div id="welcome">
 			{% if current_user.access == "admin" %}
-			<h1>{{_("Welcome, Administrator")}}
+			<h1>{{_("Welcome, Administrator")}}</h1>
+			{% block welcome_message %}{% endblock %}
 			{% else %}
 			<h1>{{current_user.name}}</h1>
 			{% endif %}
@@ -48,4 +51,6 @@
             </footer>
         </article>
     </body>
+    {% block endscripts %}
+    {% endblock %}
 </html>

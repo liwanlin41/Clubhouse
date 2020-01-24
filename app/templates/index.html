@@ -4,29 +4,20 @@
 {% block title %} {{ _("Home")}} {% endblock %}
 
 {% block navtabs %}
+{% if not current_user.is_anonymous %}
+{% if current_user.access == "admin" %}
 <li><a href="/admin">{{_("Administrator Home")}}</a></li>
+{% endif %}
 <li><a href="/clubhouse">{{_("Coordinator Home")}}</a></li>
-{% if current_user.is_anonymous %}
+{% else %}
 <li><a href="/login">{{_("Login")}}</a></li>
 {% endif %}
 {% endblock %}
 
 {% block content %}
 {% if current_user.is_anonymous %}
-<h1>{{_("Welcome! Sign in to your respective account.")}}</h1>
+<h1>{{_("Welcome! Please sign in.")}}</h1>
 {% endif %}
 
-<div class="w3-center">
-<div class="w3-bar">
-	<a href="/admin" class="w3-button w3-jumbo w3-indigo w3-hover-blue w3-round-large w3-padding-large">{{_("Admin Sign-In")}}</a>
-	<a href="/clubhouse" class="w3-button w3-jumbo w3-indigo w3-hover-blue w3-round-large w3-padding-large">{{_("Clubhouse Sign-In")}}</a>
-</div>
-</div>
-<div>
-	<a href="/admin">{{_("where sign in to administrators go")}} </a>
-</div>
-
-<div>
-	<a href="/clubhouse"> {{_("where sign in to coordinators go")}} </a>
-</div>
+<a href="/login" class="w3-button w3-block w3-jumbo w3-indigo w3-hover-blue w3-border w3-border-blue w3-round-large w3-padding-large">{{_("Admin or Clubhouse Sign-In")}}</a>
 {% endblock %}

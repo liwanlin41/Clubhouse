@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+<!-- customize welcome message -->
+
+{% block welcome_message %}
+<h3>{{_("You are currently impersonating") + " " + session['impersonation'] }}<br>
+<small><a href="/admin/clubhouseselect">{{_("Change")}}</a></small></h3>
+{% endblock %}
+

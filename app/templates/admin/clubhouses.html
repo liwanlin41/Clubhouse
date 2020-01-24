@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+<!--view all clubhouses page, allows adding and impersonation-->
+
+{% block scripts %}
+<script type="text/javascript" src ="{{ url_for('static',filename='search.js')}}"></script>
+{% endblock %}
+
+{% block title %} {{_("Clubhouses")}} {% endblock %}
+
+{% block navtabs %}
+<li><a href="/admin">{{_("Admin Home")}}</a></li>
+<li><a href="/admin/view">{{_("View Data")}}</a></li>
+{% endblock %}
+
+{% block content %}
+	<h1>{{_("Clubhouses")}}</h1>
+	<form id="chooseform" action="" method="post" autocomplete="off" novalidate>
+		{{form.hidden_tag()}}
+		<input id="search_name" type="text" placeholder="Clubhouse name"/>
+		<div class="select-field-wrapper">
+			{{ form.clubhouseselect.label() }}<br>
+			{{ form.clubhouseselect(size=20) }}<br>
+			{% for error in form.clubhouseselect.errors %}
+			<span style="color: red;">{{ error }}</span><br>
+			{% endfor %}
+			{{ form.view() }}<br>
+			{% if not select_only %}
+			{{ form.edit() }}<br>
+			{{ form.new_clubhouse() }}
+			{% endif %}
+		</div>
+	</form>
+{% endblock %}
+
+{% block endscripts %}
+<script>
+var cur_form = document.getElementById("chooseform");
+var cur_fields = ["clubhouseselect",];
+function wrapper() {
+	return search(this.value, cur_form, cur_fields);
+}
+document.getElementById("search_name").addEventListener("input", wrapper);
+</script>
+
+{% endblock %}
+

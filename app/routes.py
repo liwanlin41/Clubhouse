@@ -196,7 +196,7 @@ def create_member():
 @app.route('/clubhouse/members', methods=['GET','POST'])
 @fresh_login_required(impersonate = True)
 def manage_members():
-    club_id = session['club_id'] 
+    club_id = session['club_id']
     form_manager = MemberManager(club_id, session['last_name_first'])
     if request.method == "POST":
         if "new_member" in request.form: # add new member
@@ -217,7 +217,7 @@ def edit_member_info():
     mem_id = session['edit_member_id']
     if request.method == 'POST':
         if "cancel_btn" in request.form: # cancel the updates
-            session.pop('edit_member_id') 
+            session.pop('edit_member_id')
             return redirect('/clubhouse/members')
         if "delete_btn1" in request.form: # first click of delete button
             # go to confirmation step
@@ -316,7 +316,7 @@ def change_clubhouse_password():
     form = PasswordChangeForm()
     working_id = session['edit_club_id']
     club_name = get_clubhouse_from_id(working_id)
-    if request.method == 'POST': 
+    if request.method == 'POST':
         if "cancel_btn" in request.form: # cancel update
             session.pop('edit_club_id')
             return redirect('/admin/clubhouses')

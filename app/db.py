@@ -76,8 +76,8 @@ def query_members():
 def add_member(club_id, update_dict):
     cursor = get_cursor()
     # insert blank row with just member_id
-    cursor.execute("""INSERT INTO members (member_id, first_name, last_name, clubhouse_id) 
-                        VALUES (DEFAULT, 'temp_first', 'temp_last', %s)""", 
+    cursor.execute("""INSERT INTO members (member_id, first_name, last_name, clubhouse_id)
+                        VALUES (DEFAULT, 'temp_first', 'temp_last', %s)""",
                         (club_id))
 
     # get this id that we just created (LAST_INSERT_ID() apparently not supported w/ our v of MySQL?)

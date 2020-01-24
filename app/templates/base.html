@@ -15,7 +15,13 @@
             <header>
 		<nav>
 	    <div id="navbar">
-		<a href="/" id="logo"><img src = "{{ url_for('static',filename='images/small.jpg') }}"></a>
+		{% if current_user.is_anonymous %}
+			<a href="/" id="logo"><img src = "{{ url_for('static',filename='images/small.jpg') }}"></a>
+		{% elif current_user.access == "admin" %}
+			<a href="/admin" id="logo"><img src = "{{ url_for('static',filename='images/small.jpg') }}"></a>
+		{% else %}
+			<a href="/clubhouse" id="logo"><img src = "{{ url_for('static',filename='images/small.jpg') }}"></a>
+		{% endif %}
 		<ul>
                         {% block navtabs %}{% endblock %}
 			{% if not current_user.is_anonymous %}

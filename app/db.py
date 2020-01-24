@@ -146,9 +146,14 @@ def get_all_checkins():
     cursor.close()
     return rows
 
-# retrieve only certain check-ins (for filtering)
-def query_checkins():
-    pass
+# retrieve only check-ins from a certain clubhouse
+def get_checkins_by_clubhouse(clubhouse_id):
+    cursor = get_cursor()
+    cursor.execute("""SELECT * FROM checkins
+                      WHERE clubhouse_id = %s""", (clubhouse_id, ))
+    rows = cursor.fetchall()
+    cursor.close()
+    return rows
 
 # changes the is_checked_in field for a given member
 def change_member_checkin(member_id, clubhouse_id, checked_in):

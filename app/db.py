@@ -245,5 +245,6 @@ def convert_form_to_dict(form, to_remove):
 
 #TODO: implement
 # set password of user id_num to password
-def update_password(id_num, password):
-    print((id_num, password))
+# update last_name field to last_name
+def update_password(id_num, password, last_name):
+    print((id_num, password, last_name))

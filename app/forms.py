@@ -143,7 +143,6 @@ class PasswordChangeForm(FlaskForm):
     old_password = PasswordField(_l('Enter Current Password'))
     password = PasswordField(_l('New Password'), validators = [DataRequired()])
     confirm = PasswordField(_l('Re-enter New Password'), validators = [EqualTo('password', message = _l("Passwords do not match."))])
-    # TODO: set default based on current status of clubhouse
     name_display = BooleanField(_l('Display members by last name first'))
     submit_btn = SubmitField(_l('Update Password'))
     cancel_btn = SubmitField(_l('Cancel'))

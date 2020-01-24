@@ -16,11 +16,12 @@ class User(UserMixin):
     def __init__(self, id_num):
         super()
         # get user information
-        num, username, password_hash, is_admin = get_user_from_id(id_num)
+        num, username, password_hash, is_admin, last_name = get_user_from_id(id_num)
         if username: # valid id
             self.username = username
             self.id = id_num
             self.hash = password_hash
+            self.last_name_first = last_name
             # set user access level
             if is_admin:
                 self.access = "admin"

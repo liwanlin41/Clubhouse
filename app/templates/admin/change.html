@@ -26,6 +26,8 @@
 	<span style="color: red;">[{{ error }}]</span><br>
 	{% endfor %}
 	{{ form.confirm(size=20) }}<br>
+	{{ form.name_display() }}
+	{{ form.name_display.label }}<br>
 	{{ form.submit_btn() }}<br>
 	{{ form.cancel_btn() }}
 </form>

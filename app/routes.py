@@ -58,7 +58,7 @@ def fresh_login_required(access="basic", impersonate = False):
 # TODO: remove
 @app.route('/test')
 def auto_test():
-    testform = CheckinManager(1)
+    testform = CheckinManager(1, False)
     return render_template('test.html',form=testform.check_in_form)
 
 @app.route('/')
@@ -137,6 +137,8 @@ def login():
             if user.check_password(password): # login success
                 login_user(user, remember=form.remember.data)
                 session['fresh'] = True # manually set fresh session
+                # determine whether this user prefers last, first or first last
+                session['last_name_first'] = user.last_name_first
                 # redirect based on user status
                 if user.access == "admin":
                     # reset stored club id and impersonation name
@@ -196,7 +198,7 @@ def create_member():
 @fresh_login_required(impersonate = True)
 def manage_members():
     club_id = session['club_id'] 
-    form_manager = MemberManager(club_id)
+    form_manager = MemberManager(club_id, session['last_name_first'])
     if request.method == "POST":
         if "new_member" in request.form: # add new member
             return redirect('/clubhouse/addmember')
@@ -263,7 +265,7 @@ def checkin_handler():
     session['fresh'] = False
     if request.method == "GET":
         # get checkin manager for this specific clubhouse
-        testform = CheckinManager(session['club_id'])
+        testform = CheckinManager(session['club_id'], session['last_name_first'])
     if request.method == "POST":
         # deserialize testform and rebind fields
         testform = jsonpickle.decode(session['testform'])

@@ -202,14 +202,15 @@ def get_id_from_username(username):
         return None
 
 # given id number of user, retrieve user info or tuple of None
-# return (id, username, password hash, is_admin)
+# if last_name is True, members will be listed by last name
+# return (id, username, password hash, is_admin, last_name)
 def get_user_from_id(id_num):
     # for testing
     if id_num == 1:
-        return (1, "hi", generate_password_hash("test"), False)
+        return (1, "hi", generate_password_hash("test"), False, False)
     elif id_num == 2:
-        return (2, "admin", generate_password_hash("admin"), True)
-    return (None, None, None, None)
+        return (2, "admin", generate_password_hash("admin"), True, True)
+    return (None, None, None, None, None)
 
 #TODO: implement
 # set password of user id_num to password

@@ -340,11 +340,11 @@ def change_clubhouse_password():
             # TODO: store data if remove is clicked but then canceled?
             # alternatively just find a better confirmation solution
             handle = MemberInfoHandler(get_specific_member(club_id, mem_id))
-            return render_template('/clubhouse/edit.html',form=handle.form, new_member=False, second_del = True)
+            return render_template('/admin/change.html',form=handle.form, new_member=False, second_del = True)
         if "delete_btn2" in request.form: # delete member from active members
-            flash(_l(delete_specific_member(club_id, mem_id))) # delete from db, returns success/error message
-            session.pop('edit_member_id') # clear stored id
-            return redirect('/clubhouse/members')
+            flash(_l(delete_specific_clubhouse(club_id))) # delete from db, returns success message (no error message lel)
+            session.pop('edit_club_id') # clear stored id
+            return redirect('/admin/clubhouses') # currently no GET request in admin/change
         else:
             flash(_l("Incorrect password."))
     return render_template('/admin/change.html', form=form, clubhouse_name=club_name, display_last=display_last)

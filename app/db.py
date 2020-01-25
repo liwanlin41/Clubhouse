@@ -123,7 +123,7 @@ def delete_specific_member(club_id, mem_id):
                         AND member_id = %s""",
                         (club_id, mem_id))
     # delete from checkins table
-    # temporary patch to ensure user does not appear in checked-in users
+    # temporary patch to ensure user does not appear in checked-in users -- where did attempted actual sol'tn go?
     current_time = datetime.now()
     cursor.execute("""UPDATE checkins
                       SET checkout_datetime = %s
@@ -254,6 +254,23 @@ def add_clubhouse(update_dict):
     conn.commit()
     cursor.close()
     return _l("Clubhouse added successfully.") # again could be more specific
+
+def delete_clubhouse(club_id):
+    cursor = get_cursor()
+    # delete clubhouse row
+    cursor.execute("""DELETE FROM clubhouses
+                        WHERE clubhouse_id = %s""",
+                        (club_id))
+    # delete clubhouse login row
+    cursor.execute("""DELETE FROM logins
+                        WHERE clubhouse_id = %s""",
+                        (club_id))
+
+    # TODO: if requested, delete all members in this clubhouse and all their checkins
+
+    conn.commit()
+    cursor.close()
+    return _l("Clubhouse removed successfully.")
 
 # get login information
 # on an attempted login with username username,

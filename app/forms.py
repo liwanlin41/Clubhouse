@@ -66,9 +66,7 @@ class MemberAddForm(FlaskForm):
     add_btn = SubmitField(_l('Add Member'))
     update_btn = SubmitField(_l('Update Member Info'))
     cancel_btn = SubmitField(_l('Cancel'))
-    # two delete buttons to handle confirmation of member deletion
-    delete_btn1 = SubmitField(_l('Remove Member'))
-    delete_btn2 = SubmitField(_l('Remove Member'))
+    delete_btn = SubmitField(_l('Remove Member'))
 
 # handle form pre-population, loading data, etc.
 class MemberInfoHandler:
@@ -121,11 +119,16 @@ class MemberInfoHandler:
 
 # these are mostly copied from the member view
 class ClubhouseViewForm(FlaskForm):
-    all_clubhouses = get_all_clubhouses() 
-    clubhouseselect = SelectField(_l("Clubhouse List"), choices = all_clubhouses, validators = [DataRequired(_l("Please select a clubhouse."))], coerce = int)
+    clubhouseselect = SelectField(_l("Clubhouse List"), choices = [], validators = [DataRequired(_l("Please select a clubhouse."))], coerce = int)
     view = SubmitField(_l("View as Clubhouse"))
     edit = SubmitField(_l("Edit Clubhouse"))
     new_clubhouse = SubmitField(_l("New Clubhouse"))
+
+# wrapper class for ClubhouseViewForm
+class ClubhouseManager:
+    def __init__(self):
+        self.club_form = ClubhouseViewForm()
+        self.club_form.clubhouseselect.choices = get_all_clubhouses()
 
 class ClubhouseAddForm(FlaskForm):
     full_name = StringField(_l('Clubhouse Full Name'), validators = [DataRequired()])
@@ -146,9 +149,7 @@ class ClubhouseEditForm(FlaskForm):
     name_display = BooleanField(_l('Display members by last name first'))
     submit_btn = SubmitField(_l('Update Password'))
     cancel_btn = SubmitField(_l('Cancel'))
-    # included delete buttons like MemberAddForm when removing a clubhouse
-    delete_btn1 = SubmitField(_l('Remove Clubhouse'))
-    delete_btn2 = SubmitField(_l('Remove Clubhouse'))
+    delete_btn = SubmitField(_l('Remove Clubhouse'))
 
 # check-in form and handler, these are up and running
 class CheckinForm(FlaskForm):

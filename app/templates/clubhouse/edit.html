@@ -19,7 +19,7 @@
 	{% if new_member %}
 	<form action="" method="post" novalidate>
 	{% else %}
-	<form action="/clubhouse/editmember" method="post" novalidate>
+	<form id = "editform" action="/clubhouse/editmember" method="post" novalidate>
 		<!--onSubmit="return confirm('Are you sure?')" novalidate>-->
 	<!--have the editmember page handle the edits-->
 	{% endif %}
@@ -78,13 +78,21 @@
 		{{ form.add_btn() }}
 		{% else %}
 		{{ form.update_btn() }}
-		{% if second_del %}
-		{{ form.delete_btn2() }}
-		{% else %}
-		{{ form.delete_btn1() }}
-		{% endif %}
+		{{ form.delete_btn() }}
 		{% endif %}
 		<br>
 		{{ form.cancel_btn() }}
 	</form>
+{% endblock %}
+
+{% block endscripts %}
+<script type="text/javascript">
+var cur_form = document.getElementById("editform");
+var delete_btn = cur_form.elements['delete_btn']; // get delete_btn
+function confirm_delete(e) {
+	if (!confirm("Attempting to delete a clubhouse member. This action is irreversible."))
+		e.preventDefault();
+}
+delete_btn.onclick = confirm_delete;
+</script>
 {% endblock %}

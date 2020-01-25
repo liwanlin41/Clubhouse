@@ -14,7 +14,7 @@
 {% if clubhouse_name %}
 <h3>{{ clubhouse_name }}</h3>
 {% endif %}
-<form action="" method="post" novalidate>
+<form id="editform" action="" method="post" novalidate>
 	{{ form.hidden_tag() }}
 	{{ form.old_password.label }}<br>
 	{{ form.old_password(size=20) }}<br>
@@ -30,12 +30,24 @@
 	{{ form.confirm(size=20) }}<br>
 	{{ form.name_display(checked=display_last) }}
 	{{ form.name_display.label }}<br>
-	{{ form.submit_btn() }}<br>
-	{{ form.cancel_btn() }}<br>
-	{% if second_del %}
-	{{ form.delete_btn2() }}
-	{% else %}
-	{{ form.delete_btn1() }}
+	{{ form.submit_btn() }}
+	{% if clubhouse_name %}
+	{{ form.delete_btn() }}
 	{% endif %}
+	<br>
+	{{ form.cancel_btn() }}
 </form>
+{% endblock %}
+
+<!-- this is mostly copied from clubhouse member deletion -->
+{% block endscripts %}
+<script type="text/javascript">
+var cur_form = document.getElementById("editform");
+var delete_btn = cur_form.elements['delete_btn'];
+function confirm_delete(e) {
+	if (!confirm("WARNING: attempting to delete a clubhouse. This action is irreversible. Are you sure?"))
+		e.preventDefault();
+}
+delete_btn.onclick = confirm_delete;
+</script>
 {% endblock %}

@@ -37,7 +37,8 @@ body {
 
 #content {
 	width: 98%;
-	margin: 0 auto;
+	/*margin: 0 auto;*/
+	display: inline-block;
 }
 
 /* navbar */
@@ -110,7 +111,7 @@ input[type=submit]{
 
 /* check-in and check-out div wrappers */
 .select-field-wrapper {
-	display: table-cell;
+	/*display: table-cell;*/
 	padding: 10px;
 	margin: 0 auto;
 	width: 50%;
@@ -149,7 +150,8 @@ article {
 }
 
 main {
-    flex-grow: 1;
+    flex-grow: 1; 
+    text-align: center;
 }
 
 header, main, footer {

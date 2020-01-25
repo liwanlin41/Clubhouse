@@ -16,7 +16,7 @@
 	<h1>{{_("Clubhouses")}}</h1>
 	<form id="chooseform" action="" method="post" autocomplete="off" novalidate>
 		{{form.hidden_tag()}}
-		<input id="search_name" type="text" placeholder="Clubhouse name"/>
+		<input id="search_name" type="text" placeholder="Clubhouse name"/><br>
 		<div class="select-field-wrapper">
 			{{ form.clubhouseselect.label() }}<br>
 			{{ form.clubhouseselect(size=20) }}<br>

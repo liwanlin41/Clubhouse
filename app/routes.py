@@ -307,6 +307,7 @@ def change_clubhouse_password():
         working_id = get_user_id_from_club(session['edit_club_id'])
         club_name = get_clubhouse_from_id(session['edit_club_id'])
         display_last = get_user_from_id(working_id)[-1] # clubhouse customization
+
     form = ClubhouseEditForm()
     if request.method == 'POST': 
         if "cancel_btn" in request.form: # cancel update
@@ -328,11 +329,11 @@ def change_clubhouse_password():
                 if 'edit_club_id' in session:
                     session.pop('edit_club_id') # remove club_id from memory
                 flash(_l("Password changed successfully."))
-#                return redirect('/admin/clubhouses')
             session.pop('edit_club_id') # clear stored id
             return redirect('/admin/clubhouses') # currently no GET request in admin/change
         else:
             flash(_l("Incorrect password."))
+            
     return render_template('/admin/change.html', form=form, clubhouse_name=club_name, display_last=display_last)
 
 @app.route('/admin/addclubhouse', methods=['GET','POST'])

@@ -215,7 +215,7 @@ def edit_member_info():
         if "cancel_btn" in request.form: # cancel the updates
             session.pop('edit_member_id')
             return redirect('/clubhouse/members')
-        if "delete_btn1" in request.form: # first click of delete button
+        if "delete_btn1" in request.form: # first click of delete button. TODO: MAKE NICER CODE W/ JS INSTEAD
             # go to confirmation step
             flash(_l("WARNING: Attempting to delete member - this action is irreversible. Click 'Remove Member' again to confirm."))
             # display message and require resubmit
@@ -315,6 +315,7 @@ def change_clubhouse_password():
         working_id = get_user_id_from_club(session['edit_club_id'])
         club_name = get_clubhouse_from_id(session['edit_club_id'])
         display_last = get_user_from_id(working_id)[-1] # clubhouse customization
+
     form = ClubhouseEditForm()
     if request.method == 'POST': 
         if "cancel_btn" in request.form: # cancel update
@@ -332,7 +333,8 @@ def change_clubhouse_password():
                 flash(_l("Password changed successfully."))
                 return redirect('/admin/clubhouses')
         # taken from editmember : allows admin to delete a clubhouse if necessary
-        if "delete_btn1" in request.form: # first click of delete button
+        if "delete_btn1" in request.form: # first click of delete button. 
+        # TODO: SAME AS EDIT_MEMBER, so inner logic still copied from edit_member, shouldn't work
             # go to confirmation step
             flash(_l("WARNING: Attempting to delete member - this action is irreversible. Click 'Remove Member' again to confirm."))
             # display message and require resubmit
@@ -347,6 +349,7 @@ def change_clubhouse_password():
             return redirect('/admin/clubhouses') # currently no GET request in admin/change
         else:
             flash(_l("Incorrect password."))
+            
     return render_template('/admin/change.html', form=form, clubhouse_name=club_name, display_last=display_last)
 
 @app.route('/admin/addclubhouse', methods=['GET','POST'])

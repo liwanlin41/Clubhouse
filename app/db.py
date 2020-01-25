@@ -218,9 +218,24 @@ def get_all_clubhouses(name="short_name"):
     cursor.close()
     return rows
 
+# check to make sure usernames are distinct
+def check_distinct_clubhouse_usernames(proposed_username):
+    cursor = get_cursor()
+
+    cursor.execute("""SELECT username FROM logins 
+                        WHERE username = %s
+                        AND is_admin = 0""",
+                        (proposed_username))
+    repeats = cursor.fetchall()
+    if len(repeats) > 0:
+        # another clubhouse already has this nickname
+        return False
+    return True
+
 # adds and creates a clubhouse, similar to add_member
 def add_clubhouse(update_dict):
     cursor = get_cursor()
+
     # create clubhouse row
     cursor.execute("""INSERT INTO clubhouses (clubhouse_id, short_name, full_name)
                         VALUES (DEFAULT, 'NULL', 'temp_full')""") # may error if other values have no default

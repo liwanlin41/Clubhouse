@@ -115,6 +115,12 @@ input[type=submit]{
 	padding: 10px;
 	margin: 0 auto;
 	width: 50%;
+	flex: 50%;
+}
+
+/* check-in and check-out whole wrapper */
+#checkin-row {
+	display: flex;
 }
 
 select {

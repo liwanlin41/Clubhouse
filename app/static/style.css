@@ -123,6 +123,17 @@ input[type=submit]{
 	display: flex;
 }
 
+/* styling of flash messages */
+.flash-container {
+	text-align: center;
+}
+
+.flash-warning {
+	color: red;
+	display: inline-block;
+}
+
+
 select {
 	min-width: 33%;
 	margin: 0 auto;

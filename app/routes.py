@@ -6,7 +6,7 @@ from functools import wraps
 from datetime import datetime
 from flask import render_template, flash, redirect, request, url_for, session
 from app import app
-from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler, AuthenticateForm, ClubhouseViewForm, ClubhouseAddForm, PasswordChangeForm
+from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler, AuthenticateForm, ClubhouseViewForm, ClubhouseAddForm, ClubhouseEditForm
 from flask_babel import lazy_gettext as _l
 from flask_login import current_user, login_user, logout_user
 from werkzeug.urls import url_parse
@@ -315,7 +315,7 @@ def change_clubhouse_password():
         working_id = get_user_id_from_club(session['edit_club_id'])
         club_name = get_clubhouse_from_id(session['edit_club_id'])
         display_last = get_user_from_id(working_id)[-1] # clubhouse customization
-    form = PasswordChangeForm()
+    form = ClubhouseEditForm()
     if request.method == 'POST': 
         if "cancel_btn" in request.form: # cancel update
             if 'edit_club_id' in session:
@@ -331,6 +331,20 @@ def change_clubhouse_password():
                     session.pop('edit_club_id') # remove club_id from memory
                 flash(_l("Password changed successfully."))
                 return redirect('/admin/clubhouses')
+        # taken from editmember : allows admin to delete a clubhouse if necessary
+        if "delete_btn1" in request.form: # first click of delete button
+            # go to confirmation step
+            flash(_l("WARNING: Attempting to delete member - this action is irreversible. Click 'Remove Member' again to confirm."))
+            # display message and require resubmit
+            # note this will also clear all fields
+            # TODO: store data if remove is clicked but then canceled?
+            # alternatively just find a better confirmation solution
+            handle = MemberInfoHandler(get_specific_member(club_id, mem_id))
+            return render_template('/clubhouse/edit.html',form=handle.form, new_member=False, second_del = True)
+        if "delete_btn2" in request.form: # delete member from active members
+            flash(_l(delete_specific_member(club_id, mem_id))) # delete from db, returns success/error message
+            session.pop('edit_member_id') # clear stored id
+            return redirect('/clubhouse/members')
         else:
             flash(_l("Incorrect password."))
     return render_template('/admin/change.html', form=form, clubhouse_name=club_name, display_last=display_last)

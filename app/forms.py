@@ -139,13 +139,16 @@ class ClubhouseAddForm(FlaskForm):
     add_btn = SubmitField(_l('Add Clubhouse'))
     cancel_btn = SubmitField(_l('Cancel'))
 
-class PasswordChangeForm(FlaskForm):
+class ClubhouseEditForm(FlaskForm):
     old_password = PasswordField(_l('Enter Current Password'))
     password = PasswordField(_l('New Password'), validators = [DataRequired()])
     confirm = PasswordField(_l('Re-enter New Password'), validators = [EqualTo('password', message = _l("Passwords do not match."))])
     name_display = BooleanField(_l('Display members by last name first'))
     submit_btn = SubmitField(_l('Update Password'))
     cancel_btn = SubmitField(_l('Cancel'))
+    # included delete buttons like MemberAddForm when removing a clubhouse
+    delete_btn1 = SubmitField(_l('Remove Clubhouse'))
+    delete_btn2 = SubmitField(_l('Remove Clubhouse'))
 
 # check-in form and handler, these are up and running
 class CheckinForm(FlaskForm):

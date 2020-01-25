@@ -81,10 +81,11 @@ def add_member(club_id, update_dict):
                         (club_id))
 
     # get this id that we just created (LAST_INSERT_ID() apparently not supported w/ our v of MySQL?)
-    cursor.execute("""SELECT LAST_INSERT_ID() FROM members""")
+    cursor.execute("""SELECT LAST_INSERT_ID()""")
     member_ids = cursor.fetchall()
     if len(member_ids) != 1:
         app.logger.error("There should only be one ID.")
+        app.logger.error(member_ids)
     new_member_id = member_ids[0]
 
     # update each field separately
@@ -225,10 +226,11 @@ def add_clubhouse(update_dict):
                         VALUES (DEFAULT, 'NULL', 'temp_full')""") # may error if other values have no default
 
     # get this id that we just created 
-    cursor.execute("""SELECT LAST_INSERT_ID() FROM clubhouses""")
+    cursor.execute("""SELECT LAST_INSERT_ID()""")
     club_ids = cursor.fetchall()
     if len(club_ids) != 1:
         app.logger.error("There should only be one ID.")
+        app.logger.error(club_ids)
     new_club_id = club_ids[0]
 
     # create login row

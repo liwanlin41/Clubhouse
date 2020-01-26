@@ -205,35 +205,34 @@ def add_checkout(member_id, clubhouse_id):
 
 def enable_auto_checkout(clubhouse_id):
     cursor = get_cursor()
+    members = [x[0] for x in get_clubhouse_members(clubhouse_id)] # only gets list of member_ids
 
     for member_id in members:
-        event_name = "auto-checkout" + clubhouse_id + "-" + member_id
-        current_time = str(datetime.now())
-        time_stamp = current_time[:11]
-        schedule = "AT " + time_stamp + " 23:59:00 + INTERVAL 1 DAY" # so same day, if need to check
+        event_name = 'autocheckoutc' + str(clubhouse_id) + 'm' + str(member_id)
 
-        # set up recurring database event: sketch things: @check_row variable, may need to set event-scheduler=ON in mysql config file
-        cursor.execute("""CREATE EVENT IF NOT EXISTS %s
-                            ON SCHEDULE %s
-                            ON COMPLETION PRESERVE ENABLE
-                            DO
-                                SET @check_row := (SELECT checkout_datetime FROM checkins
-                                    WHERE member_id = %s
+        # set up recurring database event: sketch things: may need to set event-scheduler=ON in mysql config file
+        cursor.execute("""CREATE EVENT IF NOT EXISTS %s 
+                            ON SCHEDULE AT CURRENT_DATE 23:59:00 + INTERVAL 1 DAY ON COMPLETION PRESERVE ENABLE DO IF ((SELECT checkout_datetime FROM checkins
+                                    WHERE member_id = %%s
                                     ORDER BY checkin_datetime DESC
-                                    LIMIT 1);
-                                SELECT @check_row;
-
-                                IF @check_row = NULL THEN
+                                    LIMIT 1) = NULL) THEN
                                     UPDATE checkins
-                                        SET checkout_datetime =  NOW()
-                                        WHERE member_id = %s
+                                        SET checkout_datetime =  CURRENT_TIMESTAMP
+                                        WHERE member_id = %%s
                                         ORDER BY checkin_datetime DESC
                                         LIMIT 1;
-                                END IF;
-                                """,
-                            (event_name, schedule, member_id, member_id))
+                                END IF
+                                """ % (event_name, ),
+                            (member_id, member_id))
     conn.commit()
     cursor.close()
+
+# sketch mysql variable thing, recently deleted:
+                            # -- SET @check_row := (SELECT checkout_datetime FROM checkins
+                            # --         WHERE member_id = %%s
+                            # --         ORDER BY checkin_datetime DESC
+                            # --         LIMIT 1);
+                            # --     SELECT @check_row;
 
 ### admin side ###
 

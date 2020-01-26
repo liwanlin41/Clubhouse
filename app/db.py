@@ -68,6 +68,19 @@ def get_checked_in_members(clubhouse_id, sort_by_last=True):
             result.append((member_id, (first, last)))
     return result
 
+# same but for currently checked out: returns list of member_ids who have checked in but not out
+    # may have to be called directly inside enable_auto_checkout
+def get_checked_out_members(clubhouse_id):
+    cursor = get_cursor()
+    cursor.execute("""SELECT member_id FROM members
+                        WHERE clubhouse_id = %s
+                        AND is_checked_in = 1""",
+                        (clubhouse_id, ))
+    checked_out = cursor.fetchall()
+    conn.commit()
+    cursor.close()
+    return checked_out
+
 # retrieve only certain members (for filtering)
 def query_members():
     pass
@@ -78,7 +91,7 @@ def add_member(club_id, update_dict):
     # insert blank row with just member_id
     cursor.execute("""INSERT INTO members (member_id, first_name, last_name, clubhouse_id)
                         VALUES (DEFAULT, 'temp_first', 'temp_last', %s)""",
-                        (club_id))
+                        (club_id, ))
 
     # get this id that we just created (LAST_INSERT_ID() apparently not supported w/ our v of MySQL?)
     cursor.execute("""SELECT LAST_INSERT_ID()""")
@@ -143,7 +156,7 @@ def get_all_checkins():
     cursor.close()
     return rows
 
-# retrieve only check-ins from a certain clubhouse
+# retrieve check-ins from a certain clubhouse
 def get_checkins_by_clubhouse(clubhouse_id):
     cursor = get_cursor()
     cursor.execute("""SELECT * FROM checkins
@@ -190,6 +203,38 @@ def add_checkout(member_id, clubhouse_id):
     cursor.close()
     change_member_checkin(member_id, clubhouse_id, False)
 
+def enable_auto_checkout(clubhouse_id):
+    cursor = get_cursor()
+
+    for member_id in members:
+        event_name = "auto-checkout" + clubhouse_id + "-" + member_id
+        current_time = str(datetime.now())
+        time_stamp = current_time[:11]
+        schedule = "AT " + time_stamp + " 23:59:00 + INTERVAL 1 DAY" # so same day, if need to check
+
+        # set up recurring database event: sketch things: @check_row variable, may need to set event-scheduler=ON in mysql config file
+        cursor.execute("""CREATE EVENT IF NOT EXISTS %s
+                            ON SCHEDULE %s
+                            ON COMPLETION PRESERVE ENABLE
+                            DO
+                                SET @check_row := (SELECT checkout_datetime FROM checkins
+                                    WHERE member_id = %s
+                                    ORDER BY checkin_datetime DESC
+                                    LIMIT 1);
+                                SELECT @check_row;
+
+                                IF @check_row = NULL THEN
+                                    UPDATE checkins
+                                        SET checkout_datetime =  NOW()
+                                        WHERE member_id = %s
+                                        ORDER BY checkin_datetime DESC
+                                        LIMIT 1;
+                                END IF;
+                                """,
+                            (event_name, schedule, member_id, member_id))
+    conn.commit()
+    cursor.close()
+
 ### admin side ###
 
 # given id number of clubhouse, get clubhouse name (either 'short_name' or 'full_name')
@@ -225,7 +270,7 @@ def check_distinct_clubhouse_usernames(proposed_username):
     cursor.execute("""SELECT username FROM logins 
                         WHERE username = %s
                         AND is_admin = 0""",
-                        (proposed_username))
+                        (proposed_username, ))
     repeats = cursor.fetchall()
     if len(repeats) > 0:
         # another clubhouse already has this nickname
@@ -275,11 +320,11 @@ def delete_clubhouse(club_id):
     # delete clubhouse row
     cursor.execute("""DELETE FROM clubhouses
                         WHERE clubhouse_id = %s""",
-                        (club_id))
+                        (club_id, ))
     # delete clubhouse login row
     cursor.execute("""DELETE FROM logins
                         WHERE clubhouse_id = %s""",
-                        (club_id))
+                        (club_id, ))
 
     # TODO: if requested, delete all members in this clubhouse and all their checkins
 

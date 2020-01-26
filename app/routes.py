@@ -239,7 +239,9 @@ def checkin_handler():
     session['fresh'] = False
     if request.method == "GET":
         # get checkin manager for this specific clubhouse
-        testform = CheckinManager(session['club_id'], session['last_name_first'])
+        club_id = session['club_id']
+        testform = CheckinManager(club_id, session['last_name_first'])
+        enable_auto_checkout(club_id) # should only create db event once to set up auto_checkout
     if request.method == "POST":
         # deserialize testform and rebind fields
         testform = jsonpickle.decode(session['testform'])

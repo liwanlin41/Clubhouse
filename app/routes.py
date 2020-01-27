@@ -85,7 +85,7 @@ def coord_view():
         cur_format = request.form['format']
         # pass cur_range, cur_format to template
         # to keep them displayed on the page (minimize confusion)
-        return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format, plot=plot(cur_range, cur_format), cur_range =int(cur_range), cur_format = int(cur_format))
+        return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format, plot=plot(cur_range, cur_format, session['club_id']), cur_range =int(cur_range), cur_format = int(cur_format))
     if request.method == 'GET':
         # default cur_range, cur_format to be the first in the list
         return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format, cur_range = time_ranges[0][0], cur_format = data_format[0][0])
@@ -229,7 +229,7 @@ def edit_member_info():
     if request.method == "GET":
         # pull stored information
         handle = MemberInfoHandler(get_specific_member(club_id, mem_id))
-        return render_template('/clubhouse/edit.html', form=handle.form, new_member=False)
+        return render_template('/clubhouse/edit.html', form=handle.form, new_member=False, plot=plot_by_member(club_id, mem_id))
 
 # check-in page, main functionality of website
 @app.route('/clubhouse/checkin', methods=['GET','POST'])

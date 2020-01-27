@@ -152,6 +152,10 @@ body {
     background-color: #E0EBF1;
 }
 
+footer {
+    background-color: #7290C0;
+}
+
 /* apparently necessary for keeping footer at bottom */
 
 html, body {

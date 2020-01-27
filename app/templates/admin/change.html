@@ -10,14 +10,24 @@
 {% endblock %}
 
 {% block content %}
-<h1>{{_("Change Password")}}</h1>
 {% if clubhouse_name %}
+<h1>{{_("Edit Clubhouse")}}</h1>
 <h3>{{ clubhouse_name }}</h3>
+{% else %}
+<h1>{{_("Change Password")}}</h1>
 {% endif %}
 <form id="editform" action="" method="post" novalidate>
 	{{ form.hidden_tag() }}
+	{% if clubhouse_name %}
+	{{ form.full_name.label }}<br>
+	{{ form.full_name(size=20) }}<br>
+	{{ form.short_name.label }}<br>
+	{{ form.short_name(size=20) }}<br>
+	{% endif %}
+	{% if require_password %}
 	{{ form.old_password.label }}<br>
 	{{ form.old_password(size=20) }}<br>
+	{% endif %}
 	{{ form.password.label }}<br>
 	{% for error in form.password.errors %}
 	<span style="color: red;">[{{ error }}]</span><br>
@@ -28,8 +38,6 @@
 	<span style="color: red;">[{{ error }}]</span><br>
 	{% endfor %}
 	{{ form.confirm(size=20) }}<br>
-	{{ form.name_display(checked=display_last) }}
-	{{ form.name_display.label }}<br>
 	{{ form.submit_btn() }}
 	{% if clubhouse_name %}
 	{{ form.delete_btn() }}

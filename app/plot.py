@@ -115,3 +115,38 @@ def plot_dayofweek(time_range, rows):
         tooltip = mpld3.plugins.PointHTMLTooltip(boxes[i], label, hoffset=15, voffset=-15)
         mpld3.plugins.connect(fig, tooltip)
     return mpld3.fig_to_html(fig)
+
+def plot_by_member(club_id, member_id):
+    fig, ax = plt.subplots()
+
+    rows = get_checkins_by_member(club_id, member_id)
+
+    current_day = dt.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+
+    delta = dt.timedelta(days=30)
+
+    timecounts = {}
+    for i in range(30):
+        timecounts[current_day - dt.timedelta(days=i)] = 0
+    max_y = 0
+
+    for (member_id, checkin, checkout, clubhouse_id) in rows:
+        if checkin < current_day - delta:
+            continue
+        if checkout == None:
+            checkout = dt.datetime.now()
+        checkin_day = checkin.replace(hour=0, minute=0, second=0, microsecond=0)
+        timecounts[checkin_day] = timecounts[checkin_day] + (checkout - checkin).total_seconds() // 60
+        max_y = max(max_y, timecounts[checkin_day])
+
+    try:
+        keys, values = zip(*timecounts.items())
+    except ValueError:
+        return 'No checkins by this member'
+    points = ax.plot_date(keys, values, xdate=True)
+    ax.plot_date(keys, values, 'b-', xdate=True)
+    ax.set_xlim([current_day - dt.timedelta(days=30), current_day])
+    ax.set_ylim([0, max_y+10])
+    tooltip = mpld3.plugins.PointLabelTooltip(points[0], values)
+    mpld3.plugins.connect(fig, tooltip)
+    return mpld3.fig_to_html(fig)

@@ -229,7 +229,7 @@ def edit_member_info():
     if request.method == "GET":
         # pull stored information
         handle = MemberInfoHandler(get_specific_member(club_id, mem_id))
-        return render_template('/clubhouse/edit.html', form=handle.form, new_member=False)
+        return render_template('/clubhouse/edit.html', form=handle.form, new_member=False, plot=plot_by_member(club_id, mem_id))
 
 # check-in page, main functionality of website
 @app.route('/clubhouse/checkin', methods=['GET','POST'])

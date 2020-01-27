@@ -308,12 +308,14 @@ def add_clubhouse(update_dict):
         app.logger.error(club_ids)
     new_club_id = club_ids[0]
 
+    pw = generate_password_hash(update_dict['password'])
+
     # create login row
     cursor.execute("""INSERT INTO logins (user_id, username, password, clubhouse_id, is_admin)
                         VALUES (DEFAULT, %s, %s, %s, DEFAULT)""",
-                        (update_dict['username'], update_dict['password'], new_club_id))
+                        (update_dict['username'], pw, new_club_id))
     # TODO: eventually switch to the bottom which stores the password hash instead of password
-#                        (update_dict['username'], generate_password_hash(update_dict['password']), new_club_id))
+#                        (update_dict['username'], generate_password_hash(update_dict['password']), new_club_id)) -- done?
 
     # update each field separately
     for key in update_dict:
@@ -436,11 +438,19 @@ def convert_form_to_dict(form, to_remove):
         del update_dict[field]
     return update_dict
 
-#TODO: implement
+#TODO: implement -- interpretated correctly?
 # set password of user id_num to password
 # id_num is user id
 def update_password(id_num, password):
-    print((id_num, password))
+    pw = generate_password_hash(password)
+
+    cursor = get_cursor()
+    cursor.execute("""UPDATE logins
+                        SET password = %s
+                        WHERE user_id = %s""",
+                        (pw, id_num))
+    conn.commit()
+    cursor.close()
 
 # update clubhouse info given clubhouse id
 def update_club_names(club_id, full_name, short_name):   

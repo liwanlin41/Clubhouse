@@ -442,7 +442,18 @@ def convert_form_to_dict(form, to_remove):
 def update_password(id_num, password):
     print((id_num, password))
 
-#TODO: implement
 # update clubhouse info given clubhouse id
-def update_club_names(club_id, full_name, short_name):
-    pass
+def update_club_names(club_id, full_name, short_name):   
+    cursor = get_cursor()
+    if len(full_name) > 0:
+        cursor.execute("""UPDATE clubhouses
+                            SET full_name = %s
+                            WHERE clubhouse_id = %s""",
+                            (full_name, club_id))
+    if len(short_name) > 0:
+        cursor.execute("""UPDATE clubhouses
+                            SET short_name = %s
+                            WHERE clubhouse_id = %s""",
+                            (short_name, club_id))
+    conn.commit()
+    cursor.close()

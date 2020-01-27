@@ -211,7 +211,7 @@ def enable_auto_checkout(clubhouse_id):
         event_name = 'autocheckoutc' + str(clubhouse_id) + 'm' + str(member_id)
 
         # set up recurring database event: sketch things: may need to set event-scheduler=ON in mysql config file
-        cursor.execute("""CREATE EVENT IF NOT EXISTS %s 
+        cursor.execute("""CREATE EVENT IF NOT EXISTS %s
                             ON SCHEDULE AT CURRENT_DATE 23:59:00 + INTERVAL 1 DAY ON COMPLETION PRESERVE ENABLE DO IF ((SELECT checkout_datetime FROM checkins
                                     WHERE member_id = %%s
                                     ORDER BY checkin_datetime DESC
@@ -266,7 +266,7 @@ def get_all_clubhouses(name="short_name"):
 def check_distinct_clubhouse_usernames(proposed_username):
     cursor = get_cursor()
 
-    cursor.execute("""SELECT username FROM logins 
+    cursor.execute("""SELECT username FROM logins
                         WHERE username = %s
                         AND is_admin = 0""",
                         (proposed_username, ))
@@ -284,7 +284,7 @@ def add_clubhouse(update_dict):
     cursor.execute("""INSERT INTO clubhouses (clubhouse_id, short_name, full_name)
                         VALUES (DEFAULT, 'NULL', 'temp_full')""") # may error if other values have no default
 
-    # get this id that we just created 
+    # get this id that we just created
     cursor.execute("""SELECT LAST_INSERT_ID()""")
     club_ids = cursor.fetchall()
     if len(club_ids) != 1:
@@ -390,13 +390,17 @@ def get_user_id_from_club(club_id):
 def get_user_from_id(id_num):
     cursor = get_cursor()
     cursor.execute("""SELECT * FROM logins
-                    WHERE user_id = %s""", (id_num,))
+                    WHERE user_id = %s""", (id_num,))   # TODO don't selet *, select exact fields
     users = cursor.fetchall()
     if len(users) != 1:
         app.logger.error("There should be exactly one user with this user id.")
     else:
         # TODO: add last_name field and password hash so this is just a return
         u_id, username, password, club_id, is_admin = users[0]
+        # print("id is")
+        # print(u_id)
+        # print("username is")
+        # print(username)
         return (u_id, username, generate_password_hash(password), club_id, is_admin, False)
     # for testing
 #    if id_num == 1:

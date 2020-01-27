@@ -9,7 +9,10 @@ from app import login_manager
 
 @login_manager.user_loader
 def load_user(id_num):
-    return User(int(id_num))
+    user = User(int(id_num))
+    if user.id:
+        return user
+    return None
 
 # user class, this is needed for compatibility with flask-login
 class User(UserMixin):
@@ -30,7 +33,7 @@ class User(UserMixin):
                 self.access = "clubhouse"
                 self.name = get_clubhouse_from_id(club_id)
         else: # this shouldn't happen
-            raise ValueError
+            self.id = None
 
     def check_password(self, password):
         if check_password_hash(self.hash, password): # correct combo

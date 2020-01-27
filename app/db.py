@@ -429,6 +429,9 @@ def convert_form_to_dict(form, to_remove):
     for key in update_dict:
         if type(update_dict[key]) == list and len(update_dict[key]) == 1:
             update_dict[key] = update_dict[key][0]
+        # additional stupid boolean thing, I don't know a better way to handle this
+        if key == "display_by_last" and update_dict[key] == 'y':
+            update_dict[key] = '1'
     for field in update_dict:
         if len(update_dict[field]) == 0:
             to_remove.append(field)

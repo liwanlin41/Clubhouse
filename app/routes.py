@@ -272,7 +272,7 @@ def mass_checkout():
     for mem_id, mem_name in checkins:
         add_checkout(mem_id, club_id)
     flash(_l("Checked out all members."))
-    return redirect('/clubhouse')
+    return redirect('/clubhouse/checkin')
 
 # rest of app routes for admin home page
 
@@ -372,7 +372,6 @@ def admin_clubhouses():
             if not check_distinct_clubhouse_usernames(request.form['username']):
                 flash(_l("This username is already taken."))
             else:
-                # TODO: add new clubhouse in database
                 flash(_l(add_clubhouse(convert_form_to_dict(request.form, ["add_btn", "confirm", "csrf_token"]))))
                 # TODO: make editclubhouses have a GET method so can show individual clubhouse first, like add_member?
                 return redirect('/admin/clubhouses')

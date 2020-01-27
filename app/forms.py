@@ -139,7 +139,7 @@ class ClubhouseAddForm(FlaskForm):
     password = PasswordField(_l('Password'), validators = [DataRequired()])
     confirm = PasswordField(_l('Re-enter Password'), validators = [EqualTo('password', message=_l("Passwords do not match."))])
     # TODO: image field for logo upload
-    name_display = BooleanField(_l('Display members by last name first'))
+    display_by_last = BooleanField(_l('Display members by last name first'))
     add_btn = SubmitField(_l('Add Clubhouse'))
     cancel_btn = SubmitField(_l('Cancel'))
 
@@ -149,7 +149,7 @@ class ClubhouseEditForm(FlaskForm):
     old_password = PasswordField(_l('Enter Current Password'))
     password = PasswordField(_l('New Password'))
     confirm = PasswordField(_l('Re-enter New Password'), validators = [EqualTo('password', message = _l("Passwords do not match."))])
-    name_display = BooleanField(_l('Display members by last name first'))
+    display_by_last = BooleanField(_l('Display members by last name first'))
     submit_btn = SubmitField(_l('Update'))
     cancel_btn = SubmitField(_l('Cancel'))
     delete_btn = SubmitField(_l('Remove Clubhouse'))
@@ -159,14 +159,14 @@ class ClubhouseInfoHandler:
     def __init__(self,data):
         self.form = ClubhouseEditForm()
         # unpack data
-        full_name, short_name, name_display = data
+        full_name, short_name, display_by_last = data
         # prepopulate fields
         if full_name:
             self.form.full_name.render_kw = {'value': full_name}
         if short_name:
             self.form.short_name.render_kw = {'value': short_name}
-        if name_display:
-            self.form.name_display = {'checked': name_display}
+        if display_by_last:
+            self.form.display_by_last = {'checked': display_by_last}
 
 
 # check-in form and handler, these are up and running

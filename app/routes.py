@@ -254,7 +254,7 @@ def checkin_handler():
             elif "check_out_id" in request.form: # check-out button
                 testform.checkout_member(int(request.form["check_out_id"]))
             elif "all_check_out" in request.form:
-                testform.all_check_out()
+                return redirect('/clubhouse/checkout')
             # serialize for persistence
             session['testform'] = jsonpickle.encode(testform)
             return render_template('/clubhouse/checkin.html',form=testform.check_in_form)
@@ -263,6 +263,16 @@ def checkin_handler():
     session['testform'] = jsonpickle.encode(testform) # serialize, persistence
     return render_template('/clubhouse/checkin.html',form=testform.check_in_form)
 
+# mass checkout
+@app.route('/clubhouse/checkout')
+@fresh_login_required(impersonate = True)
+def mass_checkout():
+    club_id = session['club_id']
+    checkins = get_checked_in_members(club_id)
+    for mem_id, mem_name in checkins:
+        add_checkout(mem_id, club_id)
+    flash(_l("Checked out all members."))
+    return redirect('/clubhouse')
 
 # rest of app routes for admin home page
 

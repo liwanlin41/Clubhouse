@@ -257,12 +257,13 @@ class CheckinManager:
         self.setfields()
 
     # checks out all currently checked in students
-    def all_check_out(self):
-        checkedins = [member[0] for member in get_checked_in_members(self.clubhouse)] # returns (id, (first, last))
-        # app.logger.info(checkedins)
-
-        for mem in checkedins:
-            # app.logger.info(mem)
-            self.checkout_member(mem)
-
-        # return "All students were checked out successfully." # doesn't show
+    # not used
+#    def all_check_out(self):
+#        checkedins = [member[0] for member in get_checked_in_members(self.clubhouse)] # returns (id, (first, last))
+#        # app.logger.info(checkedins)
+#
+#        for mem in checkedins:
+#            # app.logger.info(mem)
+#            self.checkout_member(mem)
+#
+#        # return "All students were checked out successfully." # doesn't show

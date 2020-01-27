@@ -6,6 +6,7 @@ from wtforms.validators import DataRequired, Optional, EqualTo, Length
 from flask_babel import lazy_gettext as _l
 from helpers import binary_search
 from .db import *
+from app import app
 
 # login forms
 
@@ -163,6 +164,7 @@ class CheckinForm(FlaskForm):
     check_out_id = SelectField(_l("Members Currently in Clubhouse"), choices = members_in)
     check_in = SubmitField(_l('Check In'))
     check_out = SubmitField(_l('Check Out'))
+    all_check_out = SubmitField(_l('Check Out All Students'))
 
 # handle all check in/out operations
 class CheckinManager:
@@ -236,3 +238,14 @@ class CheckinManager:
         self.members_out.insert(binary_search(self.members_out, member, key = lambda x: self.id_to_name[x[0]][1] + ", " + self.id_to_name[x[0]][0]), member)
 #       self.members_out.insert(binary_search(self.members_out, self.id_to_name[id_num], key = lambda x: x[1]), member)
         self.setfields()
+
+    # checks out all currently checked in students
+    def all_check_out(self):
+        checkedins = [member[0] for member in get_checked_in_members(self.clubhouse)] # returns (id, (first, last))
+        # app.logger.info(checkedins)
+
+        for mem in checkedins:
+            # app.logger.info(mem)
+            self.checkout_member(mem)
+
+        # return "All students were checked out successfully." # doesn't show

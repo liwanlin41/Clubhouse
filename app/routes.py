@@ -241,7 +241,7 @@ def checkin_handler():
         # get checkin manager for this specific clubhouse
         club_id = session['club_id']
         testform = CheckinManager(club_id, session['last_name_first'])
-        enable_auto_checkout(club_id) # should only create db event once to set up auto_checkout
+        # enable_auto_checkout(club_id) # should only create db event once to set up auto_checkout
     if request.method == "POST":
         # deserialize testform and rebind fields
         testform = jsonpickle.decode(session['testform'])
@@ -253,6 +253,8 @@ def checkin_handler():
                 testform.checkin_member(int(request.form["check_in_id"]))
             elif "check_out_id" in request.form: # check-out button
                 testform.checkout_member(int(request.form["check_out_id"]))
+            elif "all_check_out" in request.form:
+                testform.all_check_out()
             # serialize for persistence
             session['testform'] = jsonpickle.encode(testform)
             return render_template('/clubhouse/checkin.html',form=testform.check_in_form)

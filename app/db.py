@@ -168,7 +168,7 @@ def get_checkins_by_clubhouse(clubhouse_id):
 # retrieve check-ins for a given member
 def get_checkins_by_member(clubhouse_id, member_id):
     cursor = get_cursor()
-    cursor.execute("""SELECt * FROM checkins
+    cursor.execute("""SELECT * FROM checkins
                       WHERE clubhouse_id = %s
                       AND member_id = %s""", (clubhouse_id, member_id))
     rows = cursor.fetchall()
@@ -247,19 +247,25 @@ def enable_auto_checkout(clubhouse_id):
 ### admin side ###
 
 # given id number of clubhouse, get clubhouse name (either 'short_name' or 'full_name')
-# mostly copied from get_specific_member
-def get_clubhouse_from_id(club_id, name="short_name"):
+# given id number of clubhouse, select one specific field
+# alternatively get all clubhouse data
+def get_clubhouse_from_id(club_id, field="short_name"):
     cursor = get_cursor()
-    query = """SELECT %s FROM clubhouses WHERE clubhouse_id = %%s""" % name
-    cursor.execute(query, (club_id,))
-    club_name = cursor.fetchall()
+    if field:
+        query = """SELECT %s FROM clubhouses WHERE clubhouse_id = %%s""" % field
+        cursor.execute(query, (club_id,))
+    else: # select everything
+        cursor.execute("""SELECT full_name, short_name, display_by_last FROM clubhouses WHERE clubhouse_id = %s""", (club_id,))
+    club_info = cursor.fetchall()
     conn.commit()
     cursor.close()
-    if len(club_name) > 1:
+    if len(club_info) > 1:
         app.logger.error("error: found more than two clubhouses with these ids")
-    elif len(club_name) < 1:
+    elif len(club_info) < 1:
         app.logger.error("error: didn't find any clubhouse with this id")
-    return club_name[0][0]
+    if field:
+        return club_info[0][0]
+    return club_info[0]
 
 # analog to get_clubhouse_members, return id,name (either short or long name)
 # ordered alphabetically
@@ -399,20 +405,20 @@ def get_user_id_from_club(club_id):
 # here id is the user login id
 def get_user_from_id(id_num):
     cursor = get_cursor()
-    cursor.execute("""SELECT * FROM logins
+    cursor.execute("""SELECT user_id, username, password, clubhouse_id, is_admin FROM logins
                     WHERE user_id = %s""", (id_num,))
     users = cursor.fetchall()
     if len(users) != 1:
         app.logger.error("There should be exactly one user with this user id.")
     else:
-        # TODO: add last_name field and password hash so this is just a return
         u_id, username, password, club_id, is_admin = users[0]
-        return (u_id, username, generate_password_hash(password), club_id, is_admin, False)
-    # for testing
-#    if id_num == 1:
-#        return (1, "hi", generate_password_hash("test"), False, True)
-#    elif id_num == 2:
-#        return (2, "admin", generate_password_hash("admin"), True, False)
+        if is_admin:
+            last_name = False
+        else:
+            # get user preference for name display order
+            last_name = get_clubhouse_from_id(club_id, field="display_by_last")
+        # TODO: change to password hash so this is just a return
+        return (u_id, username, generate_password_hash(password), club_id, is_admin, last_name)
     return (None, None, None, None, None, None)
 
 # HELPER FUNCTION: also removes empty fields
@@ -432,7 +438,11 @@ def convert_form_to_dict(form, to_remove):
 
 #TODO: implement
 # set password of user id_num to password
-# update last_name field to last_name
 # id_num is user id
-def update_password(id_num, password, last_name):
-    print((id_num, password, last_name))
+def update_password(id_num, password):
+    print((id_num, password))
+
+#TODO: implement
+# update clubhouse info given clubhouse id
+def update_club_names(club_id, full_name, short_name):
+    pass

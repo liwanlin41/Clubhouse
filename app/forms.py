@@ -143,13 +143,30 @@ class ClubhouseAddForm(FlaskForm):
     cancel_btn = SubmitField(_l('Cancel'))
 
 class ClubhouseEditForm(FlaskForm):
+    full_name = StringField(_l('Clubhouse Full Name'))
+    short_name = StringField(_l('Clubhouse Short Name'))
     old_password = PasswordField(_l('Enter Current Password'))
-    password = PasswordField(_l('New Password'), validators = [DataRequired()])
+    password = PasswordField(_l('New Password'))
     confirm = PasswordField(_l('Re-enter New Password'), validators = [EqualTo('password', message = _l("Passwords do not match."))])
     name_display = BooleanField(_l('Display members by last name first'))
-    submit_btn = SubmitField(_l('Update Password'))
+    submit_btn = SubmitField(_l('Update'))
     cancel_btn = SubmitField(_l('Cancel'))
     delete_btn = SubmitField(_l('Remove Clubhouse'))
+
+# wrapper for ClubhouseEditForm
+class ClubhouseInfoHandler:
+    def __init__(self,data):
+        self.form = ClubhouseEditForm()
+        # unpack data
+        full_name, short_name, name_display = data
+        # prepopulate fields
+        if full_name:
+            self.form.full_name.render_kw = {'value': full_name}
+        if short_name:
+            self.form.short_name.render_kw = {'value': short_name}
+        if name_display:
+            self.form.name_display = {'checked': name_display}
+
 
 # check-in form and handler, these are up and running
 class CheckinForm(FlaskForm):

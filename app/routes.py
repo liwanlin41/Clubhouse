@@ -6,7 +6,7 @@ from functools import wraps
 from datetime import datetime
 from flask import render_template, flash, redirect, request, url_for, session
 from app import app
-from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler, AuthenticateForm, ClubhouseManager, ClubhouseAddForm, ClubhouseEditForm
+from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler, AuthenticateForm, ClubhouseManager, ClubhouseAddForm, ClubhouseInfoHandler
 from flask_babel import lazy_gettext as _l
 from flask_login import current_user, login_user, logout_user
 from werkzeug.urls import url_parse
@@ -298,45 +298,56 @@ def choose_clubhouse():
 
 @app.route('/admin/editclubhouse', methods=['GET','POST'])
 @fresh_login_required(access="admin")
-def change_clubhouse_password():
+def edit_clubhouse_info():
     if 'edit_club_id' not in session:
         # make this the admin password change page
         working_id = current_user.id # login id
-        club_name = None
-        display_last = session['last_name_first']
+        # must take the form full_name, short_name, name_display
+        load_info = (None, None, None)
+        # require password
+        require_password = True
     else:
         # retrieve login id
         working_id = get_user_id_from_club(session['edit_club_id'])
-        club_name = get_clubhouse_from_id(session['edit_club_id'])
-        display_last = get_user_from_id(working_id)[-1] # clubhouse customization
-
-    form = ClubhouseEditForm()
+        club_info = get_clubhouse_from_id(session['edit_club_id'], field=None)
+        # clubhouse preference name_display does not get changed here
+        load_info = club_info[:2] + (None,)
+        require_password = False
+    handler = ClubhouseInfoHandler(load_info)
+    form = handler.form
     if request.method == 'POST': 
         if "cancel_btn" in request.form: # cancel update
             if 'edit_club_id' in session:
                 session.pop('edit_club_id')
             return redirect('/admin/clubhouses')
-        # first check if password is valid
-        if User(working_id).check_password(request.form['old_password']):
-            # delete takes priority after getting a valid password
-            # TODO: implement higher security clubhouse deletion
-            if "delete_btn" in request.form: # this only happens when clubhouse is selected
-                flash(delete_clubhouse(session['edit_club_id'])) # delete from db
-                if 'club_id' in session and session['club_id'] == session['edit_club_id']:
-                    session.pop('club_id') # remove from memory if impersonating clubhouse is deleted
-            elif form.validate_on_submit():
-                # this contains the new value of last_name
-                new_last_name = form.name_display.data
-                update_password(working_id, request.form['password'], new_last_name)
-                if 'edit_club_id' in session:
-                    session.pop('edit_club_id') # remove club_id from memory
-                flash(_l("Password changed successfully."))
-            session.pop('edit_club_id') # clear stored id
-            return redirect('/admin/clubhouses') # currently no GET request in admin/change
-        else:
-            flash(_l("Incorrect password."))
-            
-    return render_template('/admin/change.html', form=form, clubhouse_name=club_name, display_last=display_last)
+        if require_password: # change admin password
+            # check that password is correct
+            if current_user.check_password(request.form['old_password']):
+                if form.validate_on_submit():
+                    if len(request.form['password']) == 0:
+                        flash(_l("Password is required."))
+                    # update password
+                    else:
+                        update_password(working_id, request.form['password'])
+                        flash(_l("Password changed successfully."))
+                        return redirect('/admin/clubhouses')
+            else:
+                flash(_l("Incorrect password."))
+        elif "delete_btn" in request.form: # delete clubhouse
+            flash(delete_clubhouse(session['edit_club_id'])) # delete from db
+            if 'club_id' in session and session['club_id'] == session['edit_club_id']:
+                session.pop('club_id') # remove from memory if impersonating clubhouse is deleted
+            return redirect('/admin/clubhouses')
+        elif form.validate_on_submit():
+            # update password 
+            if len(request.form['password']) > 0:
+                update_password(working_id, request.form['password'])
+            # update everything else
+            update_club_names(session['edit_club_id'], request.form['full_name'], request.form['short_name'])
+            session.pop('edit_club_id') # remove club_id from memory
+            flash(_l("Updated successfully."))
+            return redirect('/admin/clubhouses')
+    return render_template('/admin/change.html', form=form, clubhouse_name=load_info[0],require_password=require_password)
 
 @app.route('/admin/addclubhouse', methods=['GET','POST'])
 @fresh_login_required(access="admin")

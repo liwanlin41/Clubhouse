@@ -83,7 +83,7 @@
 		<br>
 		{{ form.cancel_btn() }}
 	</form>
-	<div> {{ plot|safe }} </div>
+	<div> {{ plot_month|safe }} {{ plot_year|safe }} {{ plot_time|safe }} {{ plot_weekday|safe }} </div>
 {% endblock %}
 
 {% block endscripts %}

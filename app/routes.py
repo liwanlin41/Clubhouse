@@ -77,7 +77,7 @@ def coord_view():
     time_ranges = [(1,_l("Last 24 hours")), (7,_l("Last 7 days")), (30,_l("Last month")), (365,_l("Last year"))]
     # TODO: name things better, come up with a better indexing system?
     # 0 is meant to be raw data, e.g. number of people on each day
-    data_format = [(0, _l("Check-ins")), (1, _l("Time of day")), (2, _l("Day of week"))]
+    data_format = [(0, _l("Check-ins")), (1, _l("Time of day")), (2, _l("Day of week")), (3, _l("Statistics")), (4, _l("Number of Members"))]
     if request.method == 'POST':
         # TODO: title the graph and update to getting checkins for a given clubhouse
         # extract relevant information
@@ -95,7 +95,7 @@ def coord_view():
 def admin_view():
     # copied from coord_view
     time_ranges = [(1,_l("Last 24 hours")), (7,_l("Last 7 days")), (30,_l("Last month")), (365,_l("Last year"))]
-    data_format = [(0, _l("Check-ins")), (1, _l("Time of day")), (2, _l("Day of week"))]
+    data_format = [(0, _l("Check-ins")), (1, _l("Time of day")), (2, _l("Day of week")), (3, _l("Statistics")), (4, _l("Number of Members"))]
     if request.method == 'POST':
         cur_range = request.form['range']
         cur_format = request.form['format']
@@ -229,7 +229,7 @@ def edit_member_info():
     if request.method == "GET":
         # pull stored information
         handle = MemberInfoHandler(get_specific_member(club_id, mem_id))
-        return render_template('/clubhouse/edit.html', form=handle.form, new_member=False, plot=plot_by_member(club_id, mem_id))
+        return render_template('/clubhouse/edit.html', form=handle.form, new_member=False, plot_month=plot_by_member(club_id, mem_id, 30), plot_year=plot_by_member(club_id, mem_id, 365), plot_time=plot('365', '1', club_id, mem_id), plot_weekday=plot('365', '2', club_id, mem_id))
 
 # check-in page, main functionality of website
 @app.route('/clubhouse/checkin', methods=['GET','POST'])

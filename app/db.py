@@ -24,6 +24,21 @@ def get_clubhouse_members(clubhouse_id, sort_by_last=True):
     cursor.close()
     return rows
 
+# retrieve member join dates: returns (id, join date)
+def get_clubhouse_member_joindates(clubhouse_id):
+    cursor = get_cursor()
+    cursor.execute("SELECT member_id, join_date FROM members WHERE clubhouse_id = %s ORDER BY join_date", (clubhouse_id))
+    rows = cursor.fetchall()
+    cursor.close()
+    return rows
+
+def get_all_joindates():
+    cursor = get_cursor()
+    cursor.execute("SELECT member_id, join_date FROM members ORDER BY join_date")
+    rows = cursor.fetchall()
+    cursor.close()
+    return rows
+
 # retrieve a specific member: returns the whole row by default
 def get_specific_member(clubhouse_id, member_id, short_form=False):
     cursor = get_cursor()

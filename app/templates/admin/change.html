@@ -19,16 +19,20 @@
 <form id="editform" action="" method="post" novalidate>
 	{{ form.hidden_tag() }}
 	{% if clubhouse_name %}
+	{{ form.username.label }}<br>
+	{{ form.username(size=20) }}<br>
 	{{ form.full_name.label }}<br>
+	{% for error in form.full_name.errors %}
+	<span style="color: red;">[{{ error }}]</span><br>
+	{% endfor %}
 	{{ form.full_name(size=20) }}<br>
 	{{ form.short_name.label }}<br>
+	{% for error in form.short_name.errors %}
+	<span style="color: red;">[{{ error }}]</span><br>
+	{% endfor %}
 	{{ form.short_name(size=20) }}<br>
 	{{ form.join_date.label }}<br>
 	{{ form.join_date(size=20) }}<br>
-	{% endif %}
-	{% if require_password %}
-	{{ form.old_password.label }}<br>
-	{{ form.old_password(size=20) }}<br>
 	{% endif %}
 	{{ form.password.label }}<br>
 	{% for error in form.password.errors %}

@@ -10,6 +10,7 @@ from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, M
 from flask_babel import lazy_gettext as _l
 from flask_login import current_user, login_user, logout_user
 from werkzeug.urls import url_parse
+from wtforms.validators import DataRequired
 from .db import *
 from .plot import *
 from .models import *
@@ -58,6 +59,13 @@ def fresh_login_required(access="basic", impersonate = False):
 def home():
     return render_template('index.html')
 
+@app.route('/home') # to make it easier to route based on user access
+@fresh_login_required()
+def reroute_home():
+    if current_user.access == 'admin':
+        return redirect('/admin')
+    return redirect('/clubhouse')
+
 @app.route('/clubhouse')
 @fresh_login_required(impersonate = True)
 def club_home():
@@ -102,7 +110,7 @@ def admin_view():
     if request.method == 'GET':
         return render_template('/admin/view.html', time_ranges=time_ranges, data_format=data_format, cur_range = time_ranges[0][0], cur_format = data_format[0][0])
 
-# logins and logouts
+# logins and logouts, account management
 
 # logout routing
 @app.route('/logout')
@@ -169,6 +177,43 @@ def reauthenticate():
         flash(_l("Incorrect password."))
         return redirect('/reauthenticate')
     return render_template('login.html', form=form, refresh = True)
+
+@app.route('/account', methods=['GET','POST'])
+@fresh_login_required()
+def edit_account_details(): # change password, edit display name
+    # pre-populate form fields
+    working_id = current_user.id # login id
+    if current_user.access == "admin":
+        # must take the form full_name, short_name, join_date, name_display, username
+        load_info = (None, None, None, current_user.last_name_first, current_user.username)
+    else:
+        load_info = get_clubhouse_from_id(session['club_id'], field=None) + (current_user.username,)
+    # still use wrapper of ClubhouseInfoHandler
+    handler = ClubhouseInfoHandler(load_info)
+    form = handler.form
+    if current_user.access == "admin": # for form validation later
+        form.full_name.validators = []
+        form.short_name.validators = []
+        form.password.validators = [DataRequired()]
+    # handle POST request
+    if request.method == 'POST':
+        if "cancel_btn" in request.form: # cancel update
+            return redirect('/home')
+        # require password before doing anything
+        if current_user.check_password(request.form['old_password']):
+            if form.validate_on_submit():
+                if len(request.form['password']) > 0: # update password
+                    update_password(working_id, request.form['password'])
+                # update clubhouse name and info
+                if current_user.access == "clubhouse":
+                    update_club_info(session['club_id'], request.form['full_name'], request.form['short_name'], form.display_by_last.data)
+                    # reset session field in case this changed
+                    session['last_name_first'] = form.display_by_last.data
+                flash(_l("Updated successfully."))
+                return redirect('/home')
+        else:
+            flash(_l("Incorrect password."))
+    return render_template('account.html', form=form)
 
 # rest of app routes for clubhouse home page
 
@@ -311,40 +356,21 @@ def choose_clubhouse():
 @app.route('/admin/editclubhouse', methods=['GET','POST'])
 @fresh_login_required(access="admin")
 def edit_clubhouse_info():
-    if 'edit_club_id' not in session:
-        # make this the admin password change page
-        working_id = current_user.id # login id
-        # must take the form full_name, short_name, join_date, name_display
-        load_info = (None, None, None, None)
-        # require password
-        require_password = True
-    else:
-        # retrieve login id
-        working_id = get_user_id_from_club(session['edit_club_id'])
-        club_info = get_clubhouse_from_id(session['edit_club_id'], field=None)
-        # clubhouse preference name_display does not get changed here
-        load_info = club_info[:3] + (None,)
-        require_password = False
+    if 'edit_club_id' not in session: # can only access this page if clubhouse selected
+        return redirect('/admin/clubhouses')
+    # retrieve login id
+    working_id = get_user_id_from_club(session['edit_club_id'])
+    # retrieve username
+    u_name = get_user_from_id(working_id)[1]
+    club_info = get_clubhouse_from_id(session['edit_club_id'], field=None)
+    # clubhouse preference for name_display does not get changed here
+    load_info = club_info[:-1] + (None, u_name)
     handler = ClubhouseInfoHandler(load_info)
     form = handler.form
     if request.method == 'POST': 
         if "cancel_btn" in request.form: # cancel update
-            if 'edit_club_id' in session:
-                session.pop('edit_club_id')
+            session.pop('edit_club_id')
             return redirect('/admin/clubhouses')
-        if require_password: # change admin password
-            # check that password is correct
-            if current_user.check_password(request.form['old_password']):
-                if form.validate_on_submit():
-                    if len(request.form['password']) == 0:
-                        flash(_l("Password is required."))
-                    # update password
-                    else:
-                        update_password(working_id, request.form['password'])
-                        flash(_l("Password changed successfully."))
-                        return redirect('/admin/clubhouses')
-            else:
-                flash(_l("Incorrect password."))
         elif "delete_btn" in request.form: # delete clubhouse
             flash(delete_clubhouse(session['edit_club_id'])) # delete from db
             if 'club_id' in session and session['club_id'] == session['edit_club_id']:
@@ -363,7 +389,7 @@ def edit_clubhouse_info():
             session.pop('edit_club_id') # remove club_id from memory
             flash(_l("Updated successfully."))
             return redirect('/admin/clubhouses')
-    return render_template('/admin/change.html', form=form, clubhouse_name=load_info[0],require_password=require_password)
+    return render_template('/admin/change.html', form=form, clubhouse_name=load_info[0])
 
 @app.route('/admin/addclubhouse', methods=['GET','POST'])
 @fresh_login_required(access="admin")

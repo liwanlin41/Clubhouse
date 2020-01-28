@@ -462,7 +462,7 @@ def update_password(id_num, password):
     cursor.close()
 
 # update clubhouse info given clubhouse id
-def update_club_info(club_id, full_name, short_name):
+def update_club_info(club_id, full_name, short_name, display_by_last = None):
     cursor = get_cursor()
     if len(full_name) > 0:
         cursor.execute("""UPDATE clubhouses
@@ -474,6 +474,11 @@ def update_club_info(club_id, full_name, short_name):
                             SET short_name = %s
                             WHERE clubhouse_id = %s""",
                             (short_name, club_id))
+    if display_by_last is not None:
+        cursor.execute("""UPDATE clubhouses
+                            SET display_by_last = %s
+                            WHERE clubhouse_id = %s""",
+                            (display_by_last, club_id))
     # join_date is mandatory on the add form
 #    if join_date and len(join_date) > 0:
 #        cursor.execute("""UPDATE clubhouses

@@ -145,8 +145,9 @@ class ClubhouseAddForm(FlaskForm):
     cancel_btn = SubmitField(_l('Cancel'))
 
 class ClubhouseEditForm(FlaskForm):
-    full_name = StringField(_l('Clubhouse Full Name'))
-    short_name = StringField(_l('Clubhouse Short Name'))
+    full_name = StringField(_l('Clubhouse Full Name'), validators = [DataRequired()])
+    short_name = StringField(_l('Clubhouse Short Name'), validators = [DataRequired()])
+    username = StringField(_l('Username'))
     join_date = DateField(_l('Join Date (y-m-d)'),format='%Y-%m-%d', validators = [Optional()])
     old_password = PasswordField(_l('Enter Current Password'))
     password = PasswordField(_l('New Password'))
@@ -161,7 +162,7 @@ class ClubhouseInfoHandler:
     def __init__(self,data):
         self.form = ClubhouseEditForm()
         # unpack data
-        full_name, short_name, join_date, display_by_last = data
+        full_name, short_name, join_date, display_by_last, username = data
         # prepopulate fields
         if full_name:
             self.form.full_name.render_kw = {'value': full_name}
@@ -169,8 +170,10 @@ class ClubhouseInfoHandler:
             self.form.short_name.render_kw = {'value': short_name}
         if join_date:
             self.form.join_date.render_kw = {'value': join_date, 'disabled': 'disabled'} 
+        if username:
+            self.form.username.render_kw = {'value': username, 'disabled': 'disabled'}
         if display_by_last:
-            self.form.display_by_last = {'checked': display_by_last}
+            self.form.display_by_last.render_kw = {'checked': display_by_last}
 
 
 # check-in form and handler, these are up and running

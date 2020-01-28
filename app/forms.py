@@ -134,6 +134,7 @@ class ClubhouseManager:
 class ClubhouseAddForm(FlaskForm):
     full_name = StringField(_l('Clubhouse Full Name'), validators = [DataRequired()])
     short_name = StringField(_l('Clubhouse Short Name (optional)'))
+    join_date = DateField(_l('Join Date (y-m-d)'),format='%Y-%m-%d', validators = [DataRequired()])
     # TODO: set username and password lengths
     username = StringField(_l('Username'), validators = [Length(min=2)])
     password = PasswordField(_l('Password'), validators = [DataRequired()])
@@ -146,6 +147,7 @@ class ClubhouseAddForm(FlaskForm):
 class ClubhouseEditForm(FlaskForm):
     full_name = StringField(_l('Clubhouse Full Name'))
     short_name = StringField(_l('Clubhouse Short Name'))
+    join_date = DateField(_l('Join Date (y-m-d)'),format='%Y-%m-%d', validators = [Optional()])
     old_password = PasswordField(_l('Enter Current Password'))
     password = PasswordField(_l('New Password'))
     confirm = PasswordField(_l('Re-enter New Password'), validators = [EqualTo('password', message = _l("Passwords do not match."))])
@@ -159,12 +161,14 @@ class ClubhouseInfoHandler:
     def __init__(self,data):
         self.form = ClubhouseEditForm()
         # unpack data
-        full_name, short_name, display_by_last = data
+        full_name, short_name, join_date, display_by_last = data
         # prepopulate fields
         if full_name:
             self.form.full_name.render_kw = {'value': full_name}
         if short_name:
             self.form.short_name.render_kw = {'value': short_name}
+        if join_date:
+            self.form.join_date.render_kw = {'value': join_date, 'disabled': 'disabled'} 
         if display_by_last:
             self.form.display_by_last = {'checked': display_by_last}
 

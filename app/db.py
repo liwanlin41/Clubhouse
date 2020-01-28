@@ -101,6 +101,7 @@ def query_members():
     pass
 
 # register a new member, starts checked out by default
+# returns message, member id
 def add_member(club_id, update_dict):
     cursor = get_cursor()
     # insert blank row with just member_id
@@ -126,7 +127,7 @@ def add_member(club_id, update_dict):
 
     conn.commit()
     cursor.close()
-    return _l("Member added successfully.") # again could be more specific
+    return (_l("Member added successfully."), new_member_id) # again could be more specific
 
 # edit a member
 def edit_member(club_id, mem_id, update_dict):
@@ -270,7 +271,7 @@ def get_clubhouse_from_id(club_id, field="short_name"):
         query = """SELECT %s FROM clubhouses WHERE clubhouse_id = %%s""" % field
         cursor.execute(query, (club_id,))
     else: # select everything
-        cursor.execute("""SELECT full_name, short_name, display_by_last FROM clubhouses WHERE clubhouse_id = %s""", (club_id,))
+        cursor.execute("""SELECT full_name, short_name, join_date, display_by_last FROM clubhouses WHERE clubhouse_id = %s""", (club_id,))
     club_info = cursor.fetchall()
     conn.commit()
     cursor.close()
@@ -461,7 +462,7 @@ def update_password(id_num, password):
     cursor.close()
 
 # update clubhouse info given clubhouse id
-def update_club_names(club_id, full_name, short_name):   
+def update_club_info(club_id, full_name, short_name):
     cursor = get_cursor()
     if len(full_name) > 0:
         cursor.execute("""UPDATE clubhouses
@@ -473,5 +474,11 @@ def update_club_names(club_id, full_name, short_name):
                             SET short_name = %s
                             WHERE clubhouse_id = %s""",
                             (short_name, club_id))
+    # join_date is mandatory on the add form
+#    if join_date and len(join_date) > 0:
+#        cursor.execute("""UPDATE clubhouses
+#                            SET join_date = %s
+#                            WHERE clubhouse_id = %s""",
+#                            (join_date, club_id))
     conn.commit()
     cursor.close()

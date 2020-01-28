@@ -79,7 +79,6 @@ def coord_view():
     # 0 is meant to be raw data, e.g. number of people on each day
     data_format = [(0, _l("Check-ins")), (1, _l("Time of day")), (2, _l("Day of week")), (3, _l("Statistics")), (4, _l("Number of Members"))]
     if request.method == 'POST':
-        # TODO: title the graph and update to getting checkins for a given clubhouse
         # extract relevant information
         cur_range = request.form['range']
         cur_format = request.form['format']
@@ -184,8 +183,9 @@ def create_member():
         if "cancel_btn" in request.form:
             return redirect('/clubhouse/members')
         elif form.validate_on_submit():
-            flash(_l(add_member(session['club_id'], convert_form_to_dict(request.form, ["csrf_token", "add_btn"]))))
-            # TODO: pull new member id for this GET request to work
+            message, added_mem_id = add_member(session['club_id'], convert_form_to_dict(request.form, ["csrf_token", "add_btn"]))
+            flash(message)
+            session['edit_member_id'] = added_mem_id
             return redirect('/clubhouse/editmember') # shows the posted data of newly created member
     return render_template('/clubhouse/edit.html', form=form, new_member=True)
 
@@ -314,8 +314,8 @@ def edit_clubhouse_info():
     if 'edit_club_id' not in session:
         # make this the admin password change page
         working_id = current_user.id # login id
-        # must take the form full_name, short_name, name_display
-        load_info = (None, None, None)
+        # must take the form full_name, short_name, join_date, name_display
+        load_info = (None, None, None, None)
         # require password
         require_password = True
     else:
@@ -323,7 +323,7 @@ def edit_clubhouse_info():
         working_id = get_user_id_from_club(session['edit_club_id'])
         club_info = get_clubhouse_from_id(session['edit_club_id'], field=None)
         # clubhouse preference name_display does not get changed here
-        load_info = club_info[:2] + (None,)
+        load_info = club_info[:3] + (None,)
         require_password = False
     handler = ClubhouseInfoHandler(load_info)
     form = handler.form
@@ -355,7 +355,11 @@ def edit_clubhouse_info():
             if len(request.form['password']) > 0:
                 update_password(working_id, request.form['password'])
             # update everything else
-            update_club_names(session['edit_club_id'], request.form['full_name'], request.form['short_name'])
+            # join_date should not get updated in practice
+#            join_date = None
+#            if 'join_date' in request.form: # in practice this should not happen
+#                join_date = request.form['join_date']
+            update_club_info(session['edit_club_id'], request.form['full_name'], request.form['short_name'])
             session.pop('edit_club_id') # remove club_id from memory
             flash(_l("Updated successfully."))
             return redirect('/admin/clubhouses')
@@ -365,6 +369,7 @@ def edit_clubhouse_info():
 @fresh_login_required(access="admin")
 def admin_clubhouses():
     form = ClubhouseAddForm()
+    form.join_date.render_kw = {'value': datetime.now().date()}
     if request.method == "POST":
         if "cancel_btn" in request.form: # cancel clubhouse add
             return redirect('/admin/clubhouses')

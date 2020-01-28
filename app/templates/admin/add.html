@@ -19,6 +19,11 @@
 	{{ form.full_name(size=20) }}<br>
 	{{ form.short_name.label }}<br>
 	{{ form.short_name(size=20) }}<br>
+	{{ form.join_date.label }}<br>
+	{% for error in form.join_date.errors %}
+	<span style="color: red;">[{{ error }}]</span><br>
+	{% endfor %}
+	{{ form.join_date(size=20) }}<br>
 	{{ form.username.label }}<br>
 	{% for error in form.username.errors %}
 	<span style="color: red;">[{{ error }}]</span><br>

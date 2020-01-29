@@ -31,7 +31,8 @@ class User(UserMixin):
                 self.name = "Administrator"
             else:
                 self.access = "clubhouse"
-                self.name = get_clubhouse_from_id(club_id)
+                # display full name of clubhouse
+                self.name = get_clubhouse_from_id(club_id, field="full_name")
         else: # this shouldn't happen
             self.id = None
 

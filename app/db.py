@@ -346,7 +346,7 @@ def add_clubhouse(update_dict):
         cursor.execute("""UPDATE clubhouses SET short_name = %s WHERE clubhouse_id = %s""", (update_dict['full_name'], new_club_id))
     conn.commit()
     cursor.close()
-    return _l("Clubhouse added successfully.") # again could be more specific
+    return (_l("Clubhouse added successfully."), new_club_id) # again could be more specific
 
 def delete_clubhouse(club_id):
     cursor = get_cursor()
@@ -358,8 +358,6 @@ def delete_clubhouse(club_id):
     cursor.execute("""DELETE FROM logins
                         WHERE clubhouse_id = %s""",
                         (club_id, ))
-
-    # TODO: if requested, delete all members in this clubhouse and all their checkins
 
     conn.commit()
     cursor.close()

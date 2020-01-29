@@ -45,8 +45,8 @@ class MemberManager:
 
 # form and handler for adding or editing member
 class MemberAddForm(FlaskForm):
-    first_name = StringField(_l('First Name'), validators = [DataRequired()])
-    last_name = StringField(_l('Last Name'), validators = [DataRequired()])
+    first_name = StringField(_l('First Name (*)'), validators = [DataRequired()])
+    last_name = StringField(_l('Last Name (*)'), validators = [DataRequired()])
     street_address = StringField(_l('Street Address'))
     city = StringField(_l('City'))
     state = StringField(_l('State'))
@@ -135,7 +135,6 @@ class ClubhouseAddForm(FlaskForm):
     full_name = StringField(_l('Clubhouse Full Name'), validators = [DataRequired()])
     short_name = StringField(_l('Clubhouse Short Name (optional)'))
     join_date = DateField(_l('Join Date (y-m-d)'),format='%Y-%m-%d', validators = [DataRequired()])
-    # TODO: set username and password lengths
     username = StringField(_l('Username'), validators = [Length(min=2)])
     password = PasswordField(_l('Password'), validators = [DataRequired()])
     confirm = PasswordField(_l('Re-enter Password'), validators = [EqualTo('password', message=_l("Passwords do not match."))])
@@ -149,7 +148,7 @@ class ClubhouseEditForm(FlaskForm):
     short_name = StringField(_l('Clubhouse Short Name'), validators = [DataRequired()])
     username = StringField(_l('Username'))
     join_date = DateField(_l('Join Date (y-m-d)'),format='%Y-%m-%d', validators = [Optional()])
-    old_password = PasswordField(_l('Enter Current Password'))
+    old_password = PasswordField(_l('Enter Current Password (*)'))
     password = PasswordField(_l('New Password'))
     confirm = PasswordField(_l('Re-enter New Password'), validators = [EqualTo('password', message = _l("Passwords do not match."))])
     display_by_last = BooleanField(_l('Display members by last name first'))

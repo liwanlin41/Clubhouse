@@ -83,7 +83,6 @@ def coord_view():
     # the time_range will return the number of days to be considered
     # [1, 7, 30, 365] corresponding to day, week, month, year
     time_ranges = [(1,_l("Last 24 hours")), (7,_l("Last 7 days")), (30,_l("Last month")), (365,_l("Last year"))]
-    # TODO: name things better, come up with a better indexing system?
     # 0 is meant to be raw data, e.g. number of people on each day
     data_format = [(0, _l("Check-ins")), (1, _l("Time of day")), (2, _l("Day of week")), (3, _l("Statistics")), (4, _l("Number of Members"))]
     if request.method == 'POST':
@@ -403,7 +402,9 @@ def admin_clubhouses():
             if not check_distinct_clubhouse_usernames(request.form['username']):
                 flash(_l("This username is already taken."))
             else:
-                flash(_l(add_clubhouse(convert_form_to_dict(request.form, ["add_btn", "confirm", "csrf_token"]))))
-                # TODO: make editclubhouses have a GET method so can show individual clubhouse first, like add_member?
-                return redirect('/admin/clubhouses')
+                message, new_club_id = add_clubhouse(convert_form_to_dict(request.form, ["add_btn","confirm", "csrf_token"]))
+#                flash(_l(add_clubhouse(convert_form_to_dict(request.form, ["add_btn", "confirm", "csrf_token"]))))
+                flash(message)
+                session['edit_club_id'] = new_club_id
+                return redirect('/admin/editclubhouse')
     return render_template('/admin/add.html', form=form)

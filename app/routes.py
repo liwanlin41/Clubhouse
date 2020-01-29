@@ -6,10 +6,11 @@ from functools import wraps
 from datetime import datetime
 from flask import render_template, flash, redirect, request, url_for, session
 from app import app
-from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler, AuthenticateForm, ClubhouseManager, ClubhouseAddForm, ClubhouseEditForm
+from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler, AuthenticateForm, ClubhouseManager, ClubhouseAddForm, ClubhouseInfoHandler
 from flask_babel import lazy_gettext as _l
 from flask_login import current_user, login_user, logout_user
 from werkzeug.urls import url_parse
+from wtforms.validators import DataRequired
 from .db import *
 from .plot import *
 from .models import *
@@ -58,6 +59,13 @@ def fresh_login_required(access="basic", impersonate = False):
 def home():
     return render_template('index.html')
 
+@app.route('/home') # to make it easier to route based on user access
+@fresh_login_required()
+def reroute_home():
+    if current_user.access == 'admin':
+        return redirect('/admin')
+    return redirect('/clubhouse')
+
 @app.route('/clubhouse')
 @fresh_login_required(impersonate = True)
 def club_home():
@@ -75,11 +83,9 @@ def coord_view():
     # the time_range will return the number of days to be considered
     # [1, 7, 30, 365] corresponding to day, week, month, year
     time_ranges = [(1,_l("Last 24 hours")), (7,_l("Last 7 days")), (30,_l("Last month")), (365,_l("Last year"))]
-    # TODO: name things better, come up with a better indexing system?
     # 0 is meant to be raw data, e.g. number of people on each day
-    data_format = [(0, _l("Check-ins")), (1, _l("Time of day")), (2, _l("Day of week"))]
+    data_format = [(0, _l("Check-ins")), (1, _l("Time of day")), (2, _l("Day of week")), (3, _l("Statistics")), (4, _l("Number of Members"))]
     if request.method == 'POST':
-        # TODO: title the graph and update to getting checkins for a given clubhouse
         # extract relevant information
         cur_range = request.form['range']
         cur_format = request.form['format']
@@ -95,7 +101,7 @@ def coord_view():
 def admin_view():
     # copied from coord_view
     time_ranges = [(1,_l("Last 24 hours")), (7,_l("Last 7 days")), (30,_l("Last month")), (365,_l("Last year"))]
-    data_format = [(0, _l("Check-ins")), (1, _l("Time of day")), (2, _l("Day of week"))]
+    data_format = [(0, _l("Check-ins")), (1, _l("Time of day")), (2, _l("Day of week")), (3, _l("Statistics")), (4, _l("Number of Members"))]
     if request.method == 'POST':
         cur_range = request.form['range']
         cur_format = request.form['format']
@@ -103,7 +109,7 @@ def admin_view():
     if request.method == 'GET':
         return render_template('/admin/view.html', time_ranges=time_ranges, data_format=data_format, cur_range = time_ranges[0][0], cur_format = data_format[0][0])
 
-# logins and logouts
+# logins and logouts, account management
 
 # logout routing
 @app.route('/logout')
@@ -171,6 +177,43 @@ def reauthenticate():
         return redirect('/reauthenticate')
     return render_template('login.html', form=form, refresh = True)
 
+@app.route('/account', methods=['GET','POST'])
+@fresh_login_required()
+def edit_account_details(): # change password, edit display name
+    # pre-populate form fields
+    working_id = current_user.id # login id
+    if current_user.access == "admin":
+        # must take the form full_name, short_name, join_date, name_display, username
+        load_info = (None, None, None, current_user.last_name_first, current_user.username)
+    else:
+        load_info = get_clubhouse_from_id(session['club_id'], field=None) + (current_user.username,)
+    # still use wrapper of ClubhouseInfoHandler
+    handler = ClubhouseInfoHandler(load_info)
+    form = handler.form
+    if current_user.access == "admin": # for form validation later
+        form.full_name.validators = []
+        form.short_name.validators = []
+        form.password.validators = [DataRequired()]
+    # handle POST request
+    if request.method == 'POST':
+        if "cancel_btn" in request.form: # cancel update
+            return redirect('/home')
+        # require password before doing anything
+        if current_user.check_password(request.form['old_password']):
+            if form.validate_on_submit():
+                if len(request.form['password']) > 0: # update password
+                    update_password(working_id, request.form['password'])
+                # update clubhouse name and info
+                if current_user.access == "clubhouse":
+                    update_club_info(session['club_id'], request.form['full_name'], request.form['short_name'], form.display_by_last.data)
+                    # reset session field in case this changed
+                    session['last_name_first'] = form.display_by_last.data
+                flash(_l("Updated successfully."))
+                return redirect('/home')
+        else:
+            flash(_l("Incorrect password."))
+    return render_template('account.html', form=form)
+
 # rest of app routes for clubhouse home page
 
 # add new member
@@ -184,8 +227,9 @@ def create_member():
         if "cancel_btn" in request.form:
             return redirect('/clubhouse/members')
         elif form.validate_on_submit():
-            flash(_l(add_member(session['club_id'], convert_form_to_dict(request.form, ["csrf_token", "add_btn"]))))
-            # TODO: pull new member id for this GET request to work
+            message, added_mem_id = add_member(session['club_id'], convert_form_to_dict(request.form, ["csrf_token", "add_btn"]))
+            flash(message)
+            session['edit_member_id'] = added_mem_id
             return redirect('/clubhouse/editmember') # shows the posted data of newly created member
     return render_template('/clubhouse/edit.html', form=form, new_member=True)
 
@@ -229,7 +273,7 @@ def edit_member_info():
     if request.method == "GET":
         # pull stored information
         handle = MemberInfoHandler(get_specific_member(club_id, mem_id))
-        return render_template('/clubhouse/edit.html', form=handle.form, new_member=False, plot=plot_by_member(club_id, mem_id))
+        return render_template('/clubhouse/edit.html', form=handle.form, new_member=False, plot_month=plot_by_member(club_id, mem_id, 30), plot_year=plot_by_member(club_id, mem_id, 365), plot_time=plot('365', '1', club_id, mem_id), plot_weekday=plot('365', '2', club_id, mem_id))
 
 # check-in page, main functionality of website
 @app.route('/clubhouse/checkin', methods=['GET','POST'])
@@ -241,7 +285,7 @@ def checkin_handler():
         # get checkin manager for this specific clubhouse
         club_id = session['club_id']
         testform = CheckinManager(club_id, session['last_name_first'])
-        enable_auto_checkout(club_id) # should only create db event once to set up auto_checkout
+        # enable_auto_checkout(club_id) # should only create db event once to set up auto_checkout
     if request.method == "POST":
         # deserialize testform and rebind fields
         testform = jsonpickle.decode(session['testform'])
@@ -253,6 +297,8 @@ def checkin_handler():
                 testform.checkin_member(int(request.form["check_in_id"]))
             elif "check_out_id" in request.form: # check-out button
                 testform.checkout_member(int(request.form["check_out_id"]))
+            elif "all_check_out" in request.form:
+                return redirect('/clubhouse/checkout')
             # serialize for persistence
             session['testform'] = jsonpickle.encode(testform)
             return render_template('/clubhouse/checkin.html',form=testform.check_in_form)
@@ -261,6 +307,16 @@ def checkin_handler():
     session['testform'] = jsonpickle.encode(testform) # serialize, persistence
     return render_template('/clubhouse/checkin.html',form=testform.check_in_form)
 
+# mass checkout
+@app.route('/clubhouse/checkout')
+@fresh_login_required(impersonate = True)
+def mass_checkout():
+    club_id = session['club_id']
+    checkins = get_checked_in_members(club_id)
+    for mem_id, mem_name in checkins:
+        add_checkout(mem_id, club_id)
+    flash(_l("Checked out all members."))
+    return redirect('/clubhouse/checkin')
 
 # rest of app routes for admin home page
 
@@ -298,50 +354,47 @@ def choose_clubhouse():
 
 @app.route('/admin/editclubhouse', methods=['GET','POST'])
 @fresh_login_required(access="admin")
-def change_clubhouse_password():
-    if 'edit_club_id' not in session:
-        # make this the admin password change page
-        working_id = current_user.id # login id
-        club_name = None
-        display_last = session['last_name_first']
-    else:
-        # retrieve login id
-        working_id = get_user_id_from_club(session['edit_club_id'])
-        club_name = get_clubhouse_from_id(session['edit_club_id'])
-        display_last = get_user_from_id(working_id)[-1] # clubhouse customization
-
-    form = ClubhouseEditForm()
+def edit_clubhouse_info():
+    if 'edit_club_id' not in session: # can only access this page if clubhouse selected
+        return redirect('/admin/clubhouses')
+    # retrieve login id
+    working_id = get_user_id_from_club(session['edit_club_id'])
+    # retrieve username
+    u_name = get_user_from_id(working_id)[1]
+    club_info = get_clubhouse_from_id(session['edit_club_id'], field=None)
+    # clubhouse preference for name_display does not get changed here
+    load_info = club_info[:-1] + (None, u_name)
+    handler = ClubhouseInfoHandler(load_info)
+    form = handler.form
     if request.method == 'POST': 
         if "cancel_btn" in request.form: # cancel update
-            if 'edit_club_id' in session:
-                session.pop('edit_club_id')
+            session.pop('edit_club_id')
             return redirect('/admin/clubhouses')
-        # first check if password is valid
-        if User(working_id).check_password(request.form['old_password']):
-            # delete takes priority after getting a valid password
-            # TODO: implement higher security clubhouse deletion
-            if "delete_btn" in request.form: # this only happens when clubhouse is selected
-                flash(delete_clubhouse(session['edit_club_id'])) # delete from db
-                if 'club_id' in session and session['club_id'] == session['edit_club_id']:
-                    session.pop('club_id') # remove from memory if impersonating clubhouse is deleted
-            elif form.validate_on_submit():
-                # this contains the new value of last_name
-                new_last_name = form.name_display.data
-                update_password(working_id, request.form['password'], new_last_name)
-                if 'edit_club_id' in session:
-                    session.pop('edit_club_id') # remove club_id from memory
-                flash(_l("Password changed successfully."))
-            session.pop('edit_club_id') # clear stored id
-            return redirect('/admin/clubhouses') # currently no GET request in admin/change
-        else:
-            flash(_l("Incorrect password."))
-            
-    return render_template('/admin/change.html', form=form, clubhouse_name=club_name, display_last=display_last)
+        elif "delete_btn" in request.form: # delete clubhouse
+            flash(delete_clubhouse(session['edit_club_id'])) # delete from db
+            if 'club_id' in session and session['club_id'] == session['edit_club_id']:
+                session.pop('club_id') # remove from memory if impersonating clubhouse is deleted
+            return redirect('/admin/clubhouses')
+        elif form.validate_on_submit():
+            # update password 
+            if len(request.form['password']) > 0:
+                update_password(working_id, request.form['password'])
+            # update everything else
+            # join_date should not get updated in practice
+#            join_date = None
+#            if 'join_date' in request.form: # in practice this should not happen
+#                join_date = request.form['join_date']
+            update_club_info(session['edit_club_id'], request.form['full_name'], request.form['short_name'])
+            session.pop('edit_club_id') # remove club_id from memory
+            flash(_l("Updated successfully."))
+            return redirect('/admin/clubhouses')
+    return render_template('/admin/change.html', form=form, clubhouse_name=load_info[0])
 
 @app.route('/admin/addclubhouse', methods=['GET','POST'])
 @fresh_login_required(access="admin")
 def admin_clubhouses():
     form = ClubhouseAddForm()
+    form.join_date.render_kw = {'value': datetime.now().date()}
     if request.method == "POST":
         if "cancel_btn" in request.form: # cancel clubhouse add
             return redirect('/admin/clubhouses')
@@ -349,8 +402,9 @@ def admin_clubhouses():
             if not check_distinct_clubhouse_usernames(request.form['username']):
                 flash(_l("This username is already taken."))
             else:
-                # TODO: add new clubhouse in database
-                flash(_l(add_clubhouse(convert_form_to_dict(request.form, ["add_btn", "confirm", "csrf_token"]))))
-                # TODO: make editclubhouses have a GET method so can show individual clubhouse first, like add_member?
-                return redirect('/admin/clubhouses')
+                message, new_club_id = add_clubhouse(convert_form_to_dict(request.form, ["add_btn","confirm", "csrf_token"]))
+#                flash(_l(add_clubhouse(convert_form_to_dict(request.form, ["add_btn", "confirm", "csrf_token"]))))
+                flash(message)
+                session['edit_club_id'] = new_club_id
+                return redirect('/admin/editclubhouse')
     return render_template('/admin/add.html', form=form)

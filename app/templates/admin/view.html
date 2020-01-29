@@ -1,17 +1,12 @@
 {% extends "base.html" %}
 <!-- view information across all clubhouses -->
 
-<!-- currently copied from clubhouse view -->
-
 {% block title %} {{ _("Global Clubhouse Check-ins")}} {% endblock %}
 
 {% block navtabs %}
 <li><a href="/admin">{{_("Admin Home")}}</a></li>
 <li><a href="/admin/clubhouses">{{_("Clubhouses")}}</a></li>
-	<!--
-        <div>
-                <a href="/clubhouse/checkin">{{_("Member Check-ins")}}</a>
-	</div>-->
+<li><a href="/account">{{_("Account")}}</a></li>
 {% endblock %}
 
 {% block content %}

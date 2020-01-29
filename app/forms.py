@@ -6,6 +6,7 @@ from wtforms.validators import DataRequired, Optional, EqualTo, Length
 from flask_babel import lazy_gettext as _l
 from helpers import binary_search
 from .db import *
+from app import app
 
 # login forms
 
@@ -44,8 +45,8 @@ class MemberManager:
 
 # form and handler for adding or editing member
 class MemberAddForm(FlaskForm):
-    first_name = StringField(_l('First Name'), validators = [DataRequired()])
-    last_name = StringField(_l('Last Name'), validators = [DataRequired()])
+    first_name = StringField(_l('First Name (*)'), validators = [DataRequired()])
+    last_name = StringField(_l('Last Name (*)'), validators = [DataRequired()])
     street_address = StringField(_l('Street Address'))
     city = StringField(_l('City'))
     state = StringField(_l('State'))
@@ -133,23 +134,46 @@ class ClubhouseManager:
 class ClubhouseAddForm(FlaskForm):
     full_name = StringField(_l('Clubhouse Full Name'), validators = [DataRequired()])
     short_name = StringField(_l('Clubhouse Short Name (optional)'))
-    # TODO: set username and password lengths
+    join_date = DateField(_l('Join Date (y-m-d)'),format='%Y-%m-%d', validators = [DataRequired()])
     username = StringField(_l('Username'), validators = [Length(min=2)])
     password = PasswordField(_l('Password'), validators = [DataRequired()])
     confirm = PasswordField(_l('Re-enter Password'), validators = [EqualTo('password', message=_l("Passwords do not match."))])
     # TODO: image field for logo upload
-    name_display = BooleanField(_l('Display members by last name first'))
+    display_by_last = BooleanField(_l('Display members by last name first'))
     add_btn = SubmitField(_l('Add Clubhouse'))
     cancel_btn = SubmitField(_l('Cancel'))
 
 class ClubhouseEditForm(FlaskForm):
-    old_password = PasswordField(_l('Enter Current Password'))
-    password = PasswordField(_l('New Password'), validators = [DataRequired()])
+    full_name = StringField(_l('Clubhouse Full Name'), validators = [DataRequired()])
+    short_name = StringField(_l('Clubhouse Short Name'), validators = [DataRequired()])
+    username = StringField(_l('Username'))
+    join_date = DateField(_l('Join Date (y-m-d)'),format='%Y-%m-%d', validators = [Optional()])
+    old_password = PasswordField(_l('Enter Current Password (*)'))
+    password = PasswordField(_l('New Password'))
     confirm = PasswordField(_l('Re-enter New Password'), validators = [EqualTo('password', message = _l("Passwords do not match."))])
-    name_display = BooleanField(_l('Display members by last name first'))
-    submit_btn = SubmitField(_l('Update Password'))
+    display_by_last = BooleanField(_l('Display members by last name first'))
+    submit_btn = SubmitField(_l('Update'))
     cancel_btn = SubmitField(_l('Cancel'))
     delete_btn = SubmitField(_l('Remove Clubhouse'))
+
+# wrapper for ClubhouseEditForm
+class ClubhouseInfoHandler:
+    def __init__(self,data):
+        self.form = ClubhouseEditForm()
+        # unpack data
+        full_name, short_name, join_date, display_by_last, username = data
+        # prepopulate fields
+        if full_name:
+            self.form.full_name.render_kw = {'value': full_name}
+        if short_name:
+            self.form.short_name.render_kw = {'value': short_name}
+        if join_date:
+            self.form.join_date.render_kw = {'value': join_date, 'disabled': 'disabled'} 
+        if username:
+            self.form.username.render_kw = {'value': username, 'disabled': 'disabled'}
+        if display_by_last:
+            self.form.display_by_last.render_kw = {'checked': display_by_last}
+
 
 # check-in form and handler, these are up and running
 class CheckinForm(FlaskForm):
@@ -163,6 +187,7 @@ class CheckinForm(FlaskForm):
     check_out_id = SelectField(_l("Members Currently in Clubhouse"), choices = members_in)
     check_in = SubmitField(_l('Check In'))
     check_out = SubmitField(_l('Check Out'))
+    all_check_out = SubmitField(_l('Check Out All Students'))
 
 # handle all check in/out operations
 class CheckinManager:
@@ -236,3 +261,15 @@ class CheckinManager:
         self.members_out.insert(binary_search(self.members_out, member, key = lambda x: self.id_to_name[x[0]][1] + ", " + self.id_to_name[x[0]][0]), member)
 #       self.members_out.insert(binary_search(self.members_out, self.id_to_name[id_num], key = lambda x: x[1]), member)
         self.setfields()
+
+    # checks out all currently checked in students
+    # not used
+#    def all_check_out(self):
+#        checkedins = [member[0] for member in get_checked_in_members(self.clubhouse)] # returns (id, (first, last))
+#        # app.logger.info(checkedins)
+#
+#        for mem in checkedins:
+#            # app.logger.info(mem)
+#            self.checkout_member(mem)
+#
+#        # return "All students were checked out successfully." # doesn't show

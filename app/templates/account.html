@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+<!-- user account management-->
+
+{% block title %} {{_("Account")}} {% endblock %}
+
+{% block navtabs %}
+<!-- different navtabs based on account-->
+{% if current_user.access == "admin" %}
+<li><a href="/admin">{{_("Admin Home")}}</a></li>
+<li><a href="/admin/clubhouses">{{_("Clubhouses")}}</a></li>
+<li><a href="/admin/view">{{_("View Clubhouse Data")}}</a></li>
+{% else %}
+<li><a href="/clubhouse">{{_("Clubhouse Home")}}</a></li>
+<li><a href="/clubhouse/checkin">{{_("Member Check-in")}}</a></li>
+<li><a href="/clubhouse/members">{{_("Edit Members")}}</a></li>
+<li><a href="/clubhouse/view">{{_("View Data")}}</a></li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<form action="" method="post" novalidate>
+	{{ form.hidden_tag() }}
+	{{ form.username.label }}<br>
+	{{ form.username(size=20) }}<br>
+	{% if current_user.access == "clubhouse" %}
+	{{ form.full_name.label }}<br>
+        {% for error in form.full_name.errors %}
+        <span style="color: red;">[{{ error }}]</span><br>
+        {% endfor %}
+        {{ form.full_name(size=20) }}<br>
+        {{ form.short_name.label }}<br>
+        {% for error in form.short_name.errors %}
+        <span style="color: red;">[{{ error }}]</span><br>
+        {% endfor %}
+        {{ form.short_name(size=20) }}<br>
+	{% endif %}
+	{{ form.old_password.label }}<br>
+	{{ form.old_password(size=20) }}<br>
+	{{ form.password.label }}<br>
+        {% for error in form.password.errors %}
+        <span style="color: red;">[{{ error }}]</span><br>
+        {% endfor %}
+        {{ form.password(size=20) }}<br>
+        {{ form.confirm.label }}<br>
+        {% for error in form.confirm.errors %}
+        <span style="color: red;">[{{ error }}]</span><br>
+        {% endfor %}
+        {{ form.confirm(size=20) }}<br>
+	{% if current_user.access == "clubhouse" %}
+	{{ form.display_by_last() }}
+	{{ form.display_by_last.label }}<br>
+	{% endif %}
+	{{ form.submit_btn() }}<br>
+	{{ form.cancel_btn() }}
+</form>
+{% endblock %}

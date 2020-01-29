@@ -34,6 +34,8 @@ pybabel compile -d app/translations
 ```
 and hopefully it works.
 
+In addition, when adding a new language please also add the abbreviation for that language in the `config.py LANGUAGES` list.
+
 ## Database Setup
 This website uses a MySQL database, accessed through the Flask extension `flask-mysql`.
 

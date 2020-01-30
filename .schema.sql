@@ -36,7 +36,10 @@ CREATE TABLE IF NOT EXISTS clubhouses (
   clubhouse_id        INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   short_name          TINYTEXT NOT NULL,
   full_name           TINYTEXT NOT NULL,
-  image               TINYTEXT
+  join_date           DATE,
+  time_zone           
+  image               TINYTEXT,
+  display_by_last     BOOLEAN NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS logins (

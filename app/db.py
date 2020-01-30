@@ -238,7 +238,7 @@ def enable_auto_checkout(clubhouse_id):
 
         # set up recurring database event: sketch things: may need to set event-scheduler=ON in mysql config file
         cursor.execute("""CREATE EVENT IF NOT EXISTS %s
-                            ON SCHEDULE AT CURRENT_DATE 23:59:00 + INTERVAL 1 DAY ON COMPLETION PRESERVE ENABLE DO IF ((SELECT checkout_datetime FROM checkins
+                            ON SCHEDULE AT addtime(CURDATE(), '23:59:59') + INTERVAL 1 DAY ON COMPLETION PRESERVE ENABLE DO IF ((SELECT checkout_datetime FROM checkins
                                     WHERE member_id = %%s
                                     ORDER BY checkin_datetime DESC
                                     LIMIT 1) = NULL) THEN

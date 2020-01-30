@@ -366,7 +366,7 @@ def edit_clubhouse_info():
     load_info = club_info[:-1] + (None, u_name)
     handler = ClubhouseInfoHandler(load_info)
     form = handler.form
-    if request.method == 'POST': 
+    if request.method == 'POST':
         if "cancel_btn" in request.form: # cancel update
             session.pop('edit_club_id')
             return redirect('/admin/clubhouses')
@@ -376,7 +376,7 @@ def edit_clubhouse_info():
                 session.pop('club_id') # remove from memory if impersonating clubhouse is deleted
             return redirect('/admin/clubhouses')
         elif form.validate_on_submit():
-            # update password 
+            # update password
             if len(request.form['password']) > 0:
                 update_password(working_id, request.form['password'])
             # update everything else

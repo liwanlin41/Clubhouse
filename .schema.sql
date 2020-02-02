@@ -22,7 +22,8 @@ CREATE TABLE IF NOT EXISTS members (
   guardian_email      TINYTEXT,
   guardian_phone      TINYTEXT,
   clubhouse_id        INT NOT NULL,
-  is_checked_in       BOOLEAN NOT NULL DEFAULT 0
+  is_checked_in       BOOLEAN NOT NULL DEFAULT 0,
+  active              BOOLEAN NOT NULL DEFAULT 1
 );
 
 CREATE TABLE IF NOT EXISTS checkins (
@@ -37,9 +38,10 @@ CREATE TABLE IF NOT EXISTS clubhouses (
   short_name          TINYTEXT NOT NULL,
   full_name           TINYTEXT NOT NULL,
   join_date           DATE,
-  time_zone           
+  time_zone           TINYTEXT,
   image               TINYTEXT,
-  display_by_last     BOOLEAN NOT NULL DEFAULT 0
+  display_by_last     BOOLEAN NOT NULL DEFAULT 0,
+  active              BOOLEAN NOT NULL DEFAULT 1
 );
 
 CREATE TABLE IF NOT EXISTS logins (

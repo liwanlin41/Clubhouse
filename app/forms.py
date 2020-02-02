@@ -74,7 +74,7 @@ class MemberInfoHandler:
     def __init__(self, data):
         self.form = MemberAddForm()
         # painfully load all data
-        mem_id, firstname, lastname, address, city, state, zipcode, country, email, phone, joindate, birthday, school, gender, race, guardianfirstname, guardianlastname, guardianrelationship, guardianemail, guardianphone, club_id, checked_in_now = data
+        mem_id, firstname, lastname, address, city, state, zipcode, country, email, phone, joindate, birthday, school, gender, race, guardianfirstname, guardianlastname, guardianrelationship, guardianemail, guardianphone, club_id, checked_in_now, active = data
         # someone please find a better way to do this
         # load default data, disable some fields
         if firstname:
@@ -168,7 +168,7 @@ class ClubhouseInfoHandler:
         if short_name:
             self.form.short_name.render_kw = {'value': short_name}
         if join_date:
-            self.form.join_date.render_kw = {'value': join_date, 'disabled': 'disabled'} 
+            self.form.join_date.render_kw = {'value': join_date, 'disabled': 'disabled'}
         if username:
             self.form.username.render_kw = {'value': username, 'disabled': 'disabled'}
         if display_by_last:

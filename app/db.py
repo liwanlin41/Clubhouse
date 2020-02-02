@@ -64,7 +64,8 @@ def is_checked_in(clubhouse_id, member_id):
     cursor.execute("""SELECT is_checked_in
                       FROM members
                       WHERE clubhouse_id = %s
-                      AND member_id = %s""", (clubhouse_id, member_id))
+                      AND member_id = %s
+                      AND active = %s""", (clubhouse_id, member_id, True))
     member = cursor.fetchall()
     if len(member) > 1: # error statements don't actually work lol
         app.logger.error("error: found more than two members with these ids") # shouldn't happen

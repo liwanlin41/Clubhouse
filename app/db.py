@@ -17,7 +17,7 @@ def get_clubhouse_members(clubhouse_id, sort_by_last=True):
     if sort_by_last:
         sorting = "last_name, first_name"
     # temporarily hard-coded sort order
-    cursor.execute("SELECT member_id, first_name, last_name FROM members WHERE clubhouse_id = %s ORDER BY last_name, first_name", (clubhouse_id,))
+    cursor.execute("SELECT member_id, first_name, last_name FROM members WHERE clubhouse_id = %s AND active = 1 ORDER BY last_name, first_name", (clubhouse_id,))
     rows = cursor.fetchall()
 #    for row in rows: # for debugging purposes?
 #        print(row)
@@ -90,6 +90,7 @@ def get_checked_out_members(clubhouse_id):
     cursor = get_cursor()
     cursor.execute("""SELECT member_id FROM members
                         WHERE clubhouse_id = %s
+                        AND active = 1
                         AND is_checked_in = 1""",
                         (clubhouse_id, ))
     checked_out = cursor.fetchall()
@@ -147,11 +148,17 @@ def edit_member(club_id, mem_id, update_dict):
 # delete a specific member
 def delete_specific_member(club_id, mem_id):
     cursor = get_cursor()
-    # delete from members table
-    cursor.execute("""DELETE FROM members
+    # set inactive in members table
+    cursor.execute("""UPDATE members
+                        SET active = 0
                         WHERE clubhouse_id = %s
                         AND member_id = %s""",
                         (club_id, mem_id))
+    # delete from members table
+#    cursor.execute("""DELETE FROM members
+#                        WHERE clubhouse_id = %s
+#                        AND member_id = %s""",
+#                        (club_id, mem_id))
     # delete from checkins table
     # temporary patch to ensure user does not appear in checked-in users -- where did attempted actual sol'tn go?
     current_time = datetime.now()
@@ -288,7 +295,7 @@ def get_clubhouse_from_id(club_id, field="short_name"):
 # ordered alphabetically
 def get_all_clubhouses(name="short_name"):
     cursor = get_cursor()
-    cursor.execute("""SELECT clubhouse_id, %s FROM clubhouses
+    cursor.execute("""SELECT clubhouse_id, %s FROM clubhouses WHERE active = 1
                         ORDER BY %s""" % (name, name))
     rows = cursor.fetchall()
     conn.commit()
@@ -351,10 +358,15 @@ def add_clubhouse(update_dict):
 
 def delete_clubhouse(club_id):
     cursor = get_cursor()
-    # delete clubhouse row
-    cursor.execute("""DELETE FROM clubhouses
+    # set clubhouse inactive
+    cursor.execute("""UPDATE clubhouses
+                        SET active = 0
                         WHERE clubhouse_id = %s""",
                         (club_id, ))
+#    # delete clubhouse row
+#    cursor.execute("""DELETE FROM clubhouses
+#                        WHERE clubhouse_id = %s""",
+#                        (club_id, ))
     # delete clubhouse login row
     cursor.execute("""DELETE FROM logins
                         WHERE clubhouse_id = %s""",

@@ -1,7 +1,7 @@
 # helper functions for database operations, all functions with db accesses should be here
 
 from datetime import datetime
-from app import app, conn
+from application import application, conn
 from werkzeug.security import generate_password_hash
 from flask_babel import lazy_gettext as _l
 
@@ -51,11 +51,11 @@ def get_specific_member(clubhouse_id, member_id, short_form=False):
         cursor.execute("SELECT * FROM members WHERE clubhouse_id = %s AND member_id = %s", (clubhouse_id, member_id))
     member = cursor.fetchall()
     if len(member) > 1: # error statements don't actually work lol
-        app.logger.error("error: found more than two members with these ids") # shouldn't happen
+        application.logger.error("error: found more than two members with these ids") # shouldn't happen
     if len(member) < 1:
-        app.logger.error("error: didn't find anyone with these ids")
+        application.logger.error("error: didn't find anyone with these ids")
     cursor.close()
-    app.logger.info("get specific member debug: ", member)
+    application.logger.info("get specific member debug: ", member)
     return member[0]
 
 # returns True if the member is currently checked in, False otherwise
@@ -68,9 +68,9 @@ def is_checked_in(clubhouse_id, member_id):
                       AND active = %s""", (clubhouse_id, member_id, True))
     member = cursor.fetchall()
     if len(member) > 1: # error statements don't actually work lol
-        app.logger.error("error: found more than two members with these ids") # shouldn't happen
+        application.logger.error("error: found more than two members with these ids") # shouldn't happen
     if len(member) < 1:
-        app.logger.error("error: didn't find anyone with these ids")
+        application.logger.error("error: didn't find anyone with these ids")
     cursor.close()
     return member[0][0]
 
@@ -115,8 +115,8 @@ def add_member(club_id, update_dict):
     cursor.execute("""SELECT LAST_INSERT_ID()""")
     member_ids = cursor.fetchall()
     if len(member_ids) != 1:
-        app.logger.error("There should only be one ID.")
-        app.logger.error(member_ids)
+        application.logger.error("There should only be one ID.")
+        application.logger.error(member_ids)
     new_member_id = member_ids[0]
 
     # update each field separately
@@ -284,9 +284,9 @@ def get_clubhouse_from_id(club_id, field="short_name"):
     conn.commit()
     cursor.close()
     if len(club_info) > 1:
-        app.logger.error("error: found more than two clubhouses with these ids")
+        application.logger.error("error: found more than two clubhouses with these ids")
     elif len(club_info) < 1:
-        app.logger.error("error: didn't find any clubhouse with this id")
+        application.logger.error("error: didn't find any clubhouse with this id")
     if field:
         return club_info[0][0]
     return club_info[0]
@@ -328,8 +328,8 @@ def add_clubhouse(update_dict):
     cursor.execute("""SELECT LAST_INSERT_ID()""")
     club_ids = cursor.fetchall()
     if len(club_ids) != 1:
-        app.logger.error("There should only be one ID.")
-        app.logger.error(club_ids)
+        application.logger.error("There should only be one ID.")
+        application.logger.error(club_ids)
     new_club_id = club_ids[0]
 
     pw = generate_password_hash(update_dict['password'])
@@ -389,7 +389,7 @@ def get_id_from_username(username):
     if len(users) == 0: # no such user
         return None
     if len(users) > 1:
-        app.logger.error("Multiple users with this username")
+        application.logger.error("Multiple users with this username")
     else:
         return users[0][0]
 
@@ -403,7 +403,7 @@ def get_club_id_from_user(user_id = None):
         club_ids = cursor.fetchall()
         cursor.close()
         if len(club_ids) != 1:
-            app.logger.error("There should be exactly one clubhouse with this user id")
+            application.logger.error("There should be exactly one clubhouse with this user id")
         else:
             return club_ids[0][0]
     return None
@@ -416,7 +416,7 @@ def get_user_id_from_club(club_id):
     user_ids = cursor.fetchall()
     cursor.close()
     if len(user_ids) != 1:
-        app.logger.error("Only one clubhouse should have this id.")
+        application.logger.error("Only one clubhouse should have this id.")
     else:
         return user_ids[0][0]
 
@@ -430,7 +430,7 @@ def get_user_from_id(id_num):
                     WHERE user_id = %s""", (id_num,))
     users = cursor.fetchall()
     if len(users) != 1:
-        app.logger.error("There should be exactly one user with this user id.")
+        application.logger.error("There should be exactly one user with this user id.")
     else:
         u_id, username, password, club_id, is_admin = users[0]
         if is_admin:

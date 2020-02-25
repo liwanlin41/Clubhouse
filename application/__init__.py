@@ -9,11 +9,11 @@ from flask_login import LoginManager
 from flaskext.mysql import MySQL
 
 # initialize configuration
-app = Flask(__name__)
-app.config.from_object(Config)
+application = Flask(__name__)
+application.config.from_object(Config)
 
 # set up database access
-app.config.update(
+application.config.update(
     MYSQL_DATABASE_USER = os.getenv('MYSQL_DATABASE_USER', 'root'),
     MYSQL_DATABASE_PASSWORD = os.getenv('MYSQL_DATABASE_PASSWORD', 'root'),
     MYSQL_DATABASE_DB = os.getenv('MYSQL_DATABASE_DB', 'clubhouse'),
@@ -21,24 +21,24 @@ app.config.update(
     MYSQL_DATABASE_SOCKET = None
 )
 mysql = MySQL()
-mysql.init_app(app)
+mysql.init_app(application)
 conn = mysql.connect()
 
 # multi-language support
-babel = Babel(app)
+babel = Babel(application)
 @babel.localeselector
 def get_locale():
 #    return 'es'
-    return request.accept_languages.best_match(app.config['LANGUAGES'])
+    return request.accept_languages.best_match(application.config['LANGUAGES'])
 
 # login setup
-login_manager = LoginManager(app)
+login_manager = LoginManager(application)
 login_manager.login_view = 'login'
 login_manager.refresh_view = 'reauthenticate'
 login_manager.login_message = _l("Please log in to access this page.")
 login_manager.needs_refresh_message = _l("Please reauthenticate to view this page.")
 
 # this import needs to come at the end, don't touch; later the other imported files will also be here
-from app import db
-from app import routes
-from app import models
+from application import db
+from application import routes
+from application import models

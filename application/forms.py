@@ -6,7 +6,7 @@ from wtforms.validators import DataRequired, Optional, EqualTo, Length
 from flask_babel import lazy_gettext as _l
 from helpers import binary_search
 from .db import *
-from app import app
+from application import application
 
 # login forms
 

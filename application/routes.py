@@ -5,8 +5,8 @@ import jsonpickle
 from functools import wraps
 from datetime import datetime
 from flask import render_template, flash, redirect, request, url_for, session
-from app import app
-from app.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler, AuthenticateForm, ClubhouseManager, ClubhouseAddForm, ClubhouseInfoHandler
+from application import application
+from application.forms import LoginForm, CheckinManager, MemberManager, MemberAddForm, MemberInfoHandler, AuthenticateForm, ClubhouseManager, ClubhouseAddForm, ClubhouseInfoHandler
 from flask_babel import lazy_gettext as _l
 from flask_login import current_user, login_user, logout_user
 from werkzeug.urls import url_parse
@@ -55,29 +55,29 @@ def fresh_login_required(access="basic", impersonate = False):
 
 ### homepages
 
-@app.route('/')
+@application.route('/')
 def home():
     return render_template('index.html')
 
-@app.route('/home') # to make it easier to route based on user access
+@application.route('/home') # to make it easier to route based on user access
 @fresh_login_required()
 def reroute_home():
     if current_user.access == 'admin':
         return redirect('/admin')
     return redirect('/clubhouse')
 
-@app.route('/clubhouse')
+@application.route('/clubhouse')
 @fresh_login_required(impersonate = True)
 def club_home():
     return render_template('/clubhouse/home.html')
 
-@app.route('/admin')
+@application.route('/admin')
 @fresh_login_required(access="admin")
 def admin_home():
     return render_template('/admin/home.html')
 
 # view data pages
-@app.route('/clubhouse/view', methods=['GET','POST'])
+@application.route('/clubhouse/view', methods=['GET','POST'])
 @fresh_login_required(impersonate = True)
 def coord_view():
     # the time_range will return the number of days to be considered
@@ -96,7 +96,7 @@ def coord_view():
         # default cur_range, cur_format to be the first in the list
         return render_template('/clubhouse/view.html', time_ranges=time_ranges, data_format=data_format, cur_range = time_ranges[0][0], cur_format = data_format[0][0])
 
-@app.route('/admin/view', methods=['GET', 'POST'])
+@application.route('/admin/view', methods=['GET', 'POST'])
 @fresh_login_required(access="admin")
 def admin_view():
     # copied from coord_view
@@ -112,13 +112,13 @@ def admin_view():
 # logins and logouts, account management
 
 # logout routing
-@app.route('/logout')
+@application.route('/logout')
 def logout():
     logout_user()
     return redirect('/')
 
 # basic login form, it doesn't post anything yet
-@app.route('/login', methods=['GET','POST'])
+@application.route('/login', methods=['GET','POST'])
 def login():
     if current_user.is_authenticated: # already logged in, redirect based on account type
         if current_user.access == "admin":
@@ -154,7 +154,7 @@ def login():
     return render_template('login.html', form=form, refresh = False)
 
 # page for reauthentication
-@app.route('/reauthenticate', methods=['GET','POST'])
+@application.route('/reauthenticate', methods=['GET','POST'])
 @login_required()
 def reauthenticate():
     form = AuthenticateForm()
@@ -177,7 +177,7 @@ def reauthenticate():
         return redirect('/reauthenticate')
     return render_template('login.html', form=form, refresh = True)
 
-@app.route('/account', methods=['GET','POST'])
+@application.route('/account', methods=['GET','POST'])
 @fresh_login_required()
 def edit_account_details(): # change password, edit display name
     # pre-populate form fields
@@ -217,7 +217,7 @@ def edit_account_details(): # change password, edit display name
 # rest of app routes for clubhouse home page
 
 # add new member
-@app.route('/clubhouse/addmember', methods=['GET','POST']) # might need a method -- better to make html name informative if different?
+@application.route('/clubhouse/addmember', methods=['GET','POST']) # might need a method -- better to make html name informative if different?
 @fresh_login_required(impersonate = True)
 def create_member():
     form = MemberAddForm()
@@ -233,7 +233,7 @@ def create_member():
             return redirect('/clubhouse/editmember') # shows the posted data of newly created member
     return render_template('/clubhouse/edit.html', form=form, new_member=True)
 
-@app.route('/clubhouse/members', methods=['GET','POST'])
+@application.route('/clubhouse/members', methods=['GET','POST'])
 @fresh_login_required(impersonate = True)
 def manage_members():
     club_id = session['club_id']
@@ -247,7 +247,7 @@ def manage_members():
             return redirect('/clubhouse/editmember')
     return render_template('/clubhouse/membership.html', form=form_manager.member_form)
 
-@app.route('/clubhouse/editmember',methods=['GET','POST'])
+@application.route('/clubhouse/editmember',methods=['GET','POST'])
 @fresh_login_required(impersonate = True)
 def edit_member_info():
     if 'edit_member_id' not in session:
@@ -276,7 +276,7 @@ def edit_member_info():
         return render_template('/clubhouse/edit.html', form=handle.form, new_member=False, plot_month=plot_by_member(club_id, mem_id, 30), plot_year=plot_by_member(club_id, mem_id, 365), plot_time=plot('365', '1', club_id, mem_id), plot_weekday=plot('365', '2', club_id, mem_id))
 
 # check-in page, main functionality of website
-@app.route('/clubhouse/checkin', methods=['GET','POST'])
+@application.route('/clubhouse/checkin', methods=['GET','POST'])
 @login_required(impersonate = True)
 def checkin_handler():
     # manually set session to stale
@@ -308,7 +308,7 @@ def checkin_handler():
     return render_template('/clubhouse/checkin.html',form=testform.check_in_form)
 
 # mass checkout
-@app.route('/clubhouse/checkout')
+@application.route('/clubhouse/checkout')
 @fresh_login_required(impersonate = True)
 def mass_checkout():
     club_id = session['club_id']
@@ -321,7 +321,7 @@ def mass_checkout():
 # rest of app routes for admin home page
 
 # largely copied from clubhouse/members
-@app.route('/admin/clubhouses', methods=['GET','POST'])
+@application.route('/admin/clubhouses', methods=['GET','POST'])
 @fresh_login_required(access="admin")
 def manage_clubhouses():
     # create form from wrapper class to force refresh database pull
@@ -342,7 +342,7 @@ def manage_clubhouses():
 
 # page to select clubhouse to impersonate
 # basically the same as above but with fewer things to handle
-@app.route('/admin/clubhouseselect', methods=['GET','POST'])
+@application.route('/admin/clubhouseselect', methods=['GET','POST'])
 @fresh_login_required(access="admin")
 def choose_clubhouse():
     form = ClubhouseManager().club_form
@@ -352,7 +352,7 @@ def choose_clubhouse():
         return redirect('/clubhouse')
     return render_template('/admin/clubhouses.html', form=form, select_only = True)
 
-@app.route('/admin/editclubhouse', methods=['GET','POST'])
+@application.route('/admin/editclubhouse', methods=['GET','POST'])
 @fresh_login_required(access="admin")
 def edit_clubhouse_info():
     if 'edit_club_id' not in session: # can only access this page if clubhouse selected
@@ -390,7 +390,7 @@ def edit_clubhouse_info():
             return redirect('/admin/clubhouses')
     return render_template('/admin/change.html', form=form, clubhouse_name=load_info[0])
 
-@app.route('/admin/addclubhouse', methods=['GET','POST'])
+@application.route('/admin/addclubhouse', methods=['GET','POST'])
 @fresh_login_required(access="admin")
 def admin_clubhouses():
     form = ClubhouseAddForm()

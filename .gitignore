@@ -1,7 +1,6 @@
 __pycache__/
 venv/
 app/__pycache__/
-CodeForGood-Wanlin.pem
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

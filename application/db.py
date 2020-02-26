@@ -1,18 +1,21 @@
 # helper functions for database operations, all functions with db accesses should be here
 
 from datetime import datetime
-from application import application, conn
+#from application import application, conn
+from application import application, mysql
 from werkzeug.security import generate_password_hash
 from flask_babel import lazy_gettext as _l
 
-# retrieve cursor for MySQL database defined in env vars
-def get_cursor():
-    cursor = conn.cursor()
-    return cursor
+# retrieve connection for MySQL database defined in env vars
+def get_conn():
+    conn = mysql.connect()
+#    cursor = conn.cursor()
+    return conn
 
 # retrieve members from a clubhouse: returns (id, first, last)
 def get_clubhouse_members(clubhouse_id, sort_by_last=True):
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     sorting = "first_name, last_name" # can collapse if statement to one line
     if sort_by_last:
         sorting = "last_name, first_name"
@@ -22,26 +25,32 @@ def get_clubhouse_members(clubhouse_id, sort_by_last=True):
 #    for row in rows: # for debugging purposes?
 #        print(row)
     cursor.close()
+    conn.close()
     return rows
 
 # retrieve member join dates: returns (id, join date)
 def get_clubhouse_member_joindates(clubhouse_id):
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     cursor.execute("SELECT member_id, join_date FROM members WHERE clubhouse_id = %s ORDER BY join_date", (clubhouse_id))
     rows = cursor.fetchall()
     cursor.close()
+    conn.close()
     return rows
 
 def get_all_joindates():
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     cursor.execute("SELECT member_id, join_date FROM members ORDER BY join_date")
     rows = cursor.fetchall()
     cursor.close()
+    conn.close()
     return rows
 
 # retrieve a specific member: returns the whole row by default
 def get_specific_member(clubhouse_id, member_id, short_form=False):
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     if short_form:      # return (first, last) only
         cursor.execute("""SELECT first_name, last_name
                           FROM members
@@ -55,12 +64,14 @@ def get_specific_member(clubhouse_id, member_id, short_form=False):
     if len(member) < 1:
         application.logger.error("error: didn't find anyone with these ids")
     cursor.close()
+    conn.close()
     application.logger.info("get specific member debug: ", member)
     return member[0]
 
 # returns True if the member is currently checked in, False otherwise
 def is_checked_in(clubhouse_id, member_id):
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     cursor.execute("""SELECT is_checked_in
                       FROM members
                       WHERE clubhouse_id = %s
@@ -72,6 +83,7 @@ def is_checked_in(clubhouse_id, member_id):
     if len(member) < 1:
         application.logger.error("error: didn't find anyone with these ids")
     cursor.close()
+    conn.close()
     return member[0][0]
 
 # retrieve a list of members that are currently checked into a clubhouse: returns (id, (first, last))
@@ -87,7 +99,8 @@ def get_checked_in_members(clubhouse_id, sort_by_last=True):
 # same but for currently checked out: returns list of member_ids who have checked in but not out
     # may have to be called directly inside enable_auto_checkout
 def get_checked_out_members(clubhouse_id):
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     cursor.execute("""SELECT member_id FROM members
                         WHERE clubhouse_id = %s
                         AND active = 1
@@ -96,6 +109,7 @@ def get_checked_out_members(clubhouse_id):
     checked_out = cursor.fetchall()
     conn.commit()
     cursor.close()
+    conn.close()
     return checked_out
 
 # retrieve only certain members (for filtering)
@@ -105,7 +119,8 @@ def query_members():
 # register a new member, starts checked out by default
 # returns message, member id
 def add_member(club_id, update_dict):
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     # insert blank row with just member_id
     cursor.execute("""INSERT INTO members (member_id, first_name, last_name, clubhouse_id)
                         VALUES (DEFAULT, 'temp_first', 'temp_last', %s)""",
@@ -129,11 +144,13 @@ def add_member(club_id, update_dict):
 
     conn.commit()
     cursor.close()
+    conn.close()
     return (_l("Member added successfully."), new_member_id) # again could be more specific
 
 # edit a member
 def edit_member(club_id, mem_id, update_dict):
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     for key in update_dict: # key has to match exact vocabulary of table
         query = """UPDATE members
                    SET %s = %%s
@@ -143,11 +160,13 @@ def edit_member(club_id, mem_id, update_dict):
 
     conn.commit()
     cursor.close()
+    conn.close()
     return _l("Member updated successfully.") # could be more specific but that requires getting more info
 
 # delete a specific member
 def delete_specific_member(club_id, mem_id):
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     # set inactive in members table
     cursor.execute("""UPDATE members
                         SET active = 0
@@ -170,62 +189,74 @@ def delete_specific_member(club_id, mem_id):
                       (current_time, mem_id, club_id))
     conn.commit()
     cursor.close()
+    conn.close()
     return _l("Member deleted successfully.") # could be more specific but that requires getting more info
 
 # retrieve all check-ins
 def get_all_checkins():
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     cursor.execute("SELECT * FROM checkins")
     rows = cursor.fetchall()
     cursor.close()
+    conn.close()
     return rows
 
 # retrieve check-ins from a certain clubhouse
 def get_checkins_by_clubhouse(clubhouse_id):
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     cursor.execute("""SELECT * FROM checkins
                       WHERE clubhouse_id = %s""", (clubhouse_id, ))
     rows = cursor.fetchall()
     cursor.close()
+    conn.close()
     return rows
 
 # retrieve check-ins for a given member
 def get_checkins_by_member(clubhouse_id, member_id):
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     cursor.execute("""SELECT * FROM checkins
                       WHERE clubhouse_id = %s
                       AND member_id = %s""", (clubhouse_id, member_id))
     rows = cursor.fetchall()
     cursor.close()
+    conn.close()
     return rows
 
 # changes the is_checked_in field for a given member
 def change_member_checkin(member_id, clubhouse_id, checked_in):
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     cursor.execute("""UPDATE members
                       SET is_checked_in = %s
                       WHERE clubhouse_id = %s
                       AND member_id = %s""", (checked_in, clubhouse_id, member_id))
     conn.commit()
     cursor.close()
+    conn.close()
     return "Check-in status changed successfully."
 
 # add a new check-in
 def add_checkin(member_id, clubhouse_id):
     current_time = datetime.now()
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     # for testing, change later
     cursor.execute("""INSERT INTO checkins (member_id, checkin_datetime, clubhouse_id)
                       VALUES (%s, %s, %s)""",
                       (member_id, current_time, clubhouse_id))
     conn.commit()
     cursor.close()
+    conn.close()
     change_member_checkin(member_id, clubhouse_id, True)
 
 # add a new check-out, edits checkins table
 def add_checkout(member_id, clubhouse_id):
     current_time = datetime.now()
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     # for testing, change later
     cursor.execute("""UPDATE checkins
                       SET checkout_datetime = %s
@@ -235,10 +266,12 @@ def add_checkout(member_id, clubhouse_id):
                       (current_time, member_id, clubhouse_id))
     conn.commit()
     cursor.close()
+    conn.close()
     change_member_checkin(member_id, clubhouse_id, False)
 
 def enable_auto_checkout(clubhouse_id):
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     members = [x[0] for x in get_clubhouse_members(clubhouse_id)] # only gets list of member_ids
 
     for member_id in members:
@@ -260,6 +293,7 @@ def enable_auto_checkout(clubhouse_id):
                             (member_id, member_id))
     conn.commit()
     cursor.close()
+    conn.close()
 
 # sketch mysql variable thing, recently deleted:
                             # -- SET @check_row := (SELECT checkout_datetime FROM checkins
@@ -274,7 +308,8 @@ def enable_auto_checkout(clubhouse_id):
 # given id number of clubhouse, select one specific field
 # alternatively get all clubhouse data
 def get_clubhouse_from_id(club_id, field="short_name"):
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     if field:
         query = """SELECT %s FROM clubhouses WHERE clubhouse_id = %%s""" % field
         cursor.execute(query, (club_id,))
@@ -283,6 +318,7 @@ def get_clubhouse_from_id(club_id, field="short_name"):
     club_info = cursor.fetchall()
     conn.commit()
     cursor.close()
+    conn.close()
     if len(club_info) > 1:
         application.logger.error("error: found more than two clubhouses with these ids")
     elif len(club_info) < 1:
@@ -294,17 +330,20 @@ def get_clubhouse_from_id(club_id, field="short_name"):
 # analog to get_clubhouse_members, return id,name (either short or long name)
 # ordered alphabetically
 def get_all_clubhouses(name="short_name"):
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     cursor.execute("""SELECT clubhouse_id, %s FROM clubhouses WHERE active = 1
                         ORDER BY %s""" % (name, name))
     rows = cursor.fetchall()
     conn.commit()
     cursor.close()
+    conn.close()
     return rows
 
 # check to make sure usernames are distinct
 def check_distinct_clubhouse_usernames(proposed_username):
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
 
     cursor.execute("""SELECT username FROM logins
                         WHERE username = %s
@@ -318,7 +357,8 @@ def check_distinct_clubhouse_usernames(proposed_username):
 
 # adds and creates a clubhouse, similar to add_member
 def add_clubhouse(update_dict):
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
 
     # create clubhouse row
     cursor.execute("""INSERT INTO clubhouses (clubhouse_id, short_name, full_name)
@@ -354,10 +394,12 @@ def add_clubhouse(update_dict):
         cursor.execute("""UPDATE clubhouses SET short_name = %s WHERE clubhouse_id = %s""", (update_dict['full_name'], new_club_id))
     conn.commit()
     cursor.close()
+    conn.close()
     return (_l("Clubhouse added successfully."), new_club_id) # again could be more specific
 
 def delete_clubhouse(club_id):
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     # set clubhouse inactive
     cursor.execute("""UPDATE clubhouses
                         SET active = 0
@@ -374,6 +416,7 @@ def delete_clubhouse(club_id):
 
     conn.commit()
     cursor.close()
+    conn.close()
     return _l("Clubhouse removed successfully.")
 
 # get login information
@@ -381,11 +424,13 @@ def delete_clubhouse(club_id):
 # retrieve the user id from table
 # return user id or None if username is invalid
 def get_id_from_username(username):
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     cursor.execute("""SELECT user_id FROM logins
                     WHERE username = %s""", (username,))
     users = cursor.fetchall()
     cursor.close()
+    conn.close()
     if len(users) == 0: # no such user
         return None
     if len(users) > 1:
@@ -397,11 +442,13 @@ def get_id_from_username(username):
 # return club id for that account
 def get_club_id_from_user(user_id = None):
     if user_id:
-        cursor = get_cursor()
+        conn = get_conn()
+        cursor = conn.cursor()
         cursor.execute("""SELECT clubhouse_id FROM logins
                     WHERE user_id = %s""", (user_id,))
         club_ids = cursor.fetchall()
         cursor.close()
+        conn.close()
         if len(club_ids) != 1:
             application.logger.error("There should be exactly one clubhouse with this user id")
         else:
@@ -410,11 +457,13 @@ def get_club_id_from_user(user_id = None):
 
 # given id of clubhouse, get the corresponding user id
 def get_user_id_from_club(club_id):
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     cursor.execute("""SELECT user_id FROM logins
                     WHERE clubhouse_id = %s""", (club_id,))
     user_ids = cursor.fetchall()
     cursor.close()
+    conn.close()
     if len(user_ids) != 1:
         application.logger.error("Only one clubhouse should have this id.")
     else:
@@ -425,7 +474,8 @@ def get_user_id_from_club(club_id):
 # return (id, username, password hash, club_id, is_admin, last_name)
 # here id is the user login id
 def get_user_from_id(id_num):
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     cursor.execute("""SELECT user_id, username, password, clubhouse_id, is_admin FROM logins
                     WHERE user_id = %s""", (id_num,))
     users = cursor.fetchall()
@@ -464,17 +514,20 @@ def convert_form_to_dict(form, to_remove):
 def update_password(id_num, password):
     pw = generate_password_hash(password)
 
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     cursor.execute("""UPDATE logins
                         SET password = %s
                         WHERE user_id = %s""",
                         (pw, id_num))
     conn.commit()
     cursor.close()
+    conn.close()
 
 # update clubhouse info given clubhouse id
 def update_club_info(club_id, full_name, short_name, display_by_last = None):
-    cursor = get_cursor()
+    conn = get_conn()
+    cursor = conn.cursor()
     if len(full_name) > 0:
         cursor.execute("""UPDATE clubhouses
                             SET full_name = %s
@@ -498,3 +551,4 @@ def update_club_info(club_id, full_name, short_name, display_by_last = None):
 #                            (join_date, club_id))
     conn.commit()
     cursor.close()
+    conn.close()

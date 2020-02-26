@@ -22,7 +22,7 @@ application.config.update(
 )
 mysql = MySQL()
 mysql.init_app(application)
-conn = mysql.connect()
+#conn = mysql.connect()
 
 # multi-language support
 babel = Babel(application)

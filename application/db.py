@@ -257,7 +257,6 @@ def add_checkout(member_id, clubhouse_id):
     current_time = datetime.now()
     conn = get_conn()
     cursor = conn.cursor()
-    # for testing, change later
     cursor.execute("""UPDATE checkins
                       SET checkout_datetime = %s
                       WHERE member_id = %s
@@ -268,6 +267,28 @@ def add_checkout(member_id, clubhouse_id):
     cursor.close()
     conn.close()
     change_member_checkin(member_id, clubhouse_id, False)
+
+# mass checkout, code repeated for efficiency
+def checkout_all_from_clubhouse(clubhouse_id):
+    current_time = datetime.now()
+    checked_in_members = get_checked_in_members(clubhouse_id)
+    conn = get_conn()
+    cursor = conn.cursor()
+    for member_id, mem_name in checked_in_members:
+        cursor.execute("""UPDATE checkins
+                          SET checkout_datetime = %s
+                          WHERE member_id = %s
+                          AND clubhouse_id = %s
+                          AND checkout_datetime IS NULL""",
+                          (current_time, member_id, clubhouse_id))
+        cursor.execute("""UPDATE members
+                      SET is_checked_in = %s
+                      WHERE clubhouse_id = %s
+                      AND member_id = %s""", (False, clubhouse_id, member_id))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 def enable_auto_checkout(clubhouse_id):
     conn = get_conn()

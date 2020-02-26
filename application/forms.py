@@ -247,7 +247,7 @@ class CheckinManager:
         add_checkin(id_num, self.clubhouse)
         # insert member into sorted members_in list
         # x[0] gets member id, the rest gets last, first for sorting order
-        self.members_in.insert(binary_search(self.members_in, member, key = lambda x: self.id_to_name[x[0]][1] + ", " + self.id_to_name[x[0]][0]), member)
+        self.members_in.insert(binary_search(self.members_in, member, key = lambda x: self.id_to_name[x[0]][1].lower() + ", " + self.id_to_name[x[0]][0].lower()), member)
 #        self.members_in.insert(binary_search(self.members_in, self.id_to_name[id_num], key = lambda x: x[1]), member)
         self.setfields() # update visual
 
@@ -258,7 +258,7 @@ class CheckinManager:
         member = self.get_member_display(id_num)
         self.members_in.remove(member)
         add_checkout(id_num, self.clubhouse)
-        self.members_out.insert(binary_search(self.members_out, member, key = lambda x: self.id_to_name[x[0]][1] + ", " + self.id_to_name[x[0]][0]), member)
+        self.members_out.insert(binary_search(self.members_out, member, key = lambda x: self.id_to_name[x[0]][1].lower() + ", " + self.id_to_name[x[0]][0].lower()), member)
 #       self.members_out.insert(binary_search(self.members_out, self.id_to_name[id_num], key = lambda x: x[1]), member)
         self.setfields()
 

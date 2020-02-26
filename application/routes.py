@@ -312,9 +312,10 @@ def checkin_handler():
 @fresh_login_required(impersonate = True)
 def mass_checkout():
     club_id = session['club_id']
-    checkins = get_checked_in_members(club_id)
-    for mem_id, mem_name in checkins:
-        add_checkout(mem_id, club_id)
+    checkout_all_from_clubhouse(club_id)
+#    checkins = get_checked_in_members(club_id)
+#    for mem_id, mem_name in checkins:
+#        add_checkout(mem_id, club_id)
     flash(_l("Checked out all members."))
     return redirect('/clubhouse/checkin')
 

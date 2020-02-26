@@ -183,7 +183,7 @@ def plot_by_member(club_id, member_id, time_range):
     delta = dt.timedelta(days=time_range)
 
     timecounts = {}
-    for i in range(time_range):
+    for i in range(time_range + 1):
         timecounts[current_day - dt.timedelta(days=i)] = 0
     max_y = 0
 

@@ -32,7 +32,7 @@ def get_clubhouse_members(clubhouse_id, sort_by_last=True):
 def get_clubhouse_member_joindates(clubhouse_id):
     conn = get_conn()
     cursor = conn.cursor()
-    cursor.execute("SELECT member_id, join_date FROM members WHERE clubhouse_id = %s ORDER BY join_date", (clubhouse_id))
+    cursor.execute("SELECT member_id, join_date FROM members WHERE clubhouse_id = %s AND active = 1 ORDER BY join_date", (clubhouse_id))
     rows = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -41,7 +41,7 @@ def get_clubhouse_member_joindates(clubhouse_id):
 def get_all_joindates():
     conn = get_conn()
     cursor = conn.cursor()
-    cursor.execute("SELECT member_id, join_date FROM members ORDER BY join_date")
+    cursor.execute("SELECT member_id, join_date FROM members WHERE active = 1 ORDER BY join_date")
     rows = cursor.fetchall()
     cursor.close()
     conn.close()

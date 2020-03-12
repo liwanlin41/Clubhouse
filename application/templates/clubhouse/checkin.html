@@ -8,29 +8,30 @@
 {% block title %} {{_("Check-in")}} {% endblock %}
 
 {% block navtabs %}
-<li><a href="/clubhouse">{{_("Clubhouse Home")}}</a></li>
+<li class="nav-item"><a class="nav-link" href="/clubhouse">{{_("Clubhouse Home")}}</a></li>
 {% endblock %}
 
 {% block content %}
-<h1>{{ _("Clubhouse Check-in")}}</h1>
-<div style="display: table; width: 100%;"> 
-<form id="chooseform" method="POST" autocomplete="off" novalidate>
-	{{form.hidden_tag()}}
-	<input id="search_name" type="text" placeholder="Enter your name"/>
-	<div id="checkin-row">
-		<div class="select-field-wrapper">
-		{{form.check_in_id.label}}<br>
-		{{form.check_in_id(size=20)}}<br>
-		{{form.check_in()}}
+<div class="col" id="check-in">
+	<h1>{{ _("Clubhouse Check-in")}}</h1>
+	<form id="chooseform" method="POST" autocomplete="off" novalidate>
+		{{form.hidden_tag()}}
+		<input id="search-name" type="text" placeholder="Enter your name"/>
+		<br />
+		<div id="checkin-wrapper">
+			<div>
+			{{form.check_in_id.label}}
+			{{form.check_in_id(size=20)}}
+			{{form.check_in()}}
+			</div>
+			<div>
+			{{ form.check_out_id.label }}
+			{{ form.check_out_id(size=20) }}
+			{{ form.check_out() }}<br />
+			{{ form.all_check_out() }}
+			</div>
 		</div>
-		<div class="select-field-wrapper">
-		{{ form.check_out_id.label }}<br>
-		{{ form.check_out_id(size=20) }}<br>
-		{{ form.check_out() }}<br>
-		{{ form.all_check_out() }}
-		</div>
-	</div>
-</form>
+	</form>
 </div>
 {% endblock %}
 
@@ -41,6 +42,6 @@ var cur_fields = ["check_in_id","check_out_id"];
 function wrapper() {
 	return search(this.value, cur_form, cur_fields);
 }
-document.getElementById("search_name").addEventListener("input", wrapper);
+document.getElementById("search-name").addEventListener("input", wrapper);
 </script>
 {% endblock %}

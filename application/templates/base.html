@@ -1,66 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        {% block head %}
-	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
-        <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}" />
-	{% block scripts %}
-	{% endblock %}
-	<title>{% block title %}{% endblock %} - {{_("The Clubhouse Network")}}</title>
-        <link rel='icon' href="{{ url_for('static',filename='images/site_logo.png')}}" type='image/x-icon'/ >    
-        {% endblock %}
-    </head>
-    <body>
-        <article>
-            <header>
-		<nav>
-	    <div id="navbar">
-		{% if current_user.is_anonymous %}
-			<a href="/" id="logo"><img src = "{{ url_for('static',filename='images/small.jpg') }}"></a>
-		{% elif current_user.access == "admin" %}
-			<a href="/admin" id="logo"><img src = "{{ url_for('static',filename='images/small.jpg') }}"></a>
-		{% else %}
-			<a href="/clubhouse" id="logo"><img src = "{{ url_for('static',filename='images/small.jpg') }}"></a>
-		{% endif %}
-		<ul>
-                        {% block navtabs %}{% endblock %}
-			{% if not current_user.is_anonymous %}
-			<li><a href="{{ url_for('logout') }}">{{_("Logout")}}</a></li>
-			{% endif %}
-                    </ul>
-                </div>
-		</nav>
-		{% if not current_user.is_anonymous %}
-		<div id="welcome">
-			{% if current_user.access == "admin" %}
-			<h1>{{_("Welcome, Administrator")}}</h1>
-			{% block welcome_message %}{% endblock %}
-			{% else %}
-			<h1>{{current_user.name}}</h1>
-			{% endif %}
-		</div>
-		{% endif %}
-		{% with messages = get_flashed_messages() %}
-		{% for message in messages %}
-		<div class="flash-container">
-			<span class="flash-warning">{{ message }}</span>
-		</div>
-		{% endfor %}
-		{% endwith %}
-            </header>
-
-            <main>
-                <div id="content">{% block content %}{% endblock %}</div>
-            </main>
-
-            <footer>
-                {% block footer %}
-                Footer - The Clubhouse Network.
-                {% endblock %}
-            </footer>
-        </article>
-    </body>
-    {% block endscripts %}
-    {% endblock %}
+  <head>
+{% block head %}
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}" />
+{% block scripts %}
+{% endblock %}
+    <title>{% block title %}{% endblock %} - {{_("The Clubhouse Network")}}</title>
+    <link rel='icon' href="{{ url_for('static',filename='images/site_logo.png')}}" type='image/x-icon'/ >
+{% endblock %}
+  </head>
+  <body>
+    <main class="container-fluid" id="content" role="main">
+      <header class="row">
+        <div class="col px-0">
+          <nav class="navbar navbar-expand-lg navbar-light bg-light">
+{% if current_user.is_anonymous %}
+              <a class="navbar-brand" href="/" id="logo"><img class="img-fluid" src = "{{ url_for('static',filename='images/tcn-logo-1000x303.png') }}"></a>
+{% elif current_user.access == "admin" %}
+              <a class="navbar-brand" href="/admin" id="logo"><img class="img-fluid" src = "{{ url_for('static',filename='images/tcn-logo-1000x303.png') }}"></a>
+{% else %}
+              <a class="navbar-brand" href="/clubhouse" id="logo"><img class="img-fluid" src = "{{ url_for('static',filename='images/tcn-logo-1000x303.png') }}"></a>
+{% endif %}
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav ml-auto">
+{% block navtabs %}{% endblock %}
+{% if not current_user.is_anonymous %}
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">{{_("Logout")}}</a></li>
+{% endif %}
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </header>
+      <div class="row" id="welcome">
+        <div class="col my-3">
+{% if not current_user.is_anonymous %}
+{% if current_user.access == "admin" %}
+          <h2>{{_("Welcome, Administrator")}}</h2>
+{% block welcome_message %}{% endblock %}
+{% else %}
+          <h2>{{current_user.name}}</h2>
+{% endif %}
+{% endif %}
+        </div>
+      </div>
+      <div class="row" id="flash-warning">
+{% with messages = get_flashed_messages() %}
+{% for message in messages %}
+        <div class="col my-3">
+          <h6>{{ message }}</h6>
+        </div>
+{% endfor %}
+{% endwith %}
+      </div>
+      <div class="row" id="primary-content">
+{% block content %}{% endblock %}
+      </div>
+    </main>
+    <footer class="container-fluid">
+      <div class="row">
+        <div class="col py-2 d-flex justify-content-center">
+          <span>
+{% block footer %}
+            &copy; 2020 The Clubhouse Network. All rights reserved.
+{% endblock %}
+          </span>
+        </div>
+      </div>
+    </footer>
+  </body>
+{% block endscripts %}
+{% endblock %}
 </html>

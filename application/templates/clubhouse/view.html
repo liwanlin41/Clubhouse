@@ -4,49 +4,31 @@
 {% block title %} {{ _("Clubhouse Check-ins")}} {% endblock %}
 
 {% block navtabs %}
-<li><a href="/clubhouse">{{_("Clubhouse Home")}}</a></li>
-<li><a href="/clubhouse/checkin">{{_("Member Check-in")}}</a></li>
-<li><a href="/clubhouse/members">{{_("Edit Members")}}</a></li>
-<li><a href="/account">{{_("Account")}}</a></li>
+<li class="nav-item"><a class="nav-link" href="/clubhouse">{{_("Clubhouse Home")}}</a></li>
+<li class="nav-item"><a class="nav-link" href="/clubhouse/checkin">{{_("Member Check-in")}}</a></li>
+<li class="nav-item"><a class="nav-link" href="/clubhouse/members">{{_("Edit Members")}}</a></li>
+<li class="nav-item"><a class="nav-link" href="/account">{{_("Account")}}</a></li>
 {% endblock %}
 
 {% block content %}
-
-<form action="" method="post">
-		<label>{{_("Time range")}}</label>
-		<select class="dropdown" name="range">
-			{% for x in time_ranges %}
-			<option value="{{ x[0] }}"{% if x[0] == cur_range %} SELECTED {% endif %}>{{ x[1] }}</option>
-			{% endfor %}
-		</select>
-	<br>
-		<label>{{_("Data format")}}</label>
-		<select class="dropdown" name="format">
-			{% for x in data_format %}
-			<option value="{{ x[0] }}"{% if x[0] == cur_format %} SELECTED {% endif %}>{{ x[1] }}</option>
-			{% endfor %}
-		</select>
-	<br>
-	<input type="submit" value="Fetch data">
-</form>
-<!--
-	<div class="dropdown-wrapper">
-		<button class="dropdown-button">{{_("Time range")}}</button>
-		<div class="dropdown-options">
-			<a href="#">{{_("Last 24 hours")}}</a>
-			<a href="#">{{_("Last 7 days")}}</a>
-			<a href="#">{{_("Last month")}}</a>
-			<a href="#">{{_("Last year")}}</a>
-		</div>
-	</div>
-
-	<div class="dropdown-wrapper">
-		<button class="dropdown-button">{{_("Data options")}}</button>
-		<div class="dropdown-options">
-			<a href="#">{{_("Time of day")}}</a>
-			<a href="#">{{_("Day of week")}}</a>
-		</div>
-	</div>
--->
-<div> {{ plot|safe }} </div>
+<div class="col" id="clubhouse-view">
+	<form action="" method="post">
+			<label>{{_("Time range")}}</label>
+			<select class="dropdown" name="range">
+				{% for x in time_ranges %}
+				<option value="{{ x[0] }}"{% if x[0] == cur_range %} SELECTED {% endif %}>{{ x[1] }}</option>
+				{% endfor %}
+			</select>
+		<br>
+			<label>{{_("Data format")}}</label>
+			<select class="dropdown" name="format">
+				{% for x in data_format %}
+				<option value="{{ x[0] }}"{% if x[0] == cur_format %} SELECTED {% endif %}>{{ x[1] }}</option>
+				{% endfor %}
+			</select>
+		<br>
+		<input type="submit" value="Fetch data">
+	</form>
+	<div> {{ plot|safe }} </div>
+</div>
 {% endblock %}

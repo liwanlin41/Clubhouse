@@ -4,19 +4,20 @@
 {% block title %} {{_("Clubhouse Members")}} {% endblock %}
 
 {% block navtabs %}
-<li><a href="/clubhouse">{{_("Clubhouse Home")}}</a></li>
-<li><a href="/clubhouse/checkin">{{_("Member Check-in")}}</a></li>
-<li><a href="/clubhouse/view">{{_("View Data")}}</a></li>
-<li><a href="/account">{{_("Account")}}</a></li>
+<li class="nav-item"><a class="nav-link" href="/clubhouse">{{_("Clubhouse Home")}}</a></li>
+<li class="nav-item"><a class="nav-link" href="/clubhouse/checkin">{{_("Member Check-in")}}</a></li>
+<li class="nav-item"><a class="nav-link" href="/clubhouse/view">{{_("View Data")}}</a></li>
+<li class="nav-item"><a class="nav-link" href="/account">{{_("Account")}}</a></li>
 {% endblock %}
 
 {% block content %}
+<div class="col" id="member-add-edit">
 	{% if new_member %}
 	<h1>{{_("Add Member")}}</h1>
 	{% else %}
 	<h1>{{_("Edit Member")}}</h1>
 	{% endif %}
-	<a href='/clubhouse/members'>{{_("All members")}}</a><br>
+	<p class="text-center"><a href="/clubhouse/members" class="btn btn-primary" role="button" aria-pressed="true">{{_("All members")}}</a></p>
 	{% if new_member %}
 	<form action="" method="post" novalidate>
 	{% else %}
@@ -25,66 +26,67 @@
 	<!--have the editmember page handle the edits-->
 	{% endif %}
 		{{form.hidden_tag()}}
-		{{ form.first_name.label }}<br>
+		{{ form.first_name.label }}
 		{% for error in form.first_name.errors %}
-		<span style="color: red;">[{{ error }}]</span><br>
+		<h6>[{{ error }}]</h6>
             	{% endfor %}
-		{{ form.first_name(size=20) }} <br>
-		{{ form.last_name.label }}<br>
+		{{ form.first_name(size=20) }}
+		{{ form.last_name.label }}
 		{% for error in form.last_name.errors %}
-		<span style="color: red;">[{{ error }}]</span><br>
+		<h6>[{{ error }}]</h6>
             	{% endfor %}
-		{{ form.last_name(size=20) }}<br>
-		{{ form.street_address.label }}<br>
-		{{ form.street_address(size=20) }}<br>
-		{{ form.city.label }}<br>
-		{{ form.city(size=20) }}<br>
-		{{ form.state.label }}<br>
-		{{ form.state(size=20) }}<br>
-		{{ form.zip_code.label }}<br>
-		{{ form.zip_code(size=20) }}<br>
-		{{ form.country.label }}<br>
-		{{ form.country(size=20) }}<br>
-		{{ form.member_email.label }}<br>
-		{{ form.member_email(size=20) }}<br>
-		{{ form.member_phone.label }}<br>
-		{{ form.member_phone(size=20) }}<br>
-		{{ form.join_date.label }}<br>
+		{{ form.last_name(size=20) }}
+		{{ form.street_address.label }}
+		{{ form.street_address(size=20) }}
+		{{ form.city.label }}
+		{{ form.city(size=20) }}
+		{{ form.state.label }}
+		{{ form.state(size=20) }}
+		{{ form.zip_code.label }}
+		{{ form.zip_code(size=20) }}
+		{{ form.country.label }}
+		{{ form.country(size=20) }}
+		{{ form.member_email.label }}
+		{{ form.member_email(size=20) }}
+		{{ form.member_phone.label }}
+		{{ form.member_phone(size=20) }}
+		{{ form.join_date.label }}
 		{% for error in form.join_date.errors %}
-                <span style="color: red;">[{{ error }}]</span><br>
+                <h6>[{{ error }}]</h6>
                 {% endfor %}
-		{{ form.join_date(size=20) }}<br>
-		{{ form.birthday.label }}<br>
+		{{ form.join_date(size=20) }}
+		{{ form.birthday.label }}
 		{% for error in form.birthday.errors %}
-                <span style="color: red;">[{{ error }}]</span><br>
+                <h6>[{{ error }}]</h6>
                 {% endfor %}
-		{{ form.birthday(size=20) }}<br>
-		{{ form.school.label }}<br>
-		{{ form.school(size=20) }}<br>
-		{{ form.gender.label }}<br>
-		{{ form.gender(size=20) }}<br>
-		{{ form.race_ethnicity.label }}<br>
-		{{ form.race_ethnicity(size=20) }}<br>
-		{{ form.guardian_first_name.label }}<br>
-		{{ form.guardian_first_name(size=20) }}<br>
-		{{ form.guardian_last_name.label }}<br>
-		{{ form.guardian_last_name(size=20) }}<br>
-		{{ form.guardian_relation.label }}<br>
-		{{ form.guardian_relation(size=20) }}<br>
-		{{ form.guardian_email.label }}<br>
-		{{ form.guardian_email(size=20) }}<br>
-		{{ form.guardian_phone.label }}<br>
-		{{ form.guardian_phone(size=20) }}<br>
+		{{ form.birthday(size=20) }}
+		{{ form.school.label }}
+		{{ form.school(size=20) }}
+		{{ form.gender.label }}
+		{{ form.gender(size=20) }}
+		{{ form.race_ethnicity.label }}
+		{{ form.race_ethnicity(size=20) }}
+		{{ form.guardian_first_name.label }}
+		{{ form.guardian_first_name(size=20) }}
+		{{ form.guardian_last_name.label }}
+		{{ form.guardian_last_name(size=20) }}
+		{{ form.guardian_relation.label }}
+		{{ form.guardian_relation(size=20) }}
+		{{ form.guardian_email.label }}
+		{{ form.guardian_email(size=20) }}
+		{{ form.guardian_phone.label }}
+		{{ form.guardian_phone(size=20) }}
+		<br />
 		{% if new_member %}
 		{{ form.add_btn() }}
 		{% else %}
 		{{ form.update_btn() }}
 		{{ form.delete_btn() }}
 		{% endif %}
-		<br>
 		{{ form.cancel_btn() }}
 	</form>
 	<div> {{ plot_month|safe }} {{ plot_year|safe }} {{ plot_time|safe }} {{ plot_weekday|safe }} </div>
+</div>
 {% endblock %}
 
 {% block endscripts %}

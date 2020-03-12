@@ -8,29 +8,29 @@
 {% block title %} {{_("Clubhouses")}} {% endblock %}
 
 {% block navtabs %}
-<li><a href="/admin">{{_("Admin Home")}}</a></li>
-<li><a href="/admin/view">{{_("View Data")}}</a></li>
-<li><a href="/account">{{_("Account")}}</a></li>
+<li class="nav-item"><a class="nav-link" href="/admin">{{_("Admin Home")}}</a></li>
+<li class="nav-item"><a class="nav-link" href="/admin/view">{{_("View Data")}}</a></li>
+<li class="nav-item"><a class="nav-link" href="/account">{{_("Account")}}</a></li>
 {% endblock %}
 
 {% block content %}
+<div class="col text-center" id="clubhouses">
 	<h1>{{_("Clubhouses")}}</h1>
 	<form id="chooseform" action="" method="post" autocomplete="off" novalidate>
 		{{form.hidden_tag()}}
-		<input id="search_name" type="text" placeholder="Clubhouse name"/><br>
-		<div class="select-field-wrapper">
-			{{ form.clubhouseselect.label() }}<br>
-			{{ form.clubhouseselect(size=20) }}<br>
-			{% for error in form.clubhouseselect.errors %}
-			<span style="color: red;">{{ error }}</span><br>
-			{% endfor %}
-			{{ form.view() }}<br>
-			{% if not select_only %}
-			{{ form.edit() }}<br>
-			{{ form.new_clubhouse() }}
-			{% endif %}
-		</div>
+		<input id="search-name" type="text" placeholder="Clubhouse name"/><br />
+		{{ form.clubhouseselect.label() }}
+		{{ form.clubhouseselect(size=20) }}
+		{% for error in form.clubhouseselect.errors %}
+		<h6>{{ error }}</h6>
+		{% endfor %}
+		{{ form.view() }}
+		{% if not select_only %}
+		{{ form.edit() }}
+		{{ form.new_clubhouse() }}
+		{% endif %}
 	</form>
+</div>
 {% endblock %}
 
 {% block endscripts %}
@@ -40,8 +40,7 @@ var cur_fields = ["clubhouseselect",];
 function wrapper() {
 	return search(this.value, cur_form, cur_fields);
 }
-document.getElementById("search_name").addEventListener("input", wrapper);
+document.getElementById("search-name").addEventListener("input", wrapper);
 </script>
 
 {% endblock %}
-

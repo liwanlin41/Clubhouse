@@ -2,7 +2,8 @@
 <!-- customize welcome message -->
 
 {% block welcome_message %}
-<h3>{{_("You are currently impersonating") + " " + session['impersonation'] }}<br>
-<small><a href="/admin/clubhouseselect">{{_("Change")}}</a></small></h3>
+<div id="clubhouse-impersonation">
+  <h3>{{_("You are currently impersonating") + " " + session['impersonation'] }}</h3>
+  <p class="text-center"><a href="/admin/clubhouseselect" class="btn btn-primary" role="button" aria-pressed="true">{{_("Change")}}</a></p>
+</div>
 {% endblock %}
-

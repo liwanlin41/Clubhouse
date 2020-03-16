@@ -14,40 +14,40 @@
     <body>
         <article>
             <header>
-		<nav>
-	    <div id="navbar">
-		{% if current_user.is_anonymous %}
-			<a href="/" id="logo"><img src = "{{ url_for('static',filename='images/small.jpg') }}"></a>
-		{% elif current_user.access == "admin" %}
-			<a href="/admin" id="logo"><img src = "{{ url_for('static',filename='images/small.jpg') }}"></a>
-		{% else %}
-			<a href="/clubhouse" id="logo"><img src = "{{ url_for('static',filename='images/small.jpg') }}"></a>
-		{% endif %}
-		<ul>
-                        {% block navtabs %}{% endblock %}
-			{% if not current_user.is_anonymous %}
-			<li><a href="{{ url_for('logout') }}">{{_("Logout")}}</a></li>
-			{% endif %}
-                    </ul>
-                </div>
-		</nav>
-		{% if not current_user.is_anonymous %}
-		<div id="welcome">
-			{% if current_user.access == "admin" %}
-			<h1>{{_("Welcome, Administrator")}}</h1>
-			{% block welcome_message %}{% endblock %}
-			{% else %}
-			<h1>{{current_user.name}}</h1>
-			{% endif %}
-		</div>
-		{% endif %}
-		{% with messages = get_flashed_messages() %}
-		{% for message in messages %}
-		<div class="flash-container">
-			<span class="flash-warning">{{ message }}</span>
-		</div>
-		{% endfor %}
-		{% endwith %}
+				<nav>
+				    <div id="navbar">
+					{% if current_user.is_anonymous %}
+						<a href="/" id="logo"><img src = "{{ url_for('static',filename='images/small.jpg') }}"></a>
+					{% elif current_user.access == "admin" %}
+						<a href="/admin" id="logo"><img src = "{{ url_for('static',filename='images/small.jpg') }}"></a>
+					{% else %}
+						<a href="/clubhouse" id="logo"><img src = "{{ url_for('static',filename='images/small.jpg') }}"></a>
+					{% endif %}
+					<ul>
+			                        {% block navtabs %}{% endblock %}
+						{% if not current_user.is_anonymous %}
+						<li><a href="{{ url_for('logout') }}">{{_("Logout")}}</a></li>
+						{% endif %}
+			                    </ul>
+			                </div>
+					</nav>
+					{% if not current_user.is_anonymous %}
+					<div id="welcome">
+						{% if current_user.access == "admin" %}
+						<h1>{{_("Welcome, Administrator")}}</h1>
+						{% block welcome_message %}{% endblock %}
+						{% else %}
+						<h1>{{current_user.name}}</h1>
+						{% endif %}
+					</div>
+					{% endif %}
+					{% with messages = get_flashed_messages() %}
+					{% for message in messages %}
+					<div class="flash-container">
+						<span class="flash-warning">{{ message }}</span>
+					</div>
+					{% endfor %}
+					{% endwith %}
             </header>
 
             <main>

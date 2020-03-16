@@ -48,6 +48,10 @@ nav {
 	background-color: white;
 }
 
+nav #navbar {
+	padding: 16px;
+}
+
 nav ul {
 	list-style-type: none;
 	text-align: center;
@@ -154,6 +158,7 @@ body {
 
 footer {
     background-color: #7290C0;
+    padding: 16px;
 }
 
 /* apparently necessary for keeping footer at bottom */

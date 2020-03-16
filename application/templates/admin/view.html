@@ -4,29 +4,29 @@
 {% block title %} {{ _("Global Clubhouse Check-ins")}} {% endblock %}
 
 {% block navtabs %}
-<li><a href="/admin">{{_("Admin Home")}}</a></li>
-<li><a href="/admin/clubhouses">{{_("Clubhouses")}}</a></li>
-<li><a href="/account">{{_("Account")}}</a></li>
+<li class="nav-item"><a class="nav-link" href="/admin">{{_("Admin Home")}}</a></li>
+<li class="nav-item"><a class="nav-link" href="/admin/clubhouses">{{_("Clubhouses")}}</a></li>
+<li class="nav-item"><a class="nav-link" href="/account">{{_("Account")}}</a></li>
 {% endblock %}
 
 {% block content %}
-
-<form action="" method="post">
-                <label>{{_("Time range")}}</label>
-                <select class="dropdown" name="range">
-                        {% for x in time_ranges %}
-                        <option value="{{ x[0] }}"{% if x[0] == cur_range %} SELECTED {% endif %}>{{ x[1] }}</option>
-                        {% endfor %}
-                </select>
-        <br>
-                <label>{{_("Data format")}}</label>
-                <select class="dropdown" name="format">
-                        {% for x in data_format %}
-                        <option value="{{ x[0] }}"{% if x[0] == cur_format %} SELECTED {% endif %}>{{ x[1] }}</option>
-                        {% endfor %}
-                </select>
-        <br>
-        <input type="submit" value="Fetch data">
-</form>
-<div> {{ plot|safe }} <div>
+<div class="col" id="view-all">
+  <form action="" method="post">
+    <label>{{_("Time range")}}</label>
+    <select class="dropdown" name="range">
+      {% for x in time_ranges %}
+      <option value="{{ x[0] }}"{% if x[0] == cur_range %} SELECTED {% endif %}>{{ x[1] }}</option>
+      {% endfor %}
+    </select>
+    <label class="mt-0">{{_("Data format")}}</label>
+    <select class="dropdown" name="format">
+      {% for x in data_format %}
+      <option value="{{ x[0] }}"{% if x[0] == cur_format %} SELECTED {% endif %}>{{ x[1] }}</option>
+      {% endfor %}
+    </select>
+    <br />
+    <input type="submit" value="Fetch data">
+  </form>
+  <div> {{ plot|safe }} </div>
+</div>
 {% endblock %}

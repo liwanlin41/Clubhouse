@@ -7,7 +7,15 @@
  * 80/60/40/20: #4478B1, #7290C0, #9BAED2, #C9D2E6
 */
 
-/* overall styling */
+/* CSS VARIABLES */
+
+:root {
+  --color-purple: #2D2769;
+  --color-network-blue: #005B9E;
+  --color-light-blue: #C5DBEA;
+}
+
+/* FONTS */
 
 @font-face {
   font-family: Montserrat;
@@ -31,23 +39,35 @@
   font-weight: bold;
 }
 
+/* CORE */
+
+html,
 body {
 	font-family: Montserrat;
+  height: 100%;
+}
+
+body {
+  background-color: #eee;
+  display: flex;
+  flex-direction: column;
 }
 
 #content {
-	width: 98%;
-	/*margin: 0 auto;*/
-	display: inline-block;
+  flex: 1 0 auto;
 }
 
-/* navbar */
-nav {
-	color: #2D2769;
-	font-weight: bold;
-	background-color: white;
+footer {
+  color: #fff;
+  background-color: var(--color-purple);
+  flex-shrink: 0;
 }
 
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  margin-bottom: 1em;
+  text-align: center;
+/*
 nav #navbar {
 	padding: 16px;
 }
@@ -57,129 +77,199 @@ nav ul {
 	text-align: center;
 	display: inline-block;
 	vertical-align: middle;
+*/
 }
 
-nav ul li {
-	display: inline;
-	padding: 5px;
-}
-
-nav a {
-	text-decoration: none;
-	padding: 10px;
-	color: #2D2769;
-}
-
-nav a:visited {
-	color: #2D2769;
-}
-
-nav a:hover {
-	background-color: #2D2769;
-	color: white;
-	border-radius: 5px;
-	padding: 10px;
-}
-
-nav #logo {
-	vertical-align: middle;
-	padding: 0;
-}
-
-/* find some better way to make the logo link look nice? */
-nav a#logo:hover {
-	background-color: rgba(0,0,0,0);
-}
-
-/* welcome message */
-#welcome {
-	color: #005B9E;
-}
-
-/* all links */
-a {
-	color: #005B9E;
-}
-
-a:visited {
-	color: #2D2769;
-}
-
-/* submit button on forms */
-input[type=submit]{
-	background-color: #716998;
-	color: #E0EBF1;
-	border-radius: 5px;
-	margin: 1pt 0pt;
-}
-
-/* check-in and check-out div wrappers */
-.select-field-wrapper {
-	/*display: table-cell;*/
-	padding: 10px;
-	margin: 0 auto;
-	width: 50%;
-	flex: 50%;
-}
-
-/* check-in and check-out whole wrapper */
-#checkin-row {
-	display: flex;
-}
-
-/* styling of flash messages */
-.flash-container {
-	text-align: center;
-}
-
-.flash-warning {
+h6, .h6 {
 	color: red;
-	display: inline-block;
 }
 
-
-select {
-	min-width: 33%;
-	margin: 0 auto;
+select, input {
+  max-width: 100%;
 }
 
-/* different style for dropdown select */
+select, input[type=submit] {
+  margin-bottom: 20px;
+}
+
+select, input:not([type=submit]) {
+  min-width: 50%;
+}
+
+@media only screen and (max-width: 767px) {
+  select, input:not([type=submit]) {
+    width: 100%;
+  }
+}
+
+label {
+  margin-top: 20px;
+}
+
+label:first-of-type {
+  margin-top: 0;
+}
+
 .dropdown {
 	min-width: 0;
 }
 
-h1, h2, h3 {
+a:not(.btn) {
+	color: var(--color-network-blue);
+}
+
+a:not(.btn):visited {
+	color: var(--color-purple);
+}
+
+input[type=checkbox] {
+  display: inline;
+}
+
+input[type=submit],
+.btn.btn-primary {
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: middle;
+  cursor: pointer;
+  color: #fff;
+  background-color: var(--color-network-blue);
+  border: 0 solid transparent;
+  padding: .5rem 1rem;
+  font-size: 1.25rem;
+  line-height: 1.5;
+  border-radius: .3rem;
+  white-space: pre-wrap;
+}
+
+input[type=submit]:hover,
+.btn.btn-primary:hover {
+  background-color: #4478B1;
+}
+
+.btn .material-icons {
+  font-size: 96px;
+  color: var(--color-light-blue);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* NAVBAR */
+
+nav .navbar-brand img {
+  width: 350px;
+}
+
+@media only screen and (max-width: 767px) {
+  nav.navbar {
+    flex-direction: column;
+  }
+  nav .navbar-toggler {
+    margin-bottom: 20px;
+  }
+}
+
+@media only screen and (max-width: 991px) {
+  nav .navbar-nav {
     text-align: center;
+  }
 }
 
-body {
-    background-color: #E0EBF1;
+@media only screen and (min-width: 992px) {
+  nav .navbar-nav li {
+    margin: 0 10px;
+  }
+  nav .navbar-nav li:first-of-type {
+    margin-left: 0;
+  }
+  nav .navbar-nav li:last-of-type {
+    margin-right: 0;
+  }
 }
 
+/* TOP */
+
+#welcome h2 {
+	color: var(--color-purple);
+  margin-bottom: 0;
+/*
 footer {
     background-color: #7290C0;
     padding: 16px;
+*/
 }
 
-/* apparently necessary for keeping footer at bottom */
-
-html, body {
-    width: 100%;
-    height: 100%;
+#welcome h3 {
+	font-style: italic;
 }
 
-article {
-    min-height: 100%;
-    display: flex;
+#welcome #clubhouse-impersonation {
+  margin-top: 20px;
+  text-align: center;
+}
+
+/* INDEX PAGE */
+
+#index {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#index .btn {
+  max-width: 350px;
+}
+
+/* ADMIN & CLUBHOUSE BUTTONS */
+
+#admin-buttons,
+#clubhouse-buttons {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+#admin-buttons a,
+#clubhouse-buttons a {
+  width: 200px;
+}
+
+@media only screen and (max-width: 767px) {
+  #admin-buttons,
+  #clubhouse-buttons {
     flex-direction: column;
-    align-items: stretch;
+  }
+  #admin-buttons a,
+  #clubhouse-buttons a {
+    width: auto;
+    margin-bottom: 20px;
+  }
 }
 
-main {
-    flex-grow: 1; 
-    text-align: center;
+/* CLUBHOUSE CHECK-IN PAGE */
+
+#checkin-wrapper {
+	display: flex;
+  flex-direction: row;
+  width: 100%;
 }
 
-header, main, footer {
-    flex-shrink: 0;
+#checkin-wrapper > div {
+	width: 50%;
+}
+
+#checkin-wrapper > div:first-of-type {
+	margin-right: 10px;
+}
+
+#checkin-wrapper > div:last-of-type {
+	margin-left: 10px;
+}
+
+#checkin-wrapper select {
+	width: 100%;
 }

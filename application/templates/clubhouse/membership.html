@@ -8,27 +8,29 @@
 {% block title %} {{_("Clubhouse Members")}} {% endblock %}
 
 {% block navtabs %}
-<li><a href="/clubhouse">{{_("Clubhouse Home")}}</a></li>
-<li><a href="/clubhouse/checkin">{{_("Member Check-in")}}</a></li>
-<li><a href="/clubhouse/view">{{_("View Data")}}</a></li>
-<li><a href="/account">{{_("Account")}}</a></li>
+<li class="nav-item"><a class="nav-link" href="/clubhouse">{{_("Clubhouse Home")}}</a></li>
+<li class="nav-item"><a class="nav-link" href="/clubhouse/checkin">{{_("Member Check-in")}}</a></li>
+<li class="nav-item"><a class="nav-link" href="/clubhouse/view">{{_("View Data")}}</a></li>
+<li class="nav-item"><a class="nav-link" href="/account">{{_("Account")}}</a></li>
 {% endblock %}
 
 {% block content %}
+<div class="col" id="members">
 	<h1>{{_("Clubhouse Members")}}</h1>
 	<form id="chooseform" action="" method="post" autocomplete="off" novalidate>
 		{{form.hidden_tag()}}
-		<input id="search_name" type="text" placeholder="Enter member name"/>
-		<div class="select-field-wrapper">
-		{{ form.memberselect.label }}<br>
-		{{ form.memberselect(size=20) }} <br>
+		<input id="search-name" type="text" placeholder="Enter member name"/>
+		<br />
+		{{ form.memberselect.label }}
+		{{ form.memberselect(size=20) }}
 		{% for error in form.memberselect.errors %}
-		<span style="color: red;">{{ error }}</span><br>
+		<h6>{{ error }}</h6>
+		<br />
 		{% endfor %}
-		{{ form.edit() }}<br>
+		{{ form.edit() }}
 		{{ form.new_member() }}
-		</div>
 	</form>
+</div>
 {% endblock %}
 
 {% block endscripts %}
@@ -38,7 +40,6 @@ var cur_fields = ['memberselect'];
 function wrapper() {
 	return search(this.value, cur_form, cur_fields);
 }
-document.getElementById("search_name").addEventListener("input",wrapper);
+document.getElementById("search-name").addEventListener("input",wrapper);
 </script>
 {% endblock %}
-

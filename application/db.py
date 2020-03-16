@@ -421,15 +421,25 @@ def add_clubhouse(update_dict):
 def delete_clubhouse(club_id):
     conn = get_conn()
     cursor = conn.cursor()
-    # set clubhouse inactive
+
+    # get members of clubhouse (active in query pertains to member being active)
+    cursor.execute("SELECT member_id FROM members WHERE clubhouse_id = %s AND active = 1", (club_id,))
+    members = cursor.fetchall()
+
+    # set members to be inactive
+    for mem_id in members:
+        cursor.execute("""UPDATE members
+                            SET active = 0
+                            WHERE clubhouse_id = %s
+                            AND member_id = %s""",
+                            (club_id, mem_id))
+
+    # set clubhouse inactive (rather than deleting it)
     cursor.execute("""UPDATE clubhouses
                         SET active = 0
                         WHERE clubhouse_id = %s""",
                         (club_id, ))
-#    # delete clubhouse row
-#    cursor.execute("""DELETE FROM clubhouses
-#                        WHERE clubhouse_id = %s""",
-#                        (club_id, ))
+
     # delete clubhouse login row
     cursor.execute("""DELETE FROM logins
                         WHERE clubhouse_id = %s""",

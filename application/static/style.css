@@ -67,6 +67,17 @@ h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
   margin-bottom: 1em;
   text-align: center;
+/*
+nav #navbar {
+	padding: 16px;
+}
+
+nav ul {
+	list-style-type: none;
+	text-align: center;
+	display: inline-block;
+	vertical-align: middle;
+*/
 }
 
 h6, .h6 {
@@ -186,6 +197,11 @@ nav .navbar-brand img {
 #welcome h2 {
 	color: var(--color-purple);
   margin-bottom: 0;
+/*
+footer {
+    background-color: #7290C0;
+    padding: 16px;
+*/
 }
 
 #welcome h3 {

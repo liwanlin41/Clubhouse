@@ -423,7 +423,7 @@ def delete_clubhouse(club_id):
     cursor = conn.cursor()
 
     # get members of clubhouse (active in query pertains to member being active)
-    cursor.execute("SELECT member_id FROM members WHERE clubhouse_id = %s AND active = 1", (clubhouse_id,))
+    cursor.execute("SELECT member_id FROM members WHERE clubhouse_id = %s AND active = 1", (club_id,))
     members = cursor.fetchall()
 
     # set members to be inactive

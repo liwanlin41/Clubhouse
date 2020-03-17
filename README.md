@@ -25,7 +25,7 @@ To link to an existing application, just do the first two steps above.
 
 ### Making Updates
 
-Elastic Beanstalk is linked to git status. Inside the git repo, commit and push any changes that were made. Activate the virtual environment (`source venv/bin/activate') and run `eb deploy`. If the Elastic Beanstalk setup was successful, this should automatically push the local changes to the server and update the live website.
+Elastic Beanstalk is linked to git status. Inside the git repo, commit and push any changes that were made. Activate the virtual environment (`source venv/bin/activate`) and run `eb deploy`. If the Elastic Beanstalk setup was successful, this should automatically push the local changes to the server and update the live website.
 
 ### SSH
 

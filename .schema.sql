@@ -1,5 +1,3 @@
-CREATE SCHEMA IF NOT EXISTS clubhouse;
-
 CREATE TABLE IF NOT EXISTS members (
   member_id           INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   first_name          TINYTEXT NOT NULL,
